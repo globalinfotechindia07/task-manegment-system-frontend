@@ -306,7 +306,7 @@ const UsersPage = () => {
                 {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Role</label>
                   <select
@@ -338,7 +338,7 @@ const UsersPage = () => {
               </div>
 
               {selectedRole === 'User' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">Department</label>
                     <select

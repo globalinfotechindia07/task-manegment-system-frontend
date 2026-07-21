@@ -248,7 +248,7 @@ const AdminReportsPage = () => {
                 ></textarea>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Assign To</label>
                   <select
@@ -274,7 +274,7 @@ const AdminReportsPage = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Start Date & Time</label>
                   <input
@@ -348,7 +348,7 @@ const AdminReportsPage = () => {
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-5 grid grid-cols-3 gap-6">
+            <div className="flex-1 overflow-y-auto p-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left Column - Details */}
               <div className="col-span-2 space-y-6">
                 <div>
