@@ -52,7 +52,7 @@ const AnnouncementsWidget = () => {
                   {ann.attachments.map((file, idx) => (
                     <a 
                       key={idx} 
-                      href={`http://localhost:5000${file}`} 
+                      href={`https://task-manegment-system-backend.onrender.com${file}`} 
                       target="_blank" 
                       rel="noreferrer"
                       className="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 px-2 py-1 rounded hover:text-indigo-400 transition-colors"

@@ -202,7 +202,7 @@ const HRAnnouncements = () => {
                     {ann.attachments.map((file, idx) => (
                       <a 
                         key={idx} 
-                        href={`http://localhost:5000${file}`} 
+                        href={`https://task-manegment-system-backend.onrender.com${file}`} 
                         target="_blank" 
                         rel="noreferrer"
                         className="flex items-center gap-2 text-xs bg-slate-900 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg hover:text-indigo-400 hover:border-indigo-500/30 transition-colors"
