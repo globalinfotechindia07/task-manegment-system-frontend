@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post('https://task-manegment-system-backend.onrender.com/api/auth/login', { email, password });
+      const { data } = await api.post('/auth/login', { email, password });
       setUser(data);
       localStorage.setItem('user', JSON.stringify(data));
       toast.success('Logged in successfully');
