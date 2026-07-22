@@ -74,6 +74,21 @@ const TeamLeadReportsPage = () => {
     }
   });
 
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (taskId) => {
+      const { data } = await api.delete(`/tasks/${taskId}`);
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Task deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      setIsDetailsModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to delete task');
+    }
+  });
+
   const addCommentMutation = useMutation({
     mutationFn: async ({ taskId, text }) => {
       const { data } = await api.post(`/tasks/${taskId}/comments`, { text });
@@ -200,12 +215,27 @@ const TeamLeadReportsPage = () => {
                     </td>
                     <td className="px-6 py-4">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => openDetails(task)}
-                        className="text-indigo-400 hover:text-indigo-300 px-3 py-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors"
-                      >
-                        View Details
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => openDetails(task)}
+                          className="text-indigo-400 hover:text-indigo-300 px-3 py-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors"
+                        >
+                          View Details
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Are you sure you want to permanently delete task "${task.title}"?`)) {
+                              deleteTaskMutation.mutate(task._id);
+                            }
+                          }}
+                          title="Delete Task"
+                          className="text-red-400 hover:text-red-300 p-1 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors inline-flex items-center justify-center"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
