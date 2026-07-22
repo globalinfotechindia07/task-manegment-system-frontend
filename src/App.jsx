@@ -11,6 +11,7 @@ import AdminUsers from './pages/admin/users';
 import AdminReports from './pages/admin/reports';
 import AdminPerformance from './pages/admin/performance';
 import AdminSettings from './pages/admin/settings';
+import AdminAnnouncements from './pages/admin/announcements';
 
 // Other Role Dashboards
 import TeamLeadDashboard from './pages/team-lead/dashboard';
@@ -43,6 +44,7 @@ function App() {
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/performance" element={<AdminPerformance />} />
+            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>

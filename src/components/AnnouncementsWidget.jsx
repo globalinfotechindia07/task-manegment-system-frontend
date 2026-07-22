@@ -30,10 +30,12 @@ const AnnouncementsWidget = () => {
       </div>
       
       <div className="space-y-4 flex-1 overflow-y-auto pr-1">
-        {announcements.length === 0 ? (
+        {announcements.filter(ann => !ann.expireDate || new Date(ann.expireDate) >= new Date()).length === 0 ? (
           <p className="text-slate-400 text-sm">No recent announcements.</p>
         ) : (
-          announcements.map(ann => (
+          announcements
+            .filter(ann => !ann.expireDate || new Date(ann.expireDate) >= new Date())
+            .map(ann => (
             <div key={ann._id} className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-indigo-500/50 transition-colors">
               <div className="flex justify-between items-start mb-2">
                 <h4 className="text-white font-medium text-sm leading-tight">{ann.title}</h4>

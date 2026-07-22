@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../api/axios';
 
-const HRAnnouncements = () => {
+const AdminAnnouncements = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -369,4 +369,4 @@ const HRAnnouncements = () => {
   );
 };
 
-export default HRAnnouncements;
+export default AdminAnnouncements;
