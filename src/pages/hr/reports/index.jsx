@@ -1,11 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../api/axios';
+import { API_BASE_URL } from '../../../config';
 
 const HRReports = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPeriod, setFilterPeriod] = useState('All');
   const [selectedUserId, setSelectedUserId] = useState('All');
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const { data: tasks = [], isLoading: isLoadingTasks } = useQuery({
     queryKey: ['tasks'],
@@ -212,6 +215,7 @@ const HRReports = () => {
                   <th className="px-6 py-4 font-semibold">Status</th>
                   <th className="px-6 py-4 font-semibold">Priority</th>
                   <th className="px-6 py-4 font-semibold">Last Updated</th>
+                  <th className="px-6 py-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
@@ -239,6 +243,17 @@ const HRReports = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">{new Date(task.updatedAt).toLocaleString()}</td>
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        onClick={() => {
+                          setSelectedTask(task);
+                          setIsDetailsModalOpen(true);
+                        }}
+                        className="text-indigo-400 hover:text-indigo-300 px-3 py-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors"
+                      >
+                        View Details
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -246,6 +261,161 @@ const HRReports = () => {
           </div>
         )}
       </div>
+
+      {/* Task Details Modal (Read-Only) */}
+      {isDetailsModalOpen && selectedTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={() => setIsDetailsModalOpen(false)}></div>
+          <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-5 border-b border-slate-800 shrink-0">
+              <div>
+                <h3 className="text-xl font-bold text-white">{selectedTask.title}</h3>
+                <p className="text-xs text-slate-400 mt-1">Read-only view for HR Monitoring</p>
+              </div>
+              <button onClick={() => setIsDetailsModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left Column - Details */}
+              <div className="md:col-span-2 space-y-6 min-w-0">
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400 mb-2">Description</h4>
+                  <p className="text-slate-200 bg-slate-800/50 p-4 rounded-lg break-words">{selectedTask.description}</p>
+                </div>
+
+                {selectedTask.attachments && selectedTask.attachments.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-400 mb-2">Attachments</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTask.attachments.map((file, i) => (
+                        <a key={i} href={`${API_BASE_URL}${file}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm text-indigo-400 transition-colors">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                          </svg>
+                          Attachment {i + 1}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400 mb-4 border-b border-slate-700 pb-2">Comments & Progress Updates</h4>
+                  <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto pr-2">
+                    {selectedTask.comments?.map((comment, i) => (
+                      <div key={i} className="bg-slate-800 p-4 rounded-lg border border-slate-700/50">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-indigo-400">{comment.user?.name || 'User'}</span>
+                          <span className="text-xs text-slate-500">{new Date(comment.createdAt).toLocaleString()}</span>
+                        </div>
+                        <p className="text-slate-300 text-sm break-words">{comment.text}</p>
+                      </div>
+                    ))}
+                    {(!selectedTask.comments || selectedTask.comments.length === 0) && (
+                      <p className="text-slate-500 italic text-sm">No comments yet.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400 mb-4 border-b border-slate-700 pb-2">Daily Reports</h4>
+                  <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto pr-2">
+                    {selectedTask.reports?.map((report, i) => (
+                      <div key={i} className="bg-slate-800 p-4 rounded-lg border-l-4 border-emerald-500">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-emerald-400">{report.user?.name || 'User'}</span>
+                          <span className="text-xs text-slate-500">{new Date(report.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-slate-300 text-sm whitespace-pre-wrap">{report.description}</p>
+                      </div>
+                    ))}
+                    {(!selectedTask.reports || selectedTask.reports.length === 0) && (
+                      <p className="text-slate-500 italic text-sm">No daily reports submitted yet.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Meta & History */}
+              <div className="space-y-6 min-w-0">
+                <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 space-y-4">
+                  <div>
+                    <span className="block text-xs font-semibold text-slate-400 mb-1">Status</span>
+                    <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
+                      selectedTask.status === 'Completed' ? 'bg-green-500/10 text-green-400' :
+                      selectedTask.status === 'In Progress' ? 'bg-indigo-500/10 text-indigo-400' :
+                      selectedTask.status === 'On Hold' ? 'bg-orange-500/10 text-orange-400' :
+                      'bg-slate-500/10 text-slate-400'
+                    }`}>
+                      {selectedTask.status}
+                    </span>
+                  </div>
+                  
+                  <div>
+                    <span className="block text-xs font-semibold text-slate-400">Assigned To</span>
+                    <span className="text-white text-sm">{selectedTask.assignedTo?.name}</span>
+                  </div>
+                  
+                  <div>
+                    <span className="block text-xs font-semibold text-slate-400">Assigned By</span>
+                    <span className="text-white text-sm">{selectedTask.assignedBy?.name}</span>
+                  </div>
+                  
+                  <div>
+                    <span className="block text-xs font-semibold text-slate-400">Priority</span>
+                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold mt-1 ${
+                      selectedTask.priority === 'High' ? 'bg-red-500/10 text-red-400' :
+                      selectedTask.priority === 'Medium' ? 'bg-yellow-500/10 text-yellow-400' :
+                      'bg-blue-500/10 text-blue-400'
+                    }`}>
+                      {selectedTask.priority}
+                    </span>
+                  </div>
+
+                  {selectedTask.startDate && (
+                    <div>
+                      <span className="block text-xs font-semibold text-slate-400">Start Date</span>
+                      <span className="text-white text-sm">{new Date(selectedTask.startDate).toLocaleString()}</span>
+                    </div>
+                  )}
+
+                  {selectedTask.dueDate && (
+                    <div>
+                      <span className="block text-xs font-semibold text-slate-400">Due Date</span>
+                      <span className="text-white text-sm">{new Date(selectedTask.dueDate).toLocaleString()}</span>
+                    </div>
+                  )}
+                  
+                  {selectedTask.estimatedTimeDuration && (
+                    <div>
+                      <span className="block text-xs font-semibold text-slate-400">Estimated Duration</span>
+                      <span className="text-white text-sm">{selectedTask.estimatedTimeDuration} Hours</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400 mb-3 border-b border-slate-700 pb-2">Activity Logs</h4>
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                    {selectedTask.history?.slice().reverse().map((log, i) => (
+                      <div key={i} className="text-sm">
+                        <p className="text-slate-300 break-words whitespace-normal">
+                          <span className="font-medium text-slate-200">{log.user?.name || 'User'}</span> {log.action}
+                        </p>
+                        <span className="text-xs text-slate-500">{new Date(log.createdAt).toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -327,6 +327,24 @@ const HRTasks = () => {
                     )}
                   </div>
                 </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400 mb-4 border-b border-slate-700 pb-2">Daily Reports</h4>
+                  <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto pr-2">
+                    {selectedTask.reports?.map((report, i) => (
+                      <div key={i} className="bg-slate-800 p-4 rounded-lg border-l-4 border-emerald-500">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-emerald-400">{report.user?.name || 'User'}</span>
+                          <span className="text-xs text-slate-500">{new Date(report.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-slate-300 text-sm whitespace-pre-wrap">{report.description}</p>
+                      </div>
+                    ))}
+                    {(!selectedTask.reports || selectedTask.reports.length === 0) && (
+                      <p className="text-slate-500 italic text-sm">No daily reports submitted yet.</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Right Column - Meta & History */}

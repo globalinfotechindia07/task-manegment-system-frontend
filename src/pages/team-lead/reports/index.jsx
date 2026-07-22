@@ -10,6 +10,7 @@ const TeamLeadReportsPage = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [commentText, setCommentText] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
   
   const queryClient = useQueryClient();
 
@@ -41,6 +42,19 @@ const TeamLeadReportsPage = () => {
       return data;
     }
   });
+
+  const { data: projects, isLoading: projectsLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const { data } = await api.get('/projects');
+      return data;
+    }
+  });
+
+  // Filter tasks based on selected project
+  const displayedTasks = tasks?.filter(t => 
+    selectedProjectId ? t.project?._id === selectedProjectId : true
+  );
 
   const createTaskMutation = useMutation({
     mutationFn: async (formData) => {
@@ -120,6 +134,9 @@ const TeamLeadReportsPage = () => {
       }
     });
 
+    // Append the selected project ID
+    formData.append('project', selectedProjectId);
+
     createTaskMutation.mutate(formData);
   };
 
@@ -150,17 +167,39 @@ const TeamLeadReportsPage = () => {
 
   return (
     <div>
-      <div className="mb-6 flex justify-between items-end">
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Task Management</h1>
           <p className="text-slate-400">Assign and monitor tasks.</p>
         </div>
-        <button 
-          onClick={() => setIsTaskModalOpen(true)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]"
-        >
-          + Assign Task
-        </button>
+        
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="min-w-[250px]">
+            <select
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+            >
+              <option value="">-- All Projects --</option>
+              {projects?.map(p => (
+                <option key={p._id} value={p._id}>{p.name} ({p.status})</option>
+              ))}
+            </select>
+          </div>
+          
+          <button 
+            onClick={() => {
+              if (!selectedProjectId) {
+                toast.error('Please select a project first to assign a task');
+                return;
+              }
+              setIsTaskModalOpen(true);
+            }}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)] whitespace-nowrap"
+          >
+            + Assign Task
+          </button>
+        </div>
       </div>
       
       <div className="glass-panel overflow-hidden">
@@ -175,8 +214,8 @@ const TeamLeadReportsPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-white mb-1">No tasks assigned yet</h3>
-            <p className="text-slate-400 max-w-sm">Click "Assign Task" to get started.</p>
+            <h3 className="text-lg font-medium text-white mb-1">No tasks found</h3>
+            <p className="text-slate-400 max-w-sm">Select a project and click "Assign Task" to get started.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -192,9 +231,14 @@ const TeamLeadReportsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
-                {tasks.map(task => (
+                {displayedTasks.map(task => (
                   <tr key={task._id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-6 py-4 font-medium text-white">{task.title}</td>
+                    <td className="px-6 py-4 font-medium text-white">
+                      {task.title}
+                      {!selectedProjectId && task.project && (
+                        <div className="text-xs text-indigo-400 mt-0.5">{task.project.name}</div>
+                      )}
+                    </td>
                     <td className="px-6 py-4">{task.assignedTo?.name || 'Unknown'}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
@@ -252,17 +296,36 @@ const TeamLeadReportsPage = () => {
           <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={() => setIsTaskModalOpen(false)}></div>
           <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-5 border-b border-slate-800 sticky top-0 bg-slate-900 z-10">
-              <h3 className="text-lg font-bold text-white">Assign New Task</h3>
+              <div>
+                <h3 className="text-lg font-bold text-white">Assign New Task</h3>
+                <p className="text-sm text-indigo-400">
+                  Project: {projects?.find(p => p._id === selectedProjectId)?.name || 'Unknown'}
+                </p>
+              </div>
               <button onClick={() => setIsTaskModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            
-            <form onSubmit={handleSubmit(onSubmitTask)} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Task Name</label>
+              <div className="bg-slate-800/40 p-4 border-b border-slate-700/50 flex flex-col sm:flex-row gap-4 items-start sm:items-center text-sm">
+                <div className="flex items-center text-slate-300 bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700 w-full sm:w-auto">
+                  <svg className="w-4 h-4 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Working Days: <strong className="text-white">Mon - Fri</strong></span>
+                </div>
+                <div className="flex items-center text-slate-300 bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700 w-full sm:w-auto">
+                  <svg className="w-4 h-4 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Working Hours: <strong className="text-white">9:00 AM - 7:00 PM</strong></span>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmitTask)} className="p-5 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Task Name</label>
                 <input
                   type="text"
                   className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
