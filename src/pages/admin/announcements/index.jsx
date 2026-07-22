@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../api/axios';
+import { API_BASE_URL } from '../../../config';
 
 const AdminAnnouncements = () => {
   const queryClient = useQueryClient();
@@ -241,7 +242,7 @@ const AdminAnnouncements = () => {
                     {ann.attachments.map((file, idx) => (
                       <a 
                         key={idx} 
-                        href={`https://task-manegment-system-backend.onrender.com${file}`} 
+                        href={`${API_BASE_URL}${file}`} 
                         target="_blank" 
                         rel="noreferrer"
                         className="flex items-center gap-2 text-xs bg-slate-900 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg hover:text-indigo-400 hover:border-indigo-500/30 transition-colors"

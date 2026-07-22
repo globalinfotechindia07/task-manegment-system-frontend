@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
+import { API_BASE_URL } from '../../../config';
 
 const UserTasksPage = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [commentText, setCommentText] = useState('');
+  const [reportText, setReportText] = useState('');
   const [attachments, setAttachments] = useState(null);
   
   const queryClient = useQueryClient();
@@ -53,6 +55,22 @@ const UserTasksPage = () => {
     }
   });
 
+  const addDailyReportMutation = useMutation({
+    mutationFn: async ({ taskId, description }) => {
+      const { data } = await api.post(`/tasks/${taskId}/reports`, { description });
+      return data;
+    },
+    onSuccess: (updatedTask) => {
+      toast.success('Daily report submitted');
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      setSelectedTask(updatedTask);
+      setReportText('');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to submit report');
+    }
+  });
+
   const handleUpdateStatus = (e) => {
     if (selectedTask) {
       const formData = new FormData();
@@ -82,6 +100,12 @@ const UserTasksPage = () => {
     e.preventDefault();
     if (!commentText.trim()) return;
     addCommentMutation.mutate({ taskId: selectedTask._id, text: commentText });
+  };
+
+  const handleAddDailyReport = (e) => {
+    e.preventDefault();
+    if (!reportText.trim()) return;
+    addDailyReportMutation.mutate({ taskId: selectedTask._id, description: reportText });
   };
 
   const openDetails = async (task) => {
@@ -199,7 +223,7 @@ const UserTasksPage = () => {
                     <h4 className="text-sm font-semibold text-slate-400 mb-2">Attachments</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedTask.attachments.map((file, i) => (
-                        <a key={i} href={`https://task-manegment-system-backend.onrender.com${file}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm text-indigo-400 transition-colors">
+                        <a key={i} href={`${API_BASE_URL}${file}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm text-indigo-400 transition-colors">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                           </svg>
@@ -262,6 +286,41 @@ const UserTasksPage = () => {
                       className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 shrink-0"
                     >
                       Send
+                    </button>
+                  </form>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400 mb-4 border-b border-slate-700 pb-2">Daily Reports</h4>
+                  <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto pr-2">
+                    {selectedTask.reports?.map((report, i) => (
+                      <div key={i} className="bg-slate-800 p-4 rounded-lg border-l-4 border-emerald-500">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-emerald-400">{report.user?.name || 'User'}</span>
+                          <span className="text-xs text-slate-500">{new Date(report.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-slate-300 text-sm whitespace-pre-wrap">{report.description}</p>
+                      </div>
+                    ))}
+                    {(!selectedTask.reports || selectedTask.reports.length === 0) && (
+                      <p className="text-slate-500 italic text-sm">No daily reports submitted yet.</p>
+                    )}
+                  </div>
+                  
+                  <form onSubmit={handleAddDailyReport} className="flex flex-col gap-2 w-full">
+                    <textarea
+                      value={reportText}
+                      onChange={(e) => setReportText(e.target.value)}
+                      placeholder="What did you do today on this task?"
+                      rows="3"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all resize-none"
+                    ></textarea>
+                    <button
+                      type="submit"
+                      disabled={addDailyReportMutation.isPending || !reportText.trim()}
+                      className="self-end px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                    >
+                      Submit Daily Report
                     </button>
                   </form>
                 </div>

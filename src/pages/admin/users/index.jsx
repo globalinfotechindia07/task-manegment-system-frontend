@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 
-const roleTypes = {
+// Hardcoded fallback in case settings fail
+const fallbackRoleTypes = {
   'Team Head': ['Project Manager', 'Marketing Manager'],
   'User': [
     'Full Stack Developer',
@@ -43,6 +44,14 @@ const UsersPage = () => {
     queryKey: ['users'],
     queryFn: async () => {
       const { data } = await api.get('/users');
+      return data;
+    }
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const { data } = await api.get('/settings');
       return data;
     }
   });
@@ -337,13 +346,10 @@ const UsersPage = () => {
                   <select
                     className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
                     {...register('role')}
-                    onChange={(e) => {
-                      register('role').onChange(e);
-                      // Reset designation when role changes
-                      setValue('designation', roleTypes[e.target.value][0]);
-                    }}
                   >
-                    {Object.keys(roleTypes).map(role => (
+                    {settings?.roles ? settings.roles.map(role => (
+                      <option key={role} value={role}>{role}</option>
+                    )) : Object.keys(fallbackRoleTypes).map(role => (
                       <option key={role} value={role}>{role}</option>
                     ))}
                   </select>
@@ -355,7 +361,9 @@ const UsersPage = () => {
                     className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
                     {...register('designation')}
                   >
-                    {roleTypes[selectedRole]?.map(type => (
+                    {settings?.designations ? settings.designations.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    )) : fallbackRoleTypes[selectedRole]?.map(type => (
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
@@ -370,8 +378,14 @@ const UsersPage = () => {
                       className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
                       {...register('department')}
                     >
-                      <option value="IT">IT</option>
-                      <option value="Marketing">Marketing</option>
+                      {settings?.departments ? settings.departments.map(dept => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      )) : (
+                        <>
+                          <option value="IT">IT</option>
+                          <option value="Marketing">Marketing</option>
+                        </>
+                      )}
                     </select>
                   </div>
                   <div>

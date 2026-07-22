@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/axios';
+import { API_BASE_URL } from '../config';
 
 const AnnouncementsWidget = () => {
   const { data: announcements = [], isLoading } = useQuery({
@@ -54,7 +55,7 @@ const AnnouncementsWidget = () => {
                   {ann.attachments.map((file, idx) => (
                     <a 
                       key={idx} 
-                      href={`https://task-manegment-system-backend.onrender.com${file}`} 
+                      href={`${API_BASE_URL}${file}`} 
                       target="_blank" 
                       rel="noreferrer"
                       className="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 px-2 py-1 rounded hover:text-indigo-400 transition-colors"

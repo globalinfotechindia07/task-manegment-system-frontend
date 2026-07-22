@@ -9,6 +9,10 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
+    // Force password change check
+    if (user.requiresPasswordChange && window.location.pathname !== '/force-password-change') {
+      return <Navigate to="/force-password-change" replace />;
+    }
     // Redirect to their respective dashboard if they don't have permission for this route
     const roleRoutes = {
       'Admin': '/admin/dashboard',
@@ -17,6 +21,11 @@ const ProtectedRoute = ({ allowedRoles }) => {
       'HR Manager': '/hr/dashboard',
     };
     return <Navigate to={roleRoutes[user.role] || '/'} replace />;
+  }
+
+  // Force password change check (for generic protected routes)
+  if (user.requiresPasswordChange && window.location.pathname !== '/force-password-change') {
+    return <Navigate to="/force-password-change" replace />;
   }
 
   return <Outlet />;

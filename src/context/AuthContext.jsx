@@ -38,6 +38,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const setupPushNotifications = async (userId) => {
+    if (!userId) return;
+    
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       return; // Push not supported
     }
@@ -56,12 +58,14 @@ export const AuthProvider = ({ children }) => {
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
       });
 
-      await api.post('/push/subscribe', {
-        userId,
-        subscription
-      });
+      if (subscription) {
+        await api.post('/push/subscribe', {
+          userId,
+          subscription
+        });
+      }
     } catch (error) {
-      console.error('Error setting up push notifications', error);
+      console.warn('Push notifications setup skipped or failed:', error.message || error);
     }
   };
 
@@ -85,8 +89,13 @@ export const AuthProvider = ({ children }) => {
     toast.success('Logged out');
   };
 
+  const updateUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
