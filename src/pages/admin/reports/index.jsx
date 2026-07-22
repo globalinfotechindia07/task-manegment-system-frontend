@@ -1,18 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
+import { useSocket } from '../../../context/SocketContext';
 
 const AdminReportsPage = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const selectedTaskRef = useRef(null); // Keep a ref to access inside socket listeners
+  const isDetailsModalOpenRef = useRef(false);
+
+  // Sync refs
+  useEffect(() => {
+    selectedTaskRef.current = selectedTask;
+    isDetailsModalOpenRef.current = isDetailsModalOpen;
+  }, [selectedTask, isDetailsModalOpen]);
+
   const [commentText, setCommentText] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   
   const queryClient = useQueryClient();
+  const socket = useSocket();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {
@@ -55,6 +66,44 @@ const AdminReportsPage = () => {
   const displayedTasks = tasks?.filter(t => 
     selectedProjectId ? t.project?._id === selectedProjectId : true
   );
+
+  const openDetails = async (task) => {
+    try {
+      const { data } = await api.get(`/tasks/${task._id || task}`);
+      setSelectedTask(data);
+      setIsDetailsModalOpen(true);
+    } catch (error) {
+      toast.error('Failed to load task details');
+    }
+  };
+
+  // Real-time task updates
+  useEffect(() => {
+    if (socket) {
+      const handleTaskUpdated = async (updatedTaskPayload) => {
+        queryClient.invalidateQueries(['tasks']);
+        // If the updated task is currently open in the modal, re-fetch its fully populated details
+        if (isDetailsModalOpenRef.current && selectedTaskRef.current?._id === updatedTaskPayload._id) {
+          try {
+            const { data } = await api.get(`/tasks/${updatedTaskPayload._id}`);
+            setSelectedTask(data);
+          } catch (error) {
+            console.error('Failed to auto-refresh task details', error);
+          }
+        }
+      };
+
+      socket.on('task_updated', handleTaskUpdated);
+      socket.on('task_created', () => {
+        queryClient.invalidateQueries(['tasks']);
+      });
+
+      return () => {
+        socket.off('task_updated', handleTaskUpdated);
+        socket.off('task_created');
+      };
+    }
+  }, [socket, queryClient]);
 
   const createTaskMutation = useMutation({
     mutationFn: async (formData) => {
@@ -155,16 +204,6 @@ const AdminReportsPage = () => {
     addCommentMutation.mutate({ taskId: selectedTask._id, text: commentText });
   };
 
-  const openDetails = async (task) => {
-    try {
-      const { data } = await api.get(`/tasks/${task._id}`);
-      setSelectedTask(data);
-      setIsDetailsModalOpen(true);
-    } catch (error) {
-      toast.error('Failed to load task details');
-    }
-  };
-
   return (
     <div>
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -226,6 +265,7 @@ const AdminReportsPage = () => {
                   <th className="px-6 py-4 font-semibold">Assigned To</th>
                   <th className="px-6 py-4 font-semibold">Priority</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
+                  <th className="px-6 py-4 font-semibold">Start Date</th>
                   <th className="px-6 py-4 font-semibold">Due Date</th>
                   <th className="px-6 py-4 font-semibold text-right">Actions</th>
                 </tr>
@@ -258,6 +298,7 @@ const AdminReportsPage = () => {
                         {task.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4">{task.startDate ? new Date(task.startDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">

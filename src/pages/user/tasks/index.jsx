@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
+import { useSocket } from '../../../context/SocketContext';
 
 const UserTasksPage = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const selectedTaskRef = useRef(null);
+  const isDetailsModalOpenRef = useRef(false);
+
+  useEffect(() => {
+    selectedTaskRef.current = selectedTask;
+    isDetailsModalOpenRef.current = isDetailsModalOpen;
+  }, [selectedTask, isDetailsModalOpen]);
+
   const [commentText, setCommentText] = useState('');
   const [reportText, setReportText] = useState('');
   const [attachments, setAttachments] = useState(null);
   
   const queryClient = useQueryClient();
+  const socket = useSocket();
 
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['tasks'],
@@ -20,6 +30,43 @@ const UserTasksPage = () => {
       return data;
     }
   });
+
+  const openDetails = async (task) => {
+    try {
+      const { data } = await api.get(`/tasks/${task._id || task}`);
+      setSelectedTask(data);
+      setIsDetailsModalOpen(true);
+    } catch (error) {
+      toast.error('Failed to load task details');
+    }
+  };
+
+  // Real-time task updates
+  useEffect(() => {
+    if (socket) {
+      const handleTaskUpdated = async (updatedTaskPayload) => {
+        queryClient.invalidateQueries(['tasks']);
+        if (isDetailsModalOpenRef.current && selectedTaskRef.current?._id === updatedTaskPayload._id) {
+          try {
+            const { data } = await api.get(`/tasks/${updatedTaskPayload._id}`);
+            setSelectedTask(data);
+          } catch (error) {
+            console.error('Failed to auto-refresh task details', error);
+          }
+        }
+      };
+
+      socket.on('task_updated', handleTaskUpdated);
+      socket.on('task_assigned', () => {
+        queryClient.invalidateQueries(['tasks']);
+      });
+
+      return () => {
+        socket.off('task_updated', handleTaskUpdated);
+        socket.off('task_assigned');
+      };
+    }
+  }, [socket, queryClient]);
 
   const updateTaskMutation = useMutation({
     mutationFn: async ({ taskId, formData }) => {
@@ -108,16 +155,6 @@ const UserTasksPage = () => {
     addDailyReportMutation.mutate({ taskId: selectedTask._id, description: reportText });
   };
 
-  const openDetails = async (task) => {
-    try {
-      const { data } = await api.get(`/tasks/${task._id}`);
-      setSelectedTask(data);
-      setIsDetailsModalOpen(true);
-    } catch (error) {
-      toast.error('Failed to load task details');
-    }
-  };
-
   return (
     <div>
       <div className="mb-6 flex justify-between items-end">
@@ -151,6 +188,7 @@ const UserTasksPage = () => {
                   <th className="px-6 py-4 font-semibold">Assigned By</th>
                   <th className="px-6 py-4 font-semibold">Priority</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
+                  <th className="px-6 py-4 font-semibold">Start Date</th>
                   <th className="px-6 py-4 font-semibold">Due Date</th>
                   <th className="px-6 py-4 font-semibold text-right">Actions</th>
                 </tr>
@@ -179,6 +217,7 @@ const UserTasksPage = () => {
                         {task.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4">{task.startDate ? new Date(task.startDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4 text-right">
                       <button 
