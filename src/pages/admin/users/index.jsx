@@ -122,7 +122,7 @@ const UsersPage = () => {
   const usersList = Array.isArray(users) ? users : [];
   const paginatedUsers = usersList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(usersList.length / itemsPerPage);
-  
+
   const teamHeads = users?.filter(u => u.role === 'Team Head' && u.status !== 'Inactive') || [];
 
   return (
@@ -132,14 +132,14 @@ const UsersPage = () => {
           <h1 className="text-2xl font-bold text-white">User Management</h1>
           <p className="text-slate-400">Manage system roles and access.</p>
         </div>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]"
         >
           + Add User
         </button>
       </div>
-      
+
       <div className="glass-panel overflow-hidden">
         {isLoading ? (
           <div className="p-8 flex justify-center">
@@ -167,12 +167,11 @@ const UsersPage = () => {
                     <td className="px-6 py-4 font-medium text-white">{user.name}</td>
                     <td className="px-6 py-4">{user.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
-                        user.role === 'Admin' ? 'bg-red-500/10 text-red-400' :
+                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${user.role === 'Admin' ? 'bg-red-500/10 text-red-400' :
                         user.role === 'Team Head' ? 'bg-purple-500/10 text-purple-400' :
-                        user.role === 'HR Manager' ? 'bg-pink-500/10 text-pink-400' :
-                        'bg-blue-500/10 text-blue-400'
-                      }`}>
+                          user.role === 'HR Manager' ? 'bg-pink-500/10 text-pink-400' :
+                            'bg-blue-500/10 text-blue-400'
+                        }`}>
                         {user.role}
                       </span>
                     </td>
@@ -180,15 +179,14 @@ const UsersPage = () => {
                     <td className="px-6 py-4">{user.teamHead?.name || '-'}</td>
                     <td className="px-6 py-4">{user.designation}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
-                        user.status === 'Inactive' ? 'bg-slate-500/10 text-slate-400' : 'bg-green-500/10 text-green-400'
-                      }`}>
+                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${user.status === 'Inactive' ? 'bg-slate-500/10 text-slate-400' : 'bg-green-500/10 text-green-400'
+                        }`}>
                         {user.status || 'Active'}
                       </span>
                     </td>
                     <td className="px-6 py-4">{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button 
+                    <td className="px-6 py-4 text-right space-x-2 flex">
+                      <button
                         onClick={() => handleEdit(user)}
                         title="Edit User"
                         className="text-indigo-400 hover:text-indigo-300 p-1.5 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors inline-flex items-center justify-center"
@@ -197,7 +195,7 @@ const UsersPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleToggleStatus(user)}
                         title={user.status === 'Inactive' ? 'Activate User' : 'Deactivate User'}
                         className={`${user.status === 'Inactive' ? 'text-green-400 hover:text-green-300 border-green-500/30 hover:bg-green-500/10' : 'text-red-400 hover:text-red-300 border-red-500/30 hover:bg-red-500/10'} p-1.5 border rounded transition-colors inline-flex items-center justify-center`}
@@ -217,7 +215,7 @@ const UsersPage = () => {
                 ))}
               </tbody>
             </table>
-            
+
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="px-6 py-4 flex items-center justify-between border-t border-slate-700/50 bg-slate-800/20">
@@ -268,7 +266,7 @@ const UsersPage = () => {
                 </svg>
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
@@ -298,9 +296,9 @@ const UsersPage = () => {
                   type="password"
                   className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                   placeholder="••••••••"
-                  {...register('password', { 
-                    required: editingUser ? false : 'Password is required', 
-                    minLength: { value: 6, message: 'Minimum 6 characters' } 
+                  {...register('password', {
+                    required: editingUser ? false : 'Password is required',
+                    minLength: { value: 6, message: 'Minimum 6 characters' }
                   })}
                 />
                 {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>}
