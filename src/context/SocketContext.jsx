@@ -48,6 +48,48 @@ export const SocketProvider = ({ children }) => {
         });
       });
 
+      // Listen for meeting invites globally
+      newSocket.on('receive_message', (message) => {
+        if (message.text && message.text.includes('Room ID:')) {
+          const roomIdMatch = message.text.split('Room ID:')[1].trim();
+          const senderName = typeof message.sender === 'object' ? message.sender.name : 'A teammate';
+          
+          // Play sound
+          if (audioRef.current) {
+            audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+          }
+
+          toast.custom((t) => (
+            <div className="bg-slate-900 border border-indigo-500/50 p-4 rounded-xl shadow-2xl flex items-center gap-4 min-w-[300px]">
+              <div className="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center animate-pulse border border-indigo-500/30">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-white text-sm">Meeting Invite!</p>
+                <p className="text-xs text-slate-300 mt-0.5">{senderName} is inviting you.</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button 
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    window.location.href = `/team-meeting/${roomIdMatch}`;
+                  }}
+                  className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg shadow-green-600/30 transition-colors"
+                >
+                  Join
+                </button>
+                <button 
+                  onClick={() => toast.dismiss(t.id)}
+                  className="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs transition-colors"
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+          ), { duration: 30000, id: `meeting-${roomIdMatch}` });
+        }
+      });
+
       setSocket(newSocket);
 
       return () => {

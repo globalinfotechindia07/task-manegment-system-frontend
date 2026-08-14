@@ -1,52 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { useSocket } from '../context/SocketContext';
-import toast from 'react-hot-toast';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const socket = useSocket();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!socket) return;
-    
-    const handleMeetingInvite = ({ roomId, fromName }) => {
-      toast(
-        (t) => (
-          <div className="flex flex-col gap-2">
-            <span className="font-medium text-white">{fromName} invited you to a video meeting!</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  navigate(`/team-meeting/${roomId}`);
-                }}
-                className="px-3 py-1.5 bg-indigo-500 hover:bg-indigo-400 text-white text-xs rounded-md shadow-sm"
-              >
-                Join Now
-              </button>
-              <button
-                onClick={() => toast.dismiss(t.id)}
-                className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-md"
-              >
-                Decline
-              </button>
-            </div>
-          </div>
-        ),
-        { duration: 10000, icon: '🎥' }
-      );
-    };
-
-    socket.on('meeting-invite', handleMeetingInvite);
-    
-    return () => {
-      socket.off('meeting-invite', handleMeetingInvite);
-    };
-  }, [socket, navigate]);
 
   return (
     <div className="flex h-screen bg-[#0f172a] text-slate-100 overflow-hidden selection:bg-indigo-500/30">
