@@ -6,6 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import ForcePasswordChange from './pages/ForcePasswordChange';
 import Profile from './pages/common/Profile';
+import Chat from './pages/common/Chat';
+import Meeting from './pages/common/Meeting';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
@@ -45,6 +47,14 @@ function App() {
           <Route path="/force-password-change" element={<ForcePasswordChange />} />
         </Route>
 
+        {/* Global Protected Routes (Accessible by any authenticated user) */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/team-meeting" element={<Meeting />} />
+            <Route path="/team-meeting/:roomId" element={<Meeting />} />
+          </Route>
+        </Route>
+
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
           <Route element={<DashboardLayout />}>
@@ -56,6 +66,7 @@ function App() {
             <Route path="/admin/announcements" element={<AdminAnnouncements />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/profile" element={<Profile />} />
+            <Route path="/admin/chat" element={<Chat />} />
           </Route>
         </Route>
 
@@ -67,6 +78,7 @@ function App() {
             <Route path="/team-lead/reports" element={<TeamLeadReports />} />
             <Route path="/team-lead/performance" element={<TeamLeadPerformance />} />
             <Route path="/team-lead/profile" element={<Profile />} />
+            <Route path="/team-lead/chat" element={<Chat />} />
           </Route>
         </Route>
 
@@ -77,6 +89,7 @@ function App() {
             <Route path="/user/tasks" element={<UserTasks />} />
             <Route path="/user/reports" element={<UserReports />} />
             <Route path="/user/profile" element={<Profile />} />
+            <Route path="/user/chat" element={<Chat />} />
           </Route>
         </Route>
 
@@ -89,6 +102,7 @@ function App() {
             <Route path="/hr/performance" element={<HRPerformance />} />
             <Route path="/hr/reports" element={<HRReports />} />
             <Route path="/hr/profile" element={<Profile />} />
+            <Route path="/hr/chat" element={<Chat />} />
           </Route>
         </Route>
       </Routes>

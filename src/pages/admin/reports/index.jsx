@@ -10,6 +10,7 @@ const AdminReportsPage = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [editingTaskId, setEditingTaskId] = useState(null);
   const selectedTaskRef = useRef(null); // Keep a ref to access inside socket listeners
   const isDetailsModalOpenRef = useRef(false);
 
@@ -22,10 +23,15 @@ const AdminReportsPage = () => {
   const [commentText, setCommentText] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   
+  // Filters
+  const [filterDate, setFilterDate] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const queryClient = useQueryClient();
   const socket = useSocket();
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {
       title: '',
       description: '',
@@ -62,10 +68,41 @@ const AdminReportsPage = () => {
     }
   });
 
-  // Filter tasks based on selected project
-  const displayedTasks = tasks?.filter(t => 
-    selectedProjectId ? t.project?._id === selectedProjectId : true
-  );
+  // Filter tasks
+  const displayedTasks = tasks?.filter(t => {
+    // Project filter
+    if (selectedProjectId && t.project?._id !== selectedProjectId) return false;
+    
+    // Status filter
+    if (filterStatus && t.status !== filterStatus) return false;
+
+    // Search filter (name or assigned to)
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const titleMatch = t.title?.toLowerCase().includes(q);
+      const assigneeMatch = t.assignedTo?.name?.toLowerCase().includes(q);
+      if (!titleMatch && !assigneeMatch) return false;
+    }
+
+    // Date filter
+    if (filterDate) {
+      const selectedDate = new Date(filterDate).setHours(0,0,0,0);
+      const start = t.startDate ? new Date(t.startDate).setHours(0,0,0,0) : null;
+      const end = t.dueDate ? new Date(t.dueDate).setHours(0,0,0,0) : null;
+      
+      if (start && end) {
+        if (selectedDate < start || selectedDate > end) return false;
+      } else if (start) {
+        if (selectedDate !== start) return false;
+      } else if (end) {
+        if (selectedDate !== end) return false;
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  });
 
   const openDetails = async (task) => {
     try {
@@ -132,6 +169,9 @@ const AdminReportsPage = () => {
       toast.success('Task updated');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       setSelectedTask(updatedTask);
+      setIsTaskModalOpen(false);
+      setEditingTaskId(null);
+      reset();
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || 'Failed to update task');
@@ -186,7 +226,11 @@ const AdminReportsPage = () => {
     // Append the selected project ID
     formData.append('project', selectedProjectId);
 
-    createTaskMutation.mutate(formData);
+    if (editingTaskId) {
+      updateTaskMutation.mutate({ taskId: editingTaskId, updateData: formData });
+    } else {
+      createTaskMutation.mutate(formData);
+    }
   };
 
   const handleUpdateStatus = (e) => {
@@ -206,24 +250,11 @@ const AdminReportsPage = () => {
 
   return (
     <div>
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Task Management</h1>
-          <p className="text-slate-400">Assign and monitor tasks for specific projects.</p>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="min-w-[250px]">
-            <select
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
-            >
-              <option value="">-- All Projects --</option>
-              {projects?.map(p => (
-                <option key={p._id} value={p._id}>{p.name} ({p.status})</option>
-              ))}
-            </select>
+      <div className="mb-6 flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Task Management</h1>
+            <p className="text-slate-400">Assign and monitor tasks for specific projects.</p>
           </div>
           
           <button 
@@ -232,12 +263,64 @@ const AdminReportsPage = () => {
                 toast.error('Please select a project first to assign a task');
                 return;
               }
+              setEditingTaskId(null);
+              reset();
               setIsTaskModalOpen(true);
             }}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)] whitespace-nowrap"
           >
             + Assign Task
           </button>
+        </div>
+
+        {/* Filter Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Project</label>
+            <select
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+            >
+              <option value="">All Projects</option>
+              {projects?.map(p => (
+                <option key={p._id} value={p._id}>{p.name} ({p.status})</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+            >
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="On Hold">On Hold</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Date</label>
+            <input
+              type="date"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Search Name</label>
+            <input
+              type="text"
+              placeholder="Task or Assignee Name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+            />
+          </div>
         </div>
       </div>
       
@@ -302,6 +385,27 @@ const AdminReportsPage = () => {
                     <td className="px-6 py-4">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingTaskId(task._id);
+                            setSelectedProjectId(task.project?._id || '');
+                            setValue('title', task.title);
+                            setValue('description', task.description);
+                            setValue('assignedTo', task.assignedTo?._id || '');
+                            setValue('priority', task.priority);
+                            setValue('startDate', task.startDate ? new Date(task.startDate).toISOString().slice(0, 16) : '');
+                            setValue('dueDate', task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 16) : '');
+                            setValue('estimatedTimeDuration', task.estimatedTimeDuration || '');
+                            setValue('status', task.status);
+                            setIsTaskModalOpen(true);
+                          }}
+                          className="text-indigo-400 hover:text-indigo-300 p-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors inline-flex items-center justify-center mr-1"
+                          title="Edit Task"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
                         <button 
                           onClick={() => openDetails(task)}
                           className="text-indigo-400 hover:text-indigo-300 px-3 py-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors"
@@ -338,7 +442,7 @@ const AdminReportsPage = () => {
           <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-5 border-b border-slate-800 sticky top-0 bg-slate-900 z-10">
               <div>
-                <h3 className="text-lg font-bold text-white">Assign New Task</h3>
+                <h3 className="text-lg font-bold text-white">{editingTaskId ? 'Edit Task' : 'Assign New Task'}</h3>
                 <p className="text-sm text-indigo-400">
                   Project: {projects?.find(p => p._id === selectedProjectId)?.name || 'Unknown'}
                 </p>
@@ -460,10 +564,10 @@ const AdminReportsPage = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={createTaskMutation.isPending}
+                  disabled={createTaskMutation.isPending || updateTaskMutation.isPending}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors shadow-lg shadow-indigo-500/20 disabled:opacity-50"
                 >
-                  {createTaskMutation.isPending ? 'Assigning...' : 'Assign Task'}
+                  {createTaskMutation.isPending || updateTaskMutation.isPending ? 'Saving...' : (editingTaskId ? 'Update Task' : 'Assign Task')}
                 </button>
               </div>
             </form>

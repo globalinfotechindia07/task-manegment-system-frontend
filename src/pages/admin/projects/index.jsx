@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
+import { API_BASE_URL } from '../../../config';
 
 const AdminProjects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,8 +44,8 @@ const AdminProjects = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (projectData) => {
-      const { data } = await api.put(`/projects/${projectData._id}`, projectData);
+    mutationFn: async ({ id, formData }) => {
+      const { data } = await api.put(`/projects/${id}`, formData);
       return data;
     },
     onSuccess: () => {
@@ -72,10 +73,20 @@ const AdminProjects = () => {
   });
 
   const onSubmit = (data) => {
+    const formData = new FormData();
+    formData.append('name', data.name);
+    if (data.description) formData.append('description', data.description);
+    formData.append('status', data.status);
+    if (data.startDate) formData.append('startDate', data.startDate);
+    if (data.endDate) formData.append('endDate', data.endDate);
+    if (data.logo && data.logo.length > 0) {
+      formData.append('logo', data.logo[0]);
+    }
+
     if (editingProject) {
-      updateMutation.mutate({ ...data, _id: editingProject._id });
+      updateMutation.mutate({ id: editingProject._id, formData });
     } else {
-      addMutation.mutate(data);
+      addMutation.mutate(formData);
     }
   };
 
@@ -125,63 +136,85 @@ const AdminProjects = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {isLoading ? (
-          <div className="col-span-full p-8 flex justify-center">
-            <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
-          </div>
-        ) : projects?.length === 0 ? (
-          <div className="col-span-full glass-panel p-12 text-center">
-            <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
-            <p className="text-slate-400">Create a new project to get started.</p>
-          </div>
-        ) : (
-          projects?.map((project) => (
-            <div key={project._id} className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 flex flex-col h-full">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-bold text-white">{project.name}</h3>
-                <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${getStatusColor(project.status)}`}>
-                  {project.status}
-                </span>
-              </div>
-              <p className="text-sm text-slate-400 mb-6 flex-grow">{project.description || 'No description provided.'}</p>
-              
-              <div className="flex flex-col gap-2 mb-6">
-                {project.startDate && (
-                  <div className="flex items-center text-xs text-slate-400">
-                    <span className="w-20">Start:</span>
-                    <span className="text-slate-300">{new Date(project.startDate).toLocaleDateString()}</span>
-                  </div>
-                )}
-                {project.endDate && (
-                  <div className="flex items-center text-xs text-slate-400">
-                    <span className="w-20">End:</span>
-                    <span className="text-slate-300">{new Date(project.endDate).toLocaleDateString()}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-slate-700/50">
-                <button
-                  onClick={() => handleEdit(project)}
-                  className="text-indigo-400 hover:text-indigo-300 p-2 hover:bg-indigo-500/10 rounded transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    if (window.confirm('Are you sure you want to delete this project?')) {
-                      deleteMutation.mutate(project._id);
-                    }
-                  }}
-                  className="text-red-400 hover:text-red-300 p-2 hover:bg-red-500/10 rounded transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+      <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-300">
+            <thead className="bg-slate-900/50 text-xs uppercase text-slate-400">
+              <tr>
+                <th scope="col" className="px-6 py-4 font-medium">Logo</th>
+                <th scope="col" className="px-6 py-4 font-medium">Project Name</th>
+                <th scope="col" className="px-6 py-4 font-medium">Description</th>
+                <th scope="col" className="px-6 py-4 font-medium">Status</th>
+                <th scope="col" className="px-6 py-4 font-medium">Start Date</th>
+                <th scope="col" className="px-6 py-4 font-medium">End Date</th>
+                <th scope="col" className="px-6 py-4 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-700/50">
+              {isLoading ? (
+                <tr>
+                  <td colSpan="7" className="px-6 py-8 text-center flex justify-center">
+                    <div className="inline-block w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+                  </td>
+                </tr>
+              ) : projects?.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center">
+                    <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
+                    <p className="text-slate-400">Create a new project to get started.</p>
+                  </td>
+                </tr>
+              ) : (
+                projects?.map((project) => (
+                  <tr key={project._id} className="hover:bg-slate-700/20 transition-colors">
+                    <td className="px-6 py-4">
+                      {project.logo ? (
+                        <img src={`${API_BASE_URL}${project.logo}`} alt={project.name} className="w-10 h-10 rounded object-cover border border-slate-700" />
+                      ) : (
+                        <div className="w-10 h-10 rounded bg-slate-700 flex items-center justify-center text-slate-400 text-xs border border-slate-600">
+                          N/A
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 font-medium text-white">{project.name}</td>
+                    <td className="px-6 py-4 text-slate-400 max-w-xs truncate" title={project.description}>
+                      {project.description || '-'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${getStatusColor(project.status)}`}>
+                        {project.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {project.startDate ? new Date(project.startDate).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {project.endDate ? new Date(project.endDate).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => handleEdit(project)}
+                        className="text-indigo-400 hover:text-indigo-300 px-2 py-1 hover:bg-indigo-500/10 rounded transition-colors mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to delete this project?')) {
+                            deleteMutation.mutate(project._id);
+                          }
+                        }}
+                        className="text-red-400 hover:text-red-300 px-2 py-1 hover:bg-red-500/10 rounded transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {isModalOpen && (
@@ -198,6 +231,16 @@ const AdminProjects = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Project Logo</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20"
+                  {...register('logo')}
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Project Name</label>
                 <input
