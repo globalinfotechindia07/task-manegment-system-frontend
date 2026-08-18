@@ -13,6 +13,15 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const audioRef = useRef(null);
 
+  // Global Notification Counters
+  const [unreadChatsCount, setUnreadChatsCount] = useState(0);
+  const [newTasksCount, setNewTasksCount] = useState(0);
+  const [meetingInvitesCount, setMeetingInvitesCount] = useState(0);
+
+  const clearUnreadChats = () => setUnreadChatsCount(0);
+  const clearNewTasks = () => setNewTasksCount(0);
+  const clearMeetingInvites = () => setMeetingInvitesCount(0);
+
   useEffect(() => {
     // Create audio element for notifications (simple short beep)
     audioRef.current = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
@@ -32,6 +41,11 @@ export const SocketProvider = ({ children }) => {
 
       // Global notification listener
       newSocket.on('notification', (notification) => {
+        // Increment tasks counter if it's task related
+        if (notification.type === 'Task' || (notification.message && notification.message.toLowerCase().includes('task'))) {
+          setNewTasksCount(prev => prev + 1);
+        }
+
         // Play sound
         if (audioRef.current) {
           audioRef.current.play().catch(e => console.log('Audio play failed:', e));
@@ -50,8 +64,18 @@ export const SocketProvider = ({ children }) => {
 
       // Listen for meeting invites globally
       newSocket.on('receive_message', (message) => {
-        if (message.text && message.text.includes('Room ID:')) {
-          const roomIdMatch = message.text.split('Room ID:')[1].trim();
+        const isMeetingLink = message.text && (message.text.includes('team-meeting/') || message.text.includes('Room ID:'));
+        
+        if (isMeetingLink) {
+          setMeetingInvitesCount(prev => prev + 1);
+          
+          let roomIdMatch = 'unknown';
+          if (message.text.includes('Room ID:')) {
+            roomIdMatch = message.text.split('Room ID:')[1].trim();
+          } else if (message.text.includes('team-meeting/')) {
+            roomIdMatch = message.text.split('team-meeting/')[1].trim().split(' ')[0];
+          }
+          
           const senderName = typeof message.sender === 'object' ? message.sender.name : 'A teammate';
           
           // Play sound
@@ -87,6 +111,11 @@ export const SocketProvider = ({ children }) => {
               </div>
             </div>
           ), { duration: 30000, id: `meeting-${roomIdMatch}` });
+        } else {
+          // Normal chat message
+          if (!window.location.pathname.includes('chat')) {
+             setUnreadChatsCount(prev => prev + 1);
+          }
         }
       });
 
@@ -99,7 +128,15 @@ export const SocketProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{ 
+      socket, 
+      unreadChatsCount, 
+      newTasksCount, 
+      meetingInvitesCount,
+      clearUnreadChats,
+      clearNewTasks,
+      clearMeetingInvites
+    }}>
       {children}
     </SocketContext.Provider>
   );

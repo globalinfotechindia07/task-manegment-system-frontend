@@ -29,7 +29,7 @@ const AdminReportsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const queryClient = useQueryClient();
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {

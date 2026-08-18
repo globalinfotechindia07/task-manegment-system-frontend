@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const { unreadChatsCount, newTasksCount, meetingInvitesCount } = useSocket();
 
   const getNavLinks = () => {
     switch (user?.role) {
@@ -110,7 +112,24 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={link.icon} />
                 {link.name === 'Settings' && <circle cx="12" cy="12" r="3" />}
               </svg>
-              <span className="text-sm font-medium">{link.name}</span>
+              <span className="text-sm font-medium flex-1">{link.name}</span>
+              
+              {/* Badges */}
+              {link.name === 'Chat' && unreadChatsCount > 0 && (
+                <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                  {unreadChatsCount > 99 ? '99+' : unreadChatsCount}
+                </span>
+              )}
+              {(link.name === 'Task Reports' || link.name === 'Daily Tasks' || link.name === 'Daily Task Monitoring') && newTasksCount > 0 && (
+                <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                  {newTasksCount > 99 ? '99+' : newTasksCount}
+                </span>
+              )}
+              {link.name === 'Team Meeting' && meetingInvitesCount > 0 && (
+                <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                  {meetingInvitesCount > 99 ? '99+' : meetingInvitesCount}
+                </span>
+              )}
             </Link>
           ))}
         </div>

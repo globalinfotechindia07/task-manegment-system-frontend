@@ -1,5 +1,7 @@
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useSocket } from './context/SocketContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -34,7 +36,23 @@ import HRReports from './pages/hr/reports';
 
 import './App.css';
 
-function App() {
+const App = () => {
+  const location = useLocation();
+  const { clearUnreadChats, clearNewTasks, clearMeetingInvites } = useSocket();
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/chat')) {
+      clearUnreadChats();
+    }
+    if (path.includes('/tasks') || path.includes('/reports')) {
+      clearNewTasks();
+    }
+    if (path.includes('/team-meeting')) {
+      clearMeetingInvites();
+    }
+  }, [location.pathname, clearUnreadChats, clearNewTasks, clearMeetingInvites]);
+
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 selection:bg-indigo-500/30">
       <Routes>

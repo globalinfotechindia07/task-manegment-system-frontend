@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Header = ({ toggleSidebar }) => {
   const { logout, user } = useAuth();
-  const socket = useSocket();
+  const { socket } = useSocket();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);

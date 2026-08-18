@@ -6,9 +6,25 @@ import { useSocket } from '../../context/SocketContext';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../../config';
 
+const renderTextWithLinks = (text) => {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 underline break-all" onClick={(e) => e.stopPropagation()}>
+          {part}
+        </a>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+};
+
 const Chat = () => {
   const { user } = useAuth();
-  const socket = useSocket();
+  const { socket } = useSocket();
   const queryClient = useQueryClient();
   const [selectedChat, setSelectedChat] = useState(null);
   const [messageText, setMessageText] = useState('');
@@ -561,7 +577,7 @@ const Chat = () => {
                                         </a>
                                       </>
                                     ) : (
-                                      msg.text
+                                      renderTextWithLinks(msg.text)
                                     )}
                                   </div>
                                 )}

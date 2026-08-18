@@ -28,16 +28,16 @@ const TeamLeadReportsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const queryClient = useQueryClient();
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {
       title: '',
       description: '',
       assignedTo: '',
+      assignedTo: '',
       startDate: '',
       dueDate: '',
-      estimatedTimeDuration: '',
       priority: 'Normal',
       status: 'Pending'
     }
@@ -294,6 +294,7 @@ const TeamLeadReportsPage = () => {
               className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
             >
               <option value="">All Statuses</option>
+              <option value="Awaiting Approval">Awaiting Approval</option>
               <option value="Pending">Pending</option>
               <option value="In Progress">In Progress</option>
               <option value="Completed">Completed</option>
@@ -374,6 +375,7 @@ const TeamLeadReportsPage = () => {
                       <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
                         task.status === 'Completed' ? 'bg-green-500/10 text-green-400' :
                         task.status === 'In Progress' ? 'bg-indigo-500/10 text-indigo-400' :
+                        task.status === 'Awaiting Approval' ? 'bg-orange-500/10 text-orange-400' :
                         'bg-slate-500/10 text-slate-400'
                       }`}>
                         {task.status}
@@ -393,7 +395,6 @@ const TeamLeadReportsPage = () => {
                             setValue('priority', task.priority);
                             setValue('startDate', task.startDate ? new Date(task.startDate).toISOString().slice(0, 16) : '');
                             setValue('dueDate', task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 16) : '');
-                            setValue('estimatedTimeDuration', task.estimatedTimeDuration || '');
                             setValue('status', task.status);
                             setIsTaskModalOpen(true);
                           }}
@@ -404,6 +405,16 @@ const TeamLeadReportsPage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                           </svg>
                         </button>
+                        {task.status === 'Awaiting Approval' && (
+                          <button
+                            onClick={() => {
+                              updateTaskMutation.mutate({ taskId: task._id, updateData: { status: 'Pending' } });
+                            }}
+                            className="text-emerald-400 hover:text-emerald-300 px-2 py-1 text-xs font-semibold border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors mr-1"
+                          >
+                            Approve
+                          </button>
+                        )}
                         <button 
                           onClick={() => openDetails(task)}
                           className="text-indigo-400 hover:text-indigo-300 px-3 py-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors"
@@ -528,16 +539,6 @@ const TeamLeadReportsPage = () => {
                     {...register('dueDate')}
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Estimated Time Duration (Hours)</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
-                  {...register('estimatedTimeDuration')}
-                />
               </div>
 
               <div>

@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
 import { useSocket } from '../../../context/SocketContext';
+import { useAuth } from '../../../context/AuthContext';
 
 const UserTasksPage = () => {
+  const { user } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const selectedTaskRef = useRef(null);
   const isDetailsModalOpenRef = useRef(false);
@@ -21,7 +25,7 @@ const UserTasksPage = () => {
   const [attachments, setAttachments] = useState(null);
   
   const queryClient = useQueryClient();
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['tasks'],
@@ -30,6 +34,62 @@ const UserTasksPage = () => {
       return data;
     }
   });
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const { data } = await api.get('/projects');
+      return data;
+    }
+  });
+
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+    defaultValues: {
+      title: '',
+      description: '',
+      project: '',
+      startDate: '',
+      dueDate: '',
+      priority: 'Medium'
+    }
+  });
+
+  const createTaskMutation = useMutation({
+    mutationFn: async (formData) => {
+      const { data } = await api.post('/tasks', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Task created successfully');
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      setIsTaskModalOpen(false);
+      reset();
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to create task');
+    }
+  });
+
+  const onSubmitTask = (data) => {
+    const formData = new FormData();
+    Object.keys(data).forEach(key => {
+      if (key === 'attachments') {
+        if (data.attachments && data.attachments.length > 0) {
+          Array.from(data.attachments).forEach(file => {
+            formData.append('attachments', file);
+          });
+        }
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+
+    // Automatically assign the task to the current user
+    formData.append('assignedTo', user._id);
+    createTaskMutation.mutate(formData);
+  };
 
   const openDetails = async (task) => {
     try {
@@ -157,11 +217,24 @@ const UserTasksPage = () => {
 
   return (
     <div>
-      <div className="mb-6 flex justify-between items-end">
+      <div className="flex justify-between items-end mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">My Daily Tasks</h1>
-          <p className="text-slate-400">View and update your assigned tasks.</p>
+          <h1 className="text-2xl font-bold text-slate-100">Daily Tasks</h1>
+          <p className="text-sm text-slate-400 mt-1">Manage and track your assigned tasks</p>
         </div>
+        
+        <button
+          onClick={() => {
+            reset();
+            setIsTaskModalOpen(true);
+          }}
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-500/20"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          New Task
+        </button>
       </div>
       
       <div className="glass-panel overflow-hidden">
@@ -435,6 +508,123 @@ const UserTasksPage = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Task Modal */}
+      {isTaskModalOpen && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="p-6 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
+              <h2 className="text-xl font-bold text-white">Create New Task</h2>
+              <button onClick={() => setIsTaskModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit(onSubmitTask)} className="p-6 space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Task Title <span className="text-red-400">*</span></label>
+                <input
+                  {...register('title', { required: 'Title is required' })}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                  placeholder="E.g., Implement new login page"
+                />
+                {errors.title && <span className="text-red-400 text-xs mt-1 block">{errors.title.message}</span>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Description <span className="text-red-400">*</span></label>
+                <textarea
+                  {...register('description', { required: 'Description is required' })}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all h-24 resize-none"
+                  placeholder="Detailed task description..."
+                ></textarea>
+                {errors.description && <span className="text-red-400 text-xs mt-1 block">{errors.description.message}</span>}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Project <span className="text-red-400">*</span></label>
+                  <select
+                    {...register('project', { required: 'Project is required' })}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  >
+                    <option value="">Select Project</option>
+                    {projects.map(p => (
+                      <option key={p._id} value={p._id}>{p.name}</option>
+                    ))}
+                  </select>
+                  {errors.project && <span className="text-red-400 text-xs mt-1 block">{errors.project.message}</span>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Priority</label>
+                  <select
+                    {...register('priority')}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  >
+                    <option value="Normal">Normal</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Start Date & Time <span className="text-red-400">*</span></label>
+                  <input
+                    type="datetime-local"
+                    {...register('startDate', { required: 'Start date is required' })}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  />
+                  {errors.startDate && <span className="text-red-400 text-xs mt-1 block">{errors.startDate.message}</span>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">End Date & Time <span className="text-red-400">*</span></label>
+                  <input
+                    type="datetime-local"
+                    {...register('dueDate', { required: 'End date is required' })}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  />
+                  {errors.dueDate && <span className="text-red-400 text-xs mt-1 block">{errors.dueDate.message}</span>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Attachments (Max 5)</label>
+                  <input
+                    type="file"
+                    multiple
+                    {...register('attachments')}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsTaskModalOpen(false)}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createTaskMutation.isPending}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white rounded-lg transition-colors shadow-lg shadow-indigo-500/20 font-medium text-sm flex items-center gap-2"
+                >
+                  {createTaskMutation.isPending && (
+                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  )}
+                  Create Task
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
