@@ -24,7 +24,7 @@ const renderTextWithLinks = (text) => {
 
 const Chat = () => {
   const { user } = useAuth();
-  const { socket } = useSocket();
+  const { socket, clearUnreadChats } = useSocket();
   const queryClient = useQueryClient();
   const [selectedChat, setSelectedChat] = useState(null);
   const [messageText, setMessageText] = useState('');
@@ -124,6 +124,40 @@ const Chat = () => {
     }
   });
 
+  // Mark messages as read
+  const markAsReadMutation = useMutation({
+    mutationFn: async (userId) => {
+      await api.put(`/chat/read/${userId}`);
+    },
+    onSuccess: (_, userId) => {
+      queryClient.setQueryData(['chatConversations'], (oldConvos) => {
+        if (!oldConvos) return oldConvos;
+        return oldConvos.map(c => (c._id === userId ? { ...c, unreadCount: 0 } : c));
+      });
+      queryClient.setQueryData(['chatMessages', userId], (oldMessages) => {
+        if (!oldMessages) return oldMessages;
+        return oldMessages.map(m => (!m.read && m.receiver === user._id) ? { ...m, read: true } : m);
+      });
+    }
+  });
+
+  // Effect to mark chat as read when opened
+  useEffect(() => {
+    if (selectedChat && !selectedChat.isGroup) {
+      const convo = conversations?.find(c => c._id === selectedChat._id);
+      if (convo && convo.unreadCount > 0) {
+        markAsReadMutation.mutate(selectedChat._id);
+      }
+    }
+  }, [selectedChat, conversations]);
+
+  useEffect(() => {
+    // Clear global unread badge in sidebar when entering the chat module
+    if (clearUnreadChats) {
+      clearUnreadChats();
+    }
+  }, [clearUnreadChats]);
+
   const updateConversationSidebar = (chatId, newMessage, incrementUnread = false) => {
     queryClient.setQueryData(['chatConversations'], (oldConvos) => {
       if (!oldConvos) return oldConvos;
@@ -219,6 +253,10 @@ const Chat = () => {
           if (old && old.some(m => m._id === message._id)) return old;
           return old ? [...old, message] : [message];
         });
+        // Mark as read immediately if viewing this 1-on-1 chat and we are the receiver
+        if (!isGroupMessage && senderId !== user._id) {
+          api.put(`/chat/read/${conversationId}`).catch(console.error);
+        }
       } else {
         // Skip chat notification if it's a meeting invite (SocketContext handles this)
         if (!message.text || !message.text.includes('Room ID:')) {

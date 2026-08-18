@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
 import AnnouncementsWidget from '../../../components/AnnouncementsWidget';
 
 const TeamLeadDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ['team-users'],
@@ -62,7 +64,10 @@ const TeamLeadDashboard = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div className="glass-panel p-6 border-t-4 border-t-blue-500">
+        <div 
+          onClick={() => navigate('/team-lead/users')}
+          className="glass-panel p-6 border-t-4 border-t-blue-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-blue-500/10"
+        >
           <p className="text-slate-400 text-sm font-medium mb-2">Team Members</p>
           <div className="flex items-end justify-between">
             <h3 className="text-4xl font-bold text-white">{teamMembersCount}</h3>
@@ -74,7 +79,10 @@ const TeamLeadDashboard = () => {
           </div>
         </div>
 
-        <div className="glass-panel p-6 border-t-4 border-t-indigo-500">
+        <div 
+          onClick={() => navigate('/team-lead/reports')}
+          className="glass-panel p-6 border-t-4 border-t-indigo-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-indigo-500/10"
+        >
           <p className="text-slate-400 text-sm font-medium mb-2">Total Tasks Assigned</p>
           <div className="flex items-end justify-between">
             <h3 className="text-4xl font-bold text-white">{totalTasks}</h3>
@@ -86,7 +94,10 @@ const TeamLeadDashboard = () => {
           </div>
         </div>
         
-        <div className="glass-panel p-6 border-t-4 border-t-green-500">
+        <div 
+          onClick={() => navigate('/team-lead/reports')}
+          className="glass-panel p-6 border-t-4 border-t-green-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-green-500/10"
+        >
           <p className="text-slate-400 text-sm font-medium mb-2">Completed Tasks</p>
           <div className="flex items-end justify-between">
             <h3 className="text-4xl font-bold text-white">{completedTasks}</h3>
@@ -98,7 +109,10 @@ const TeamLeadDashboard = () => {
           </div>
         </div>
 
-        <div className="glass-panel p-6 border-t-4 border-t-yellow-500">
+        <div 
+          onClick={() => navigate('/team-lead/reports')}
+          className="glass-panel p-6 border-t-4 border-t-yellow-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-yellow-500/10"
+        >
           <p className="text-slate-400 text-sm font-medium mb-2">In Progress</p>
           <div className="flex items-end justify-between">
             <h3 className="text-4xl font-bold text-white">{inProgressTasks}</h3>
@@ -110,7 +124,10 @@ const TeamLeadDashboard = () => {
           </div>
         </div>
 
-        <div className="glass-panel p-6 border-t-4 border-t-slate-500">
+        <div 
+          onClick={() => navigate('/team-lead/reports')}
+          className="glass-panel p-6 border-t-4 border-t-slate-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-slate-500/10"
+        >
           <p className="text-slate-400 text-sm font-medium mb-2">Pending</p>
           <div className="flex items-end justify-between">
             <h3 className="text-4xl font-bold text-white">{pendingTasks}</h3>
@@ -122,7 +139,10 @@ const TeamLeadDashboard = () => {
           </div>
         </div>
 
-        <div className="glass-panel p-6 border-t-4 border-t-red-500">
+        <div 
+          onClick={() => navigate('/team-lead/reports')}
+          className="glass-panel p-6 border-t-4 border-t-red-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-red-500/10"
+        >
           <p className="text-slate-400 text-sm font-medium mb-2">Overdue Tasks</p>
           <div className="flex items-end justify-between">
             <h3 className="text-4xl font-bold text-white">{overdueTasks}</h3>

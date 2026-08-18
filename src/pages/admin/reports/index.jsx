@@ -27,6 +27,12 @@ const AdminReportsPage = () => {
   const [filterDate, setFilterDate] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedProjectId, filterStatus, searchQuery, filterDate]);
 
   const queryClient = useQueryClient();
   const { socket } = useSocket();
@@ -103,6 +109,9 @@ const AdminReportsPage = () => {
 
     return true;
   });
+
+  const totalPages = Math.ceil((displayedTasks?.length || 0) / itemsPerPage);
+  const paginatedTasks = displayedTasks?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) || [];
 
   const openDetails = async (task) => {
     try {
@@ -354,7 +363,7 @@ const AdminReportsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
-                {displayedTasks.map(task => (
+                {paginatedTasks.map(task => (
                   <tr key={task._id} className="hover:bg-slate-800/30 transition-colors">
                     <td className="px-6 py-4 font-medium text-white">
                       {task.title}
@@ -431,6 +440,32 @@ const AdminReportsPage = () => {
                 ))}
               </tbody>
             </table>
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 border-t border-slate-700/50 bg-slate-800/30 gap-4">
+                <span className="text-sm text-slate-400">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, displayedTasks.length)} of {displayedTasks.length} entries
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-sm text-slate-300 disabled:opacity-50 hover:bg-slate-700 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-3 py-1 text-sm text-slate-400 flex items-center">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-sm text-slate-300 disabled:opacity-50 hover:bg-slate-700 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

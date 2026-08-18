@@ -2,6 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../api/axios';
 import { API_BASE_URL } from '../config';
 
+const isImage = (filename) => {
+  if (!filename) return false;
+  return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+};
+
 const AnnouncementsWidget = () => {
   const { data: announcements = [], isLoading } = useQuery({
     queryKey: ['announcements'],
@@ -48,20 +53,39 @@ const AnnouncementsWidget = () => {
                   {ann.priority}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 line-clamp-2 mb-3">{ann.content}</p>
+              <p className="text-xs text-slate-400 whitespace-pre-wrap break-words mb-3">{ann.content}</p>
               
               {ann.attachments && ann.attachments.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-3">
+                <div className="flex flex-wrap gap-2 mb-3">
                   {ann.attachments.map((file, idx) => (
-                    <a 
-                      key={idx} 
-                      href={`${API_BASE_URL}${file}`} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 px-2 py-1 rounded hover:text-indigo-400 transition-colors"
-                    >
-                      Attachment {idx + 1}
-                    </a>
+                    isImage(file) ? (
+                      <a 
+                        key={idx} 
+                        href={`${API_BASE_URL}${file}`} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="block w-full mt-1"
+                      >
+                        <img 
+                          src={`${API_BASE_URL}${file}`} 
+                          alt={`Attachment ${idx + 1}`} 
+                          className="max-w-full h-auto max-h-40 object-cover rounded-lg border border-slate-700 hover:border-indigo-500 transition-colors"
+                        />
+                      </a>
+                    ) : (
+                      <a 
+                        key={idx} 
+                        href={`${API_BASE_URL}${file}`} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-xs flex items-center gap-1 bg-slate-900 border border-slate-700 text-slate-300 px-3 py-1.5 rounded hover:bg-slate-800 hover:text-indigo-400 transition-colors"
+                      >
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                        </svg>
+                        Attachment {idx + 1}
+                      </a>
+                    )
                   ))}
                 </div>
               )}
