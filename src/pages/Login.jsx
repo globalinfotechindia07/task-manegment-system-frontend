@@ -18,6 +18,7 @@ const Login = () => {
     if (result.success) {
       const roleRoutes = {
         'Admin': '/admin/dashboard',
+        'CTO': '/admin/dashboard',
         'Team Head': '/team-lead/dashboard',
         'User': '/user/dashboard',
         'HR Manager': '/hr/dashboard',

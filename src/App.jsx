@@ -73,8 +73,8 @@ const App = () => {
           </Route>
         </Route>
 
-        {/* Protected Admin Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+        {/* Protected Admin & CTO Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['Admin', 'CTO']} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUsers />} />

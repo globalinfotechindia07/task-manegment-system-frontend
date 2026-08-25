@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../../context/AuthContext';
+import Swal from 'sweetalert2';
 import api from '../../../api/axios';
 
 // Hardcoded fallback in case settings fail
@@ -235,9 +237,24 @@ const UsersPage = () => {
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm(`Are you sure you want to permanently delete user ${user.name}? This action cannot be undone.`)) {
-                            deleteMutation.mutate(user._id);
-                          }
+                          Swal.fire({
+                            title: 'Are you sure?',
+                            text: `You are about to permanently delete user ${user.name}. This action cannot be undone.`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#334155',
+                            confirmButtonText: 'Yes, delete it!',
+                            background: '#1e293b',
+                            color: '#f8fafc',
+                            customClass: {
+                              popup: 'border border-slate-700 rounded-xl shadow-2xl',
+                            }
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              deleteMutation.mutate(user._id);
+                            }
+                          });
                         }}
                         title="Delete User"
                         className="text-red-400 hover:text-red-300 p-1.5 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors inline-flex items-center justify-center"
