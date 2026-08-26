@@ -12,7 +12,20 @@ const Landing = () => {
       'User': '/user/dashboard',
       'HR Manager': '/hr/dashboard',
     };
-    return <Navigate to={roleRoutes[user.role] || '/'} replace />;
+    if (roleRoutes[user.role]) {
+      return <Navigate to={roleRoutes[user.role]} replace />;
+    } else {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] text-slate-100">
+          <div className="bg-slate-800 p-8 rounded-xl shadow-xl text-center border border-red-500/30">
+            <h2 className="text-2xl font-bold text-red-400 mb-4">Account Error</h2>
+            <p className="text-slate-300 mb-6">Your account role "{user.role || 'Unknown'}" is not authorized for any dashboard.</p>
+            <p className="text-sm text-slate-400 mb-6">Please contact an administrator or try logging out.</p>
+            <Link to="/login" onClick={() => localStorage.removeItem('user')} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium">Return to Login</Link>
+          </div>
+        </div>
+      );
+    }
   }
 
   return (

@@ -28,13 +28,13 @@ const Meeting = () => {
 
   const handleCreate = () => {
     const newRoomId = Math.random().toString(36).substring(2, 10);
-    navigate(`/team-meeting/${newRoomId}`);
+    window.open(`/team-meeting/${newRoomId}`, '_blank');
   };
 
   const handleJoin = (e) => {
     e.preventDefault();
     if (meetingIdInput.trim()) {
-      navigate(`/team-meeting/${meetingIdInput.trim()}`);
+      window.open(`/team-meeting/${meetingIdInput.trim()}`, '_blank');
     }
   };
 

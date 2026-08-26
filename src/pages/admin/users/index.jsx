@@ -200,8 +200,8 @@ const UsersPage = () => {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{user.department || '-'}</td>
-                    <td className="px-6 py-4">{user.teamHead?.name || '-'}</td>
+                    <td className="px-6 py-4">{user.department || 'Administraton Staff'}</td>
+                    <td className="px-6 py-4">{user.teamHead?.name || 'Head'}</td>
                     <td className="px-6 py-4">{user.designation}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${user.status === 'Inactive' ? 'bg-slate-500/10 text-slate-400' : 'bg-green-500/10 text-green-400'

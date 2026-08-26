@@ -10,12 +10,12 @@ import ForcePasswordChange from './pages/ForcePasswordChange';
 import Profile from './pages/common/Profile';
 import Chat from './pages/common/Chat';
 import Meeting from './pages/common/Meeting';
+import PerformanceReport from './pages/common/PerformanceReport';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
 import AdminUsers from './pages/admin/users';
 import AdminReports from './pages/admin/reports';
-import AdminPerformance from './pages/admin/performance';
 import AdminSettings from './pages/admin/settings';
 import AdminAnnouncements from './pages/admin/announcements';
 import AdminProjects from './pages/admin/projects';
@@ -24,14 +24,12 @@ import AdminProjects from './pages/admin/projects';
 import TeamLeadDashboard from './pages/team-lead/dashboard';
 import TeamLeadUsers from './pages/team-lead/users';
 import TeamLeadReports from './pages/team-lead/reports';
-import TeamLeadPerformance from './pages/team-lead/performance';
 import UserDashboard from './pages/user/dashboard';
 import UserTasks from './pages/user/tasks';
 import UserReports from './pages/user/reports';
 import HRDashboard from './pages/hr/dashboard';
 import HRTasks from './pages/hr/tasks';
 import HRAnnouncements from './pages/hr/announcements';
-import HRPerformance from './pages/hr/performance';
 import HRReports from './pages/hr/reports';
 
 import './App.css';
@@ -80,7 +78,7 @@ const App = () => {
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/projects" element={<AdminProjects />} />
             <Route path="/admin/reports" element={<AdminReports />} />
-            <Route path="/admin/performance" element={<AdminPerformance />} />
+            <Route path="/admin/performance" element={<PerformanceReport />} />
             <Route path="/admin/announcements" element={<AdminAnnouncements />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/profile" element={<Profile />} />
@@ -94,7 +92,7 @@ const App = () => {
             <Route path="/team-lead/dashboard" element={<TeamLeadDashboard />} />
             <Route path="/team-lead/users" element={<TeamLeadUsers />} />
             <Route path="/team-lead/reports" element={<TeamLeadReports />} />
-            <Route path="/team-lead/performance" element={<TeamLeadPerformance />} />
+            <Route path="/team-lead/performance" element={<PerformanceReport />} />
             <Route path="/team-lead/profile" element={<Profile />} />
             <Route path="/team-lead/chat" element={<Chat />} />
           </Route>
@@ -117,7 +115,7 @@ const App = () => {
             <Route path="/hr/dashboard" element={<HRDashboard />} />
             <Route path="/hr/tasks" element={<HRTasks />} />
             <Route path="/hr/announcements" element={<HRAnnouncements />} />
-            <Route path="/hr/performance" element={<HRPerformance />} />
+            <Route path="/hr/performance" element={<PerformanceReport />} />
             <Route path="/hr/reports" element={<HRReports />} />
             <Route path="/hr/profile" element={<Profile />} />
             <Route path="/hr/chat" element={<Chat />} />

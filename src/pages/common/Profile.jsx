@@ -42,9 +42,7 @@ const Profile = () => {
         formData.append('profilePicture', profilePicture);
       }
 
-      const { data } = await api.put('/auth/profile', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const { data } = await api.put('/auth/profile', formData);
       
       updateUser(data);
       toast.success('Profile updated successfully');
@@ -134,8 +132,10 @@ const Profile = () => {
                     <div className="w-24 h-24 rounded-full bg-slate-800 border-2 border-indigo-500/30 overflow-hidden flex items-center justify-center">
                       {preview ? (
                         <img src={preview} alt="Profile" className="w-full h-full object-cover" />
+                      ) : user?.profilePicture ? (
+                        <img src={`${API_BASE_URL}${user.profilePicture}`} alt="Profile" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-3xl text-indigo-500 font-bold">{user?.name?.charAt(0)}</span>
+                        <span className="text-3xl text-indigo-500 font-bold">{user?.name?.charAt(0)?.toUpperCase()}</span>
                       )}
                     </div>
                     <button

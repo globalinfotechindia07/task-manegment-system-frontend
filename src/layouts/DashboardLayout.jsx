@@ -16,7 +16,7 @@ const DashboardLayout = () => {
 
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        <main className="flex-1 overflow-y-auto   relative z-0">
+        <main className="flex-1 overflow-y-auto p-4 relative z-0">
           <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             <Outlet />
           </div>

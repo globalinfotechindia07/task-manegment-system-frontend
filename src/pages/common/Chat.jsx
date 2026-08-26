@@ -45,6 +45,9 @@ const Chat = () => {
   const [editingGroupId, setEditingGroupId] = useState(null);
   const [groupName, setGroupName] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [groupIcon, setGroupIcon] = useState(null);
+  const [groupIconPreview, setGroupIconPreview] = useState(null);
+  const groupIconInputRef = useRef(null);
 
   // Fetch all users (used for New Group modal)
   const { data: users } = useQuery({
@@ -182,8 +185,8 @@ const Chat = () => {
   };
 
   const createGroupMutation = useMutation({
-    mutationFn: async (groupData) => {
-      const { data } = await api.post('/chat/groups', groupData);
+    mutationFn: async (formData) => {
+      const { data } = await api.post('/chat/groups', formData);
       return data;
     },
     onSuccess: () => {
@@ -200,8 +203,8 @@ const Chat = () => {
   });
 
   const updateGroupMutation = useMutation({
-    mutationFn: async ({ groupId, groupData }) => {
-      const { data } = await api.put(`/chat/groups/${groupId}`, groupData);
+    mutationFn: async ({ groupId, formData }) => {
+      const { data } = await api.put(`/chat/groups/${groupId}`, formData);
       return data;
     },
     onSuccess: (updatedGroup) => {
@@ -212,8 +215,10 @@ const Chat = () => {
       setSelectedMembers([]);
       setIsEditingGroup(false);
       setEditingGroupId(null);
+      setGroupIcon(null);
+      setGroupIconPreview(null);
       if (selectedChat && selectedChat._id === updatedGroup._id) {
-        setSelectedChat(prev => ({ ...prev, name: updatedGroup.name, members: updatedGroup.members }));
+        setSelectedChat(prev => ({ ...prev, name: updatedGroup.name, members: updatedGroup.members, profilePicture: updatedGroup.groupIcon }));
       }
     },
     onError: (error) => {
@@ -308,16 +313,41 @@ const Chat = () => {
     sendMessageMutation.mutate({ text: messageText, file: selectedFile, audio: audioBlob });
   };
 
+  const handleEditGroup = (e) => {
+    e.stopPropagation();
+    openEditGroupModal(selectedChat);
+  };
+
+  const handleGroupIconChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Image size should be less than 2MB');
+        return;
+      }
+      setGroupIcon(file);
+      setGroupIconPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleCreateGroup = (e) => {
     e.preventDefault();
     if (!groupName.trim() || selectedMembers.length === 0) {
       toast.error('Please enter a group name and select at least one member');
       return;
     }
+    
+    const formData = new FormData();
+    formData.append('name', groupName);
+    formData.append('members', JSON.stringify(selectedMembers));
+    if (groupIcon) {
+      formData.append('groupIcon', groupIcon);
+    }
+
     if (isEditingGroup) {
-      updateGroupMutation.mutate({ groupId: editingGroupId, groupData: { name: groupName, members: selectedMembers } });
+      updateGroupMutation.mutate({ groupId: editingGroupId, formData });
     } else {
-      createGroupMutation.mutate({ name: groupName, members: selectedMembers });
+      createGroupMutation.mutate(formData);
     }
   };
 
@@ -326,6 +356,8 @@ const Chat = () => {
     setEditingGroupId(null);
     setGroupName('');
     setSelectedMembers([]);
+    setGroupIcon(null);
+    setGroupIconPreview(null);
     setShowGroupModal(true);
   };
 
@@ -335,6 +367,8 @@ const Chat = () => {
     setGroupName(group.name);
     const memberIds = group.members.map(m => typeof m === 'object' ? m._id : m).filter(id => id !== user._id);
     setSelectedMembers(memberIds);
+    setGroupIcon(null);
+    setGroupIconPreview(group.profilePicture ? `${API_BASE_URL}${group.profilePicture}` : null);
     setShowGroupModal(true);
   };
 
@@ -415,17 +449,15 @@ const Chat = () => {
                 </span>
               )}
             </div>
-            {user?.role === 'Admin' && (
-              <button
-                onClick={openCreateGroupModal}
-                className="px-3 py-1.5 md:px-4 md:py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-indigo-500/20 flex items-center gap-1.5"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                New Group
-              </button>
-            )}
+            <button
+              onClick={openCreateGroupModal}
+              className="px-3 py-1.5 md:px-4 md:py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-indigo-500/20 flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              New Group
+            </button>
           </div>
 
           {/* Chat Body */}
@@ -474,12 +506,12 @@ const Chat = () => {
                     >
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 relative ${chat.isGroup ? 'bg-indigo-900/60 border border-indigo-500/30 text-indigo-400' : 'bg-slate-700'
                         }`}>
-                        {chat.isGroup ? (
+                        {chat.profilePicture ? (
+                          <img src={`${API_BASE_URL}${chat.profilePicture}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                        ) : chat.isGroup ? (
                           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
-                        ) : chat.profilePicture ? (
-                          <img src={`${API_BASE_URL}${chat.profilePicture}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                         ) : (
                           chat.name.charAt(0).toUpperCase()
                         )}
@@ -523,12 +555,12 @@ const Chat = () => {
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${selectedChat.isGroup ? 'bg-indigo-900/60 border border-indigo-500/30 text-indigo-400' : 'bg-slate-700 text-white'
                         }`}>
-                        {selectedChat.isGroup ? (
+                        {selectedChat.profilePicture ? (
+                          <img src={`${API_BASE_URL}${selectedChat.profilePicture}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                        ) : selectedChat.isGroup ? (
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
-                        ) : selectedChat.profilePicture ? (
-                          <img src={`${API_BASE_URL}${selectedChat.profilePicture}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                         ) : (
                           selectedChat.name.charAt(0).toUpperCase()
                         )}
@@ -540,16 +572,19 @@ const Chat = () => {
                         </p>
                       </div>
                     </div>
-                    {user?.role === 'Admin' && selectedChat.isGroup && (
-                      <button
-                        onClick={() => openEditGroupModal(selectedChat)}
-                        className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {selectedChat.isGroup && selectedChat.admin === user._id && (
+                        <button
+                          onClick={() => openEditGroupModal(selectedChat)}
+                          className="p-2 rounded-full hover:bg-slate-700/50 text-slate-400 hover:text-indigo-400 transition-colors"
+                          title="Edit Group"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Messages */}
@@ -571,7 +606,24 @@ const Chat = () => {
                         const senderName = isMine ? 'You' : (senderObj?.name || 'Unknown');
 
                         return (
-                          <div key={msg._id || index} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                          <div key={msg._id || index} className={`flex gap-2 mb-2 ${isMine ? 'justify-end flex-row-reverse' : 'justify-start flex-row'}`}>
+                            {/* Avatar */}
+                            <div className="w-8 h-8 rounded-full flex-shrink-0 bg-slate-800 border border-slate-700/50 flex items-center justify-center overflow-hidden mt-auto">
+                              {isMine ? (
+                                user?.profilePicture ? (
+                                  <img src={`${API_BASE_URL}${user.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xs font-bold text-indigo-400">{user?.name?.charAt(0)?.toUpperCase()}</span>
+                                )
+                              ) : (
+                                senderObj?.profilePicture ? (
+                                  <img src={`${API_BASE_URL}${senderObj.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xs font-bold text-slate-400">{senderName.charAt(0)?.toUpperCase()}</span>
+                                )
+                              )}
+                            </div>
+                            
                             <div className={`max-w-[85%] md:max-w-[75%] flex flex-col gap-0.5 ${isMine ? 'items-end' : 'items-start'}`}>
                               {selectedChat.isGroup && !isMine && (
                                 <span className="text-[11px] font-medium text-slate-400 ml-3">{senderName}</span>
@@ -726,16 +778,46 @@ const Chat = () => {
             <h2 className="text-xl font-bold text-white mb-5">{isEditingGroup ? 'Edit Group' : 'Create New Group'}</h2>
 
             <form onSubmit={handleCreateGroup} className="flex flex-col flex-1 overflow-hidden">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">Group Name</label>
-                <input
-                  type="text"
-                  required
-                  value={groupName}
-                  onChange={(e) => setGroupName(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-                  placeholder="e.g. Engineering Team"
-                />
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-slate-700 overflow-hidden flex items-center justify-center">
+                    {groupIconPreview ? (
+                      <img src={groupIconPreview} alt="Group Icon" className="w-full h-full object-cover" />
+                    ) : (
+                      <svg className="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => groupIconInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white border-2 border-slate-900 hover:bg-indigo-500 transition-colors shadow-lg"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                  <input
+                    type="file"
+                    ref={groupIconInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleGroupIconChange}
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Group Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={groupName}
+                    onChange={(e) => setGroupName(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    placeholder="e.g. Engineering Team"
+                  />
+                </div>
               </div>
 
               <div className="flex-1 flex flex-col min-h-0">

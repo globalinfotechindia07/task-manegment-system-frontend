@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { API_BASE_URL } from '../config';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const { user } = useAuth();
@@ -150,7 +151,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 flex items-center">
             <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
               {user?.profilePicture ? (
-                <img src={`http://localhost:5000${user.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
+                <img src={`${API_BASE_URL}${user.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 user?.name?.charAt(0).toUpperCase()
               )}

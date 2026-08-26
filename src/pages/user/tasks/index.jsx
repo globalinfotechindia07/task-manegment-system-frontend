@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
@@ -308,11 +309,11 @@ const UserTasksPage = () => {
         )}
       </div>
 
-      {/* Task Details Modal */}
-      {isDetailsModalOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Task Details Modal via Portal */}
+      {isDetailsModalOpen && selectedTask && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={() => setIsDetailsModalOpen(false)}></div>
-          <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[90vh] flex flex-col">
+          <div className="relative bg-slate-900 border-0 sm:border border-slate-700 rounded-none sm:rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[100dvh] sm:h-[90vh] flex flex-col">
             <div className="flex justify-between items-center p-5 border-b border-slate-800 shrink-0">
               <h3 className="text-xl font-bold text-white">{selectedTask.title}</h3>
               <button onClick={() => setIsDetailsModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
@@ -509,11 +510,12 @@ const UserTasksPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Create Task Modal */}
-      {isTaskModalOpen && (
+      {isTaskModalOpen && createPortal(
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl animate-in fade-in zoom-in-95">
             <div className="p-6 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
@@ -626,7 +628,8 @@ const UserTasksPage = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

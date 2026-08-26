@@ -611,7 +611,7 @@ const TeamLeadReportsPage = () => {
       {isDetailsModalOpen && selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={() => setIsDetailsModalOpen(false)}></div>
-          <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[90vh] flex flex-col">
+          <div className="relative bg-slate-900 border-0 sm:border border-slate-700 rounded-none sm:rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[100dvh] sm:h-[90vh] flex flex-col">
             <div className="flex justify-between items-center p-5 border-b border-slate-800 shrink-0">
               <h3 className="text-xl font-bold text-white">{selectedTask.title}</h3>
               <button onClick={() => setIsDetailsModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">

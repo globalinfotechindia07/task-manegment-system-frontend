@@ -8,6 +8,8 @@ import { API_BASE_URL } from '../../../config';
 const AdminProjects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
@@ -121,6 +123,20 @@ const AdminProjects = () => {
     }
   };
 
+  // Pagination Logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProjects = projects?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const totalPages = projects ? Math.ceil(projects.length / itemsPerPage) : 0;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
     <div>
       <div className="mb-6 flex justify-between items-end">
@@ -165,7 +181,7 @@ const AdminProjects = () => {
                   </td>
                 </tr>
               ) : (
-                projects?.map((project) => (
+                currentProjects.map((project) => (
                   <tr key={project._id} className="hover:bg-slate-700/20 transition-colors">
                     <td className="px-6 py-4">
                       {project.logo ? (
@@ -215,6 +231,46 @@ const AdminProjects = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {!isLoading && projects?.length > 0 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-700/50 bg-slate-900/30">
+            <span className="text-sm text-slate-400">
+              Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, projects.length)} of {projects.length} entries
+            </span>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <div className="flex space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 flex items-center justify-center text-sm rounded-md transition-colors ${
+                      currentPage === page 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
