@@ -30,8 +30,8 @@ jobs:
       - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.globalinfotechindia.com
-          username: taskmanagement_system
+          server: ftp.taskmanagementsystem.globalinfotechindia.com
+          username: globalinfotechin_taskmanagement_system
           password: culu&Zb8D
           port: 21
           local-dir: ./dist/
