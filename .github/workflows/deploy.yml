@@ -35,4 +35,4 @@ jobs:
           password: culu&Zb8D
           port: 21
           local-dir: ./dist/
-          server-dir: /taskmanagementsystem_globalinfotechindia_com
+          server-dir: /taskmanagementsystem_globalinfotechindia_com/
