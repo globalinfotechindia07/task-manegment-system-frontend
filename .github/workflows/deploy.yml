@@ -28,7 +28,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ftp.globalinfotechindia.com
           username: globalinfotechin_taskmanagement_system
