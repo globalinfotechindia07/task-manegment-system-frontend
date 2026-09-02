@@ -30,9 +30,9 @@ jobs:
       - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
+          server: ftp.globalinfotechindia.com
+          username: taskmanagement_system
+          password: culu&Zb8D
+          port: 21
           local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          server-dir: /taskmanagementsystem_globalinfotechindia_com
