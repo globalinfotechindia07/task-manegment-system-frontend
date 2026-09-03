@@ -11,6 +11,9 @@ import Profile from './pages/common/Profile';
 import Chat from './pages/common/Chat';
 import Meeting from './pages/common/Meeting';
 import PerformanceReport from './pages/common/PerformanceReport';
+import PunchInOut from './pages/common/PunchInOut';
+import MyAttendance from './pages/common/MyAttendance';
+import MySalarySlips from './pages/common/MySalarySlips';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
@@ -19,6 +22,9 @@ import AdminReports from './pages/admin/reports';
 import AdminSettings from './pages/admin/settings';
 import AdminAnnouncements from './pages/admin/announcements';
 import AdminProjects from './pages/admin/projects';
+import AttendanceSettings from './pages/admin/attendance-settings';
+import SalaryManagement from './pages/admin/salary-management';
+import PayrollDashboard from './pages/admin/payroll-dashboard';
 
 // Other Role Dashboards
 import TeamLeadDashboard from './pages/team-lead/dashboard';
@@ -68,6 +74,9 @@ const App = () => {
           <Route element={<DashboardLayout />}>
             <Route path="/team-meeting" element={<Meeting />} />
             <Route path="/team-meeting/:roomId" element={<Meeting />} />
+            <Route path="/punch-in" element={<PunchInOut />} />
+            <Route path="/my-attendance" element={<MyAttendance />} />
+            <Route path="/my-salary-slips" element={<MySalarySlips />} />
           </Route>
         </Route>
 
@@ -81,6 +90,9 @@ const App = () => {
             <Route path="/admin/performance" element={<PerformanceReport />} />
             <Route path="/admin/announcements" element={<AdminAnnouncements />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/attendance-settings" element={<AttendanceSettings />} />
+            <Route path="/admin/salary-management" element={<SalaryManagement />} />
+            <Route path="/admin/payroll-dashboard" element={<PayrollDashboard />} />
             <Route path="/admin/profile" element={<Profile />} />
             <Route path="/admin/chat" element={<Chat />} />
           </Route>
