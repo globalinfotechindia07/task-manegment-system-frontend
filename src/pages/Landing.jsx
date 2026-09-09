@@ -43,7 +43,7 @@ const Landing = () => {
         
         <div className="space-y-4">
           <h2 className="text-xl font-medium text-indigo-400 uppercase tracking-widest">
-            Daily Task Management System
+            Task Management System
           </h2>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white">
             Global Infotech India
