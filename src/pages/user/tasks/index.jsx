@@ -29,9 +29,9 @@ const UserTasksPage = () => {
   const { socket } = useSocket();
 
   const { data: tasks, isLoading: tasksLoading } = useQuery({
-    queryKey: ['tasks'],
+    queryKey: ['myDailyTasks'],
     queryFn: async () => {
-      const { data } = await api.get('/tasks');
+      const { data } = await api.get('/tasks?myTasks=true');
       return data;
     }
   });

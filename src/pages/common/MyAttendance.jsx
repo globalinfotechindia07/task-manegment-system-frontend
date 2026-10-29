@@ -63,8 +63,10 @@ const MyAttendance = () => {
                 <th className="p-4 font-medium">Date</th>
                 <th className="p-4 font-medium">Punch In</th>
                 <th className="p-4 font-medium">Punch Out</th>
+                <th className="p-4 font-medium">Punctuality</th>
                 <th className="p-4 font-medium">Status</th>
-                <th className="p-4 font-medium">Selfie</th>
+                <th className="p-4 font-medium">In Selfie</th>
+                <th className="p-4 font-medium">Out Selfie</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
@@ -89,17 +91,37 @@ const MyAttendance = () => {
                       {log.punchOut ? new Date(log.punchOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
                     </td>
                     <td className="p-4">
+                      {log.lateByMinutes > 0 ? (
+                        <span className="text-orange-400 text-xs font-medium bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">
+                          {Math.floor(log.lateByMinutes / 60) > 0 ? `${Math.floor(log.lateByMinutes / 60)}h ` : ''}{log.lateByMinutes % 60}m late
+                        </span>
+                      ) : (
+                        <span className="text-emerald-400 text-xs font-medium bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
+                          On Time
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4">
                       <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-semibold border ${getStatusColor(log.status)}`}>
                         {log.status}
                       </span>
                     </td>
                     <td className="p-4">
                       {log.punchInPhoto ? (
-                        <a href={`${API_BASE_URL}${log.punchInPhoto}`} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded border border-slate-700 overflow-hidden hover:opacity-80 transition-opacity">
-                          <img src={`${API_BASE_URL}${log.punchInPhoto}`} alt="Selfie" className="w-full h-full object-cover" />
+                        <a href={`${API_BASE_URL}${log.punchInPhoto}`} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded border border-slate-700 overflow-hidden hover:opacity-80 transition-opacity" title="View Punch In Photo">
+                          <img src={`${API_BASE_URL}${log.punchInPhoto}`} alt="In" className="w-full h-full object-cover" />
                         </a>
                       ) : (
-                        <span className="text-slate-500 text-xs">No Photo</span>
+                        <span className="text-slate-500 text-xs">N/A</span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      {log.punchOutPhoto ? (
+                        <a href={`${API_BASE_URL}${log.punchOutPhoto}`} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded border border-slate-700 overflow-hidden hover:opacity-80 transition-opacity" title="View Punch Out Photo">
+                          <img src={`${API_BASE_URL}${log.punchOutPhoto}`} alt="Out" className="w-full h-full object-cover" />
+                        </a>
+                      ) : (
+                        <span className="text-slate-500 text-xs">-</span>
                       )}
                     </td>
                   </tr>

@@ -78,12 +78,11 @@ const PayrollDashboard = () => {
             <thead>
               <tr className="bg-slate-800/50 text-slate-300 text-sm border-b border-slate-700">
                 <th className="p-4 font-semibold">Employee</th>
-                <th className="p-4 font-semibold">Base LPA</th>
-                <th className="p-4 font-semibold text-emerald-400 text-right">Gross (Monthly)</th>
-                <th className="p-4 font-semibold text-red-400 text-right">PF</th>
-                <th className="p-4 font-semibold text-red-400 text-right">PT</th>
-                <th className="p-4 font-semibold text-orange-400 text-right">Late Ded.</th>
-                <th className="p-4 font-semibold text-indigo-400 text-right">Net Pay</th>
+                <th className="p-4 font-semibold">Annual CTC</th>
+                <th className="p-4 font-semibold text-emerald-400 text-right">Gross Earnings (A)</th>
+                <th className="p-4 font-semibold text-rose-400 text-right">Total Ded. (B)</th>
+                <th className="p-4 font-semibold text-orange-400 text-right">Late Ded. (incl. in B)</th>
+                <th className="p-4 font-semibold text-indigo-400 text-right">Net Pay (A-B)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800 text-sm">
@@ -117,11 +116,10 @@ const PayrollDashboard = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-slate-300">₹{(slip.grossSalary * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="p-4 text-emerald-400 font-medium text-right">₹{slip.grossSalary.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="p-4 text-red-400 text-right">-₹{slip.deductions.pf.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="p-4 text-red-400 text-right">-₹{slip.deductions.pt.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="p-4 text-orange-400 text-right">-₹{slip.deductions.lateDeduction.toLocaleString(undefined, { maximumFractionDigits: 0 })} <span className="text-xs">({slip.stats?.lateDays || 0} days)</span></td>
+                    <td className="p-4 text-slate-300">₹{(slip.fixedCTC || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="p-4 text-emerald-400 font-medium text-right">₹{(slip.grossEarnings || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="p-4 text-rose-400 text-right">-₹{(slip.totalDeductions || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                    <td className="p-4 text-orange-400 text-right">-₹{(slip.deductions?.lateDeduction || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} <span className="text-xs">({slip.stats?.lateDays || 0} days)</span></td>
                     <td className="p-4 text-indigo-400 font-bold text-right text-base border-l border-slate-700/50">₹{slip.netPay.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                   </tr>
                 ))

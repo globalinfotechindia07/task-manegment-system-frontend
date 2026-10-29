@@ -6,6 +6,7 @@ import { API_BASE_URL } from '../../../config';
 const HRReports = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPeriod, setFilterPeriod] = useState('All');
+  const [selectedProjectId, setSelectedProjectId] = useState('All');
   const [selectedUserId, setSelectedUserId] = useState('All');
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -14,6 +15,14 @@ const HRReports = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       const { data } = await api.get('/tasks');
+      return data;
+    }
+  });
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const { data } = await api.get('/projects');
       return data;
     }
   });
@@ -39,6 +48,11 @@ const HRReports = () => {
 
   const filteredTasks = useMemo(() => {
     let tasksToFilter = tasks;
+
+    // Filter by project
+    if (selectedProjectId !== 'All') {
+      tasksToFilter = tasksToFilter.filter(t => t.project?._id === selectedProjectId);
+    }
 
     // Filter by selected user
     if (selectedUserId !== 'All') {
@@ -129,7 +143,21 @@ const HRReports = () => {
       </div>
 
       {/* Advanced Filters */}
-      <div className="glass-panel p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="glass-panel p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 mb-1">Project</label>
+          <select
+            value={selectedProjectId}
+            onChange={(e) => setSelectedProjectId(e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 outline-none appearance-none"
+          >
+            <option value="All">All Projects</option>
+            {projects.map(p => (
+              <option key={p._id} value={p._id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+
         <div>
           <label className="block text-xs font-semibold text-slate-400 mb-1">Search Users</label>
           <div className="relative">

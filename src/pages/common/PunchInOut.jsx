@@ -10,6 +10,7 @@ const PunchInOut = () => {
   const [stream, setStream] = useState(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [address, setAddress] = useState(null);
   const [locationError, setLocationError] = useState(null);
 
   // Initialize Camera
@@ -46,6 +47,23 @@ const PunchInOut = () => {
     return () => stopCamera();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (location) {
+      const fetchAddress = async () => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${location.lat}&lon=${location.lng}&format=json`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          }
+        } catch (error) {
+          console.error('Error fetching address', error);
+        }
+      };
+      fetchAddress();
+    }
+  }, [location]);
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -91,11 +109,16 @@ const PunchInOut = () => {
 
   const punchOutMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await api.post('/attendance/punch-out');
+      const formData = new FormData();
+      if (capturedPhoto) {
+        formData.append('photo', capturedPhoto, 'punchout.jpg');
+      }
+      const { data } = await api.post('/attendance/punch-out', formData);
       return data;
     },
     onSuccess: () => {
       toast.success('Punched out successfully!');
+      setCapturedPhoto(null);
       queryClient.invalidateQueries({ queryKey: ['myAttendanceReport'] });
     },
     onError: (error) => {
@@ -117,7 +140,10 @@ const PunchInOut = () => {
           <div className="text-center">
             <h2 className="text-lg font-semibold text-slate-300 mb-1">Your Location</h2>
             {location ? (
-              <p className="text-emerald-400 font-mono text-sm">Lat: {location.lat.toFixed(6)} | Lng: {location.lng.toFixed(6)}</p>
+              <>
+                <p className="text-emerald-400 font-mono text-sm mb-1">Lat: {location.lat.toFixed(6)} | Lng: {location.lng.toFixed(6)}</p>
+                {address && <p className="text-slate-400 text-xs px-4">{address}</p>}
+              </>
             ) : locationError ? (
               <p className="text-red-400 text-sm">{locationError}</p>
             ) : (
@@ -144,8 +170,14 @@ const PunchInOut = () => {
           </button>
 
           <button 
-            onClick={() => punchOutMutation.mutate()}
-            disabled={punchOutMutation.isPending}
+            onClick={() => {
+              if (!capturedPhoto) {
+                toast.error('Please capture a photo first.');
+                return;
+              }
+              punchOutMutation.mutate();
+            }}
+            disabled={punchOutMutation.isPending || !capturedPhoto}
             className="w-full max-w-xs py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(225,29,72,0.3)] disabled:opacity-50 transition-all"
           >
             {punchOutMutation.isPending ? 'Processing...' : 'PUNCH OUT'}

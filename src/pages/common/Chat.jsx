@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
@@ -67,17 +67,29 @@ const Chat = () => {
     }
   });
 
-  // Fetch messages for selected chat
-  const { data: messages, isLoading: messagesLoading } = useQuery({
+  // Fetch messages for selected chat with infinite scrolling
+  const { 
+    data: messagesData, 
+    isLoading: messagesLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
     queryKey: ['chatMessages', selectedChat?._id],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       if (!selectedChat) return [];
       const endpoint = selectedChat.isGroup ? `/chat/group/${selectedChat._id}` : `/chat/${selectedChat._id}`;
-      const { data } = await api.get(endpoint);
+      const { data } = await api.get(`${endpoint}?limit=50&skip=${pageParam}`);
       return data;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 50 ? allPages.length * 50 : undefined;
     },
     enabled: !!selectedChat
   });
+
+  // Flatten messages: reverse the pages so older messages appear first
+  const messages = messagesData?.pages ? [...messagesData.pages].reverse().flat() : [];
 
   // Send Message Mutation
   const sendMessageMutation = useMutation({
@@ -112,8 +124,15 @@ const Chat = () => {
     },
     onSuccess: (newMessage) => {
       queryClient.setQueryData(['chatMessages', selectedChat._id], (old) => {
-        if (old && old.some(m => m._id === newMessage._id)) return old;
-        return old ? [...old, newMessage] : [newMessage];
+        if (!old || !old.pages) return old;
+        // Check if message already exists in any page
+        const exists = old.pages.some(page => page.some(m => m._id === newMessage._id));
+        if (exists) return old;
+        
+        // Append to the first page (which holds the newest messages)
+        const newPages = [...old.pages];
+        newPages[0] = [...newPages[0], newMessage];
+        return { ...old, pages: newPages };
       });
 
       updateConversationSidebar(selectedChat._id, newMessage);
@@ -137,9 +156,14 @@ const Chat = () => {
         if (!oldConvos) return oldConvos;
         return oldConvos.map(c => (c._id === userId ? { ...c, unreadCount: 0 } : c));
       });
-      queryClient.setQueryData(['chatMessages', userId], (oldMessages) => {
-        if (!oldMessages) return oldMessages;
-        return oldMessages.map(m => (!m.read && m.receiver === user._id) ? { ...m, read: true } : m);
+      queryClient.setQueryData(['chatMessages', userId], (oldData) => {
+        if (!oldData || !oldData.pages) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map(page => 
+            page.map(m => (!m.read && m.receiver === user._id) ? { ...m, read: true } : m)
+          )
+        };
       });
     }
   });
@@ -255,8 +279,12 @@ const Chat = () => {
 
       if (isViewingThisChat) {
         queryClient.setQueryData(['chatMessages', selectedChat._id], (old) => {
-          if (old && old.some(m => m._id === message._id)) return old;
-          return old ? [...old, message] : [message];
+          if (!old || !old.pages) return { pages: [[message]], pageParams: [0] };
+          const exists = old.pages.some(page => page.some(m => m._id === message._id));
+          if (exists) return old;
+          const newPages = [...old.pages];
+          newPages[0] = [...newPages[0], message];
+          return { ...old, pages: newPages };
         });
         // Mark as read immediately if viewing this 1-on-1 chat and we are the receiver
         if (!isGroupMessage && senderId !== user._id) {
@@ -287,9 +315,14 @@ const Chat = () => {
 
     const handleMessagesRead = ({ readerId }) => {
       if (selectedChat && !selectedChat.isGroup && selectedChat._id === readerId) {
-        queryClient.setQueryData(['chatMessages', selectedChat._id], (old) => {
-          if (!old) return old;
-          return old.map(m => (!m.read && m.sender === user._id) ? { ...m, read: true } : m);
+        queryClient.setQueryData(['chatMessages', selectedChat._id], (oldData) => {
+          if (!oldData || !oldData.pages) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map(page => 
+              page.map(m => (!m.read && m.sender === user._id) ? { ...m, read: true } : m)
+            )
+          };
         });
       }
     };
@@ -303,9 +336,30 @@ const Chat = () => {
     };
   }, [socket, selectedChat, queryClient, user._id]);
 
+  // Keep track of scroll height to maintain scroll position when loading older messages
+  const chatContainerRef = useRef(null);
+  const [prevScrollHeight, setPrevScrollHeight] = useState(0);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (chatContainerRef.current) {
+      if (prevScrollHeight > 0) {
+        // We loaded older messages, maintain scroll pos
+        const diff = chatContainerRef.current.scrollHeight - prevScrollHeight;
+        chatContainerRef.current.scrollTop = diff;
+        setPrevScrollHeight(0);
+      } else if (!isFetchingNextPage) {
+        // Scroll to bottom only if we aren't loading older messages
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [messages, isFetchingNextPage, prevScrollHeight]);
+
+  const handleScroll = useCallback((e) => {
+    if (e.target.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+      setPrevScrollHeight(e.target.scrollHeight);
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -588,7 +642,16 @@ const Chat = () => {
                   </div>
 
                   {/* Messages */}
-                  <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'4\' height=\'4\' viewBox=\'0 0 4 4\'%3E%3Cpath fill=\'%23334155\' fill-opacity=\'0.1\' d=\'M1 3h1v1H1V3zm2-2h1v1H3V1z\'/%3E%3C/svg%3E')]">
+                  <div 
+                    ref={chatContainerRef}
+                    onScroll={handleScroll}
+                    className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'4\' height=\'4\' viewBox=\'0 0 4 4\'%3E%3Cpath fill=\'%23334155\' fill-opacity=\'0.1\' d=\'M1 3h1v1H1V3zm2-2h1v1H3V1z\'/%3E%3C/svg%3E')]"
+                  >
+                    {isFetchingNextPage && (
+                      <div className="flex justify-center py-2">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500 border-t-transparent"></div>
+                      </div>
+                    )}
                     {messagesLoading ? (
                       <div className="flex justify-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 border-t-transparent"></div>

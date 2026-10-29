@@ -7,9 +7,9 @@ const UserDashboard = () => {
   const { user } = useAuth();
 
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['tasks'],
+    queryKey: ['myTasks'],
     queryFn: async () => {
-      const { data } = await api.get('/tasks');
+      const { data } = await api.get('/tasks?myTasks=true');
       return data;
     }
   });

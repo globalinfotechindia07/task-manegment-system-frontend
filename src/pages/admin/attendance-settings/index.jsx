@@ -24,6 +24,7 @@ const AttendanceSettings = () => {
           const data = await res.json();
           if (data && data.display_name) {
             setAddress(data.display_name);
+            setValue('officeAddress', data.display_name, { shouldDirty: true });
           } else {
             setAddress('Address not found');
           }
@@ -74,6 +75,8 @@ const AttendanceSettings = () => {
     data.allowedRadiusMeters = parseInt(data.allowedRadiusMeters);
     data.bufferMinutes = parseInt(data.bufferMinutes);
     data.allowedLateMarks = parseInt(data.allowedLateMarks);
+    
+    // officeAddress is naturally a string, it will be included in data
     
     updateMutation.mutate(data);
   };
@@ -150,15 +153,21 @@ const AttendanceSettings = () => {
                         src={`https://maps.google.com/maps?q=${lat},${lng}&t=&z=17&ie=UTF8&iwloc=&output=embed`}
                       ></iframe>
                     </div>
-                    <div className="text-slate-200 text-sm">
-                      {isFetchingAddress ? (
-                        <span className="flex items-center gap-2 text-slate-400 animate-pulse">
-                          <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></span>
-                          Fetching address text...
-                        </span>
-                      ) : address ? (
-                        <span className="font-medium text-slate-300">{address}</span>
-                      ) : null}
+                    <div className="text-slate-200 text-sm w-full">
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Editable Address Label</label>
+                      <div className="relative">
+                        <textarea 
+                          {...register('officeAddress')} 
+                          rows={2}
+                          className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none resize-none"
+                          placeholder="Address will auto-fetch or you can enter manually..."
+                        />
+                        {isFetchingAddress && (
+                          <div className="absolute right-3 top-3">
+                            <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin block"></span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ) : (

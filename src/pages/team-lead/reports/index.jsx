@@ -21,6 +21,7 @@ const TeamLeadReportsPage = () => {
 
   const [commentText, setCommentText] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState('');
   
   // Filters
   const [filterDate, setFilterDate] = useState('');
@@ -31,7 +32,7 @@ const TeamLeadReportsPage = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedProjectId, filterStatus, searchQuery, filterDate]);
+  }, [selectedProjectId, selectedUserId, filterStatus, searchQuery, filterDate]);
 
   const queryClient = useQueryClient();
   const { socket } = useSocket();
@@ -78,6 +79,9 @@ const TeamLeadReportsPage = () => {
     // Project filter
     if (selectedProjectId && t.project?._id !== selectedProjectId) return false;
     
+    // Assignee filter
+    if (selectedUserId && t.assignedTo?._id !== selectedUserId) return false;
+
     // Status filter
     if (filterStatus && t.status !== filterStatus) return false;
 
@@ -281,7 +285,7 @@ const TeamLeadReportsPage = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Project</label>
             <select
@@ -292,6 +296,19 @@ const TeamLeadReportsPage = () => {
               <option value="">All Projects</option>
               {projects?.map(p => (
                 <option key={p._id} value={p._id}>{p.name} ({p.status})</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Assigned To</label>
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+            >
+              <option value="">All Members</option>
+              {users?.map(u => (
+                <option key={u._id} value={u._id}>{u.name} ({u.role})</option>
               ))}
             </select>
           </div>
