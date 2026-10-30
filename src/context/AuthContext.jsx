@@ -97,8 +97,16 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const setAuthSession = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    if (userData?._id) {
+      setupPushNotifications(userData._id);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, setAuthSession, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

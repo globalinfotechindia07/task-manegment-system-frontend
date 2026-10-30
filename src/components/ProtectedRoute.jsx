@@ -15,7 +15,9 @@ const ProtectedRoute = ({ allowedRoles }) => {
     }
     // Redirect to their respective dashboard if they don't have permission for this route
     const roleRoutes = {
+      'Super Admin': '/super-admin/dashboard',
       'Admin': '/admin/dashboard',
+      'CTO': '/admin/dashboard',
       'Team Head': '/team-lead/dashboard',
       'User': '/user/dashboard',
       'HR Manager': '/hr/dashboard',

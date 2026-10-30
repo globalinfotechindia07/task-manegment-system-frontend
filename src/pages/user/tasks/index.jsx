@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
@@ -25,6 +25,17 @@ const UserTasksPage = () => {
   const [reportText, setReportText] = useState('');
   const [attachments, setAttachments] = useState(null);
   
+  // Filter & Pagination States
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedProjectId, filterStatus, searchQuery]);
+  
   const queryClient = useQueryClient();
   const { socket } = useSocket();
 
@@ -43,6 +54,26 @@ const UserTasksPage = () => {
       return data;
     }
   });
+
+  // Filter tasks by project, status, and search query
+  const displayedTasks = useMemo(() => {
+    if (!Array.isArray(tasks)) return [];
+    return tasks.filter(t => {
+      if (selectedProjectId && t.project?._id !== selectedProjectId) return false;
+      if (filterStatus && t.status !== filterStatus) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const titleMatch = t.title?.toLowerCase().includes(q);
+        const projectMatch = t.project?.name?.toLowerCase().includes(q);
+        const descMatch = t.description?.toLowerCase().includes(q);
+        if (!titleMatch && !projectMatch && !descMatch) return false;
+      }
+      return true;
+    });
+  }, [tasks, selectedProjectId, filterStatus, searchQuery]);
+
+  const totalPages = Math.ceil(displayedTasks.length / itemsPerPage);
+  const paginatedTasks = displayedTasks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {
@@ -238,20 +269,69 @@ const UserTasksPage = () => {
         </button>
       </div>
       
+      {/* Filter Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 mb-6">
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Filter by Project</label>
+          <select
+            value={selectedProjectId}
+            onChange={(e) => setSelectedProjectId(e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+          >
+            <option value="">All Projects</option>
+            {projects?.map(p => (
+              <option key={p._id} value={p._id}>{p.name} ({p.status})</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+          >
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Awaiting Approval">Awaiting Approval</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-400 mb-1">Search Task or Project</label>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by task title or project..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+            />
+            <svg className="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
       <div className="glass-panel overflow-hidden">
         {tasksLoading ? (
           <div className="p-8 flex justify-center">
             <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
           </div>
-        ) : !Array.isArray(tasks) || tasks.length === 0 ? (
+        ) : displayedTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-12">
             <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-white mb-1">No tasks assigned</h3>
-            <p className="text-slate-400 max-w-sm">You currently have no tasks assigned to you.</p>
+            <h3 className="text-lg font-medium text-white mb-1">No tasks found</h3>
+            <p className="text-slate-400 max-w-sm">
+              {tasks?.length === 0 ? "You currently have no tasks assigned to you." : "No tasks match the selected project or filter."}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -268,9 +348,14 @@ const UserTasksPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
-                {tasks.map(task => (
+                {paginatedTasks.map(task => (
                   <tr key={task._id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-6 py-4 font-medium text-white">{task.title}</td>
+                    <td className="px-6 py-4 font-medium text-white">
+                      {task.title}
+                      {task.project && (
+                        <div className="text-xs text-indigo-400 mt-0.5">{task.project.name}</div>
+                      )}
+                    </td>
                     <td className="px-6 py-4">{task.assignedBy?.name || 'Unknown'}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
@@ -305,6 +390,34 @@ const UserTasksPage = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 border-t border-slate-700/50 bg-slate-800/30 gap-4">
+                <span className="text-sm text-slate-400">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, displayedTasks.length)} of {displayedTasks.length} entries
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-sm text-slate-300 disabled:opacity-50 hover:bg-slate-700 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-3 py-1 text-sm text-slate-400 flex items-center">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-sm text-slate-300 disabled:opacity-50 hover:bg-slate-700 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

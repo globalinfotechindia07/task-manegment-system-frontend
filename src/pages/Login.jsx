@@ -17,6 +17,7 @@ const Login = () => {
     
     if (result.success) {
       const roleRoutes = {
+        'Super Admin': '/super-admin/dashboard',
         'Admin': '/admin/dashboard',
         'CTO': '/admin/dashboard',
         'Team Head': '/team-lead/dashboard',

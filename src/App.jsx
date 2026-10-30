@@ -15,6 +15,12 @@ import PunchInOut from './pages/common/PunchInOut';
 import MyAttendance from './pages/common/MyAttendance';
 import MySalarySlips from './pages/common/MySalarySlips';
 
+// Super Admin Pages
+import SuperAdminDashboard from './pages/super-admin/dashboard';
+import OfficesManager from './pages/super-admin/offices';
+import PlansManager from './pages/super-admin/plans';
+import SuperAdminCMS from './pages/super-admin/cms';
+
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
 import AdminUsers from './pages/admin/users';
@@ -25,6 +31,7 @@ import AdminProjects from './pages/admin/projects';
 import AttendanceSettings from './pages/admin/attendance-settings';
 import SalaryManagement from './pages/admin/salary-management';
 import PayrollDashboard from './pages/admin/payroll-dashboard';
+import AdminBilling from './pages/admin/billing';
 
 // Other Role Dashboards
 import TeamLeadDashboard from './pages/team-lead/dashboard';
@@ -80,6 +87,17 @@ const App = () => {
           </Route>
         </Route>
 
+        {/* Protected Super Admin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['Super Admin']} />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+            <Route path="/super-admin/offices" element={<OfficesManager />} />
+            <Route path="/super-admin/plans" element={<PlansManager />} />
+            <Route path="/super-admin/cms" element={<SuperAdminCMS />} />
+            <Route path="/super-admin/profile" element={<Profile />} />
+          </Route>
+        </Route>
+
         {/* Protected Admin & CTO Routes */}
         <Route element={<ProtectedRoute allowedRoles={['Admin', 'CTO']} />}>
           <Route element={<DashboardLayout />}>
@@ -93,6 +111,7 @@ const App = () => {
             <Route path="/admin/attendance-settings" element={<AttendanceSettings />} />
             <Route path="/admin/salary-management" element={<SalaryManagement />} />
             <Route path="/admin/payroll-dashboard" element={<PayrollDashboard />} />
+            <Route path="/admin/billing" element={<AdminBilling />} />
             <Route path="/admin/profile" element={<Profile />} />
             <Route path="/admin/chat" element={<Chat />} />
           </Route>

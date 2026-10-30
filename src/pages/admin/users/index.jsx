@@ -8,16 +8,17 @@ import api from '../../../api/axios';
 
 // Hardcoded fallback in case settings fail
 const fallbackRoleTypes = {
-  'Team Head': ['Project Manager', 'Marketing Manager'],
   'User': [
     'Full Stack Developer',
     'Frontend Developer',
     'Backend Developer',
     'App Developer',
-    'Marketing Executive'
+    'Marketing Executive',
+    'UI/UX Designer',
+    'QA Engineer'
   ],
-  'HR Manager': ['HR Manager'],
-  'Admin': ['System Administrator']
+  'Team Head': ['Project Manager', 'Marketing Manager', 'Technical Lead'],
+  'HR Manager': ['HR Manager', 'Talent Acquisition']
 };
 
 const UsersPage = () => {
@@ -364,9 +365,7 @@ const UsersPage = () => {
                     className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
                     {...register('role')}
                   >
-                    {settings?.roles ? settings.roles.map(role => (
-                      <option key={role} value={role}>{role}</option>
-                    )) : Object.keys(fallbackRoleTypes).map(role => (
+                    {['User', 'Team Head', 'HR Manager'].map(role => (
                       <option key={role} value={role}>{role}</option>
                     ))}
                   </select>
