@@ -1,22 +1,24 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
   const { user } = useAuth();
+  const location = useLocation();
 
+  // 1. Not authenticated → login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Force password change check
-  if (user.requiresPasswordChange && window.location.pathname !== '/force-password-change') {
+  // 2. Force password change (skip if already on that page)
+  if (user.requiresPasswordChange && location.pathname !== '/force-password-change') {
     return <Navigate to="/force-password-change" replace />;
   }
 
-  // 1. Super Admin and Office Admin have full access to their respective portal routes
-  const isOfficeAdmin = user.role === 'Admin' || user.role === 'CTO';
   const isSuperAdmin = user.role === 'Super Admin';
+  const isOfficeAdmin = user.role === 'Admin' || user.role === 'CTO';
 
+  // 3. Super Admin — full access to their portal routes
   if (isSuperAdmin) {
     if (allowedRoles && !allowedRoles.includes('Super Admin')) {
       return <Navigate to="/super-admin/dashboard" replace />;
@@ -24,12 +26,12 @@ const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
     return children ? children : <Outlet />;
   }
 
-  // If this is a Super Admin only route and user is not Super Admin
-  if (allowedRoles && allowedRoles.includes('Super Admin') && !isSuperAdmin) {
+  // 4. Super Admin only route but user isn't Super Admin
+  if (allowedRoles && allowedRoles.includes('Super Admin')) {
     return <Navigate to="/" replace />;
   }
 
-  // 2. Check dynamic permission for staff
+  // 5. Compute access
   let hasAccess = false;
 
   if (isOfficeAdmin) {

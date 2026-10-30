@@ -59,12 +59,12 @@ const App = () => {
   }, [location.pathname, clearUnreadChats, clearNewTasks, clearMeetingInvites]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500/20 font-sans">
+    <div className="app-shell min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500/20 font-sans antialiased">
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        
+
         {/* Force Password Change Route - Needs protection but without dashboard layout */}
         <Route element={<ProtectedRoute />}>
           <Route path="/force-password-change" element={<ForcePasswordChange />} />
@@ -137,16 +137,32 @@ const App = () => {
         </Route>
       </Routes>
 
-      <Toaster position="bottom-right" toastOptions={{
-        style: {
-          background: '#ffffff',
-          color: '#0f172a',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.08)'
-        }
-      }}/>
+      <Toaster
+        position="top-right"
+        containerStyle={{
+          top: 80,
+          right: 16,
+          left: 16,
+        }}
+        toastOptions={{
+          duration: 3500,
+          style: {
+            background: '#ffffff',
+            color: '#0f172a',
+            border: '1px solid #e2e8f0',
+            borderRadius: '10px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            fontWeight: 500,
+            maxWidth: 'calc(100vw - 32px)',
+            boxShadow: '0 4px 16px rgba(15, 23, 42, 0.08)',
+          },
+          success: { iconTheme: { primary: '#4f46e5', secondary: '#ffffff' } },
+          error: { iconTheme: { primary: '#ef4444', secondary: '#ffffff' } },
+        }}
+      />
     </div>
   );
-}
+};
 
 export default App;

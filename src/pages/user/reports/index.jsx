@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { 
-  HiOutlineArrowDownTray, 
-  HiOutlineMagnifyingGlass, 
-  HiOutlineEye, 
-  HiOutlinePaperClip, 
-  HiOutlineXMark, 
+import {
+  HiOutlineArrowDownTray,
+  HiOutlineMagnifyingGlass,
+  HiOutlineEye,
+  HiOutlinePaperClip,
+  HiOutlineXMark,
   HiOutlineClipboardDocumentList,
   HiOutlineCheckCircle
 } from 'react-icons/hi2';
@@ -273,9 +273,8 @@ const UserReportsPage = () => {
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">Project Focus</span>
               {currentProject && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                  currentProject.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                }`}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${currentProject.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                  }`}>
                   {currentProject.status}
                 </span>
               )}
@@ -478,24 +477,22 @@ const UserReportsPage = () => {
 
                       {/* Priority */}
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                          task.priority === 'High' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                          task.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                          'bg-blue-50 text-blue-700 border-blue-200'
-                        }`}>
+                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${task.priority === 'High' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                            task.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                              'bg-blue-50 text-blue-700 border-blue-200'
+                          }`}>
                           {task.priority || 'Normal'}
                         </span>
                       </td>
 
                       {/* Status */}
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                          task.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                          task.status === 'In Progress' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
-                          task.status === 'Awaiting Approval' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                          task.status === 'On Hold' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                          'bg-slate-100 text-slate-700 border-slate-200'
-                        }`}>
+                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${task.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                            task.status === 'In Progress' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                              task.status === 'Awaiting Approval' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                task.status === 'On Hold' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                  'bg-slate-100 text-slate-700 border-slate-200'
+                          }`}>
                           {task.status}
                         </span>
                       </td>
@@ -693,11 +690,10 @@ const UserReportsPage = () => {
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3.5">
                   <div>
                     <span className="block text-xs font-medium text-slate-500 mb-1">Status</span>
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                      selectedTask.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      selectedTask.status === 'In Progress' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
-                      'bg-slate-100 text-slate-700 border-slate-200'
-                    }`}>
+                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${selectedTask.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        selectedTask.status === 'In Progress' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                          'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}>
                       {selectedTask.status}
                     </span>
                   </div>
@@ -717,11 +713,10 @@ const UserReportsPage = () => {
 
                   <div>
                     <span className="block text-xs font-medium text-slate-500 mb-1">Priority</span>
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                      selectedTask.priority === 'High' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                      selectedTask.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      'bg-blue-50 text-blue-700 border-blue-200'
-                    }`}>
+                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${selectedTask.priority === 'High' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                        selectedTask.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          'bg-blue-50 text-blue-700 border-blue-200'
+                      }`}>
                       {selectedTask.priority || 'Normal'}
                     </span>
                   </div>

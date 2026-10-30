@@ -1,20 +1,38 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  // Close mobile sidebar on route change (extra safety)
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isSidebarOpen]);
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden selection:bg-indigo-500/20">
+    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden selection:bg-indigo-500/20 antialiased">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      <div className="flex-1 flex flex-col w-full h-full relative overflow-hidden bg-slate-50">
-        <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <div className="flex-1 flex flex-col w-full min-w-0 h-full relative overflow-hidden bg-slate-50">
+        <Header toggleSidebar={() => setIsSidebarOpen((v) => !v)} />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 relative z-0 bg-slate-50/70">
-          <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 relative z-0">
+          <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-5 lg:py-6">
             <Outlet />
           </div>
         </main>

@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  HiOutlineXMark, 
-  HiOutlineShieldCheck, 
-  HiOutlineCheckCircle, 
-  HiOutlineArrowRight, 
-  HiOutlineArrowLeft 
+import {
+  HiOutlineXMark,
+  HiOutlineShieldCheck,
+  HiOutlineCheckCircle,
+  HiOutlineArrowRight,
+  HiOutlineArrowLeft,
 } from 'react-icons/hi2';
 
 const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway }) => {
@@ -24,7 +24,6 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
 
   // Form State
   const [formData, setFormData] = useState({
-    // Step 1: Company / Office Details
     companyName: '',
     location: '',
     address: '',
@@ -34,14 +33,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
     industry: 'Information Technology',
     phone: '',
     contactEmail: '',
-
-    // Step 2: Admin Account Credentials
     adminName: '',
     adminEmail: '',
     adminPassword: '',
     confirmPassword: '',
     adminDesignation: 'Company Administrator',
-    adminPhone: ''
+    adminPhone: '',
   });
 
   if (!isOpen || !selectedPlan) return null;
@@ -51,40 +48,25 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Step 1 Validation
   const handleNextToAdminSetup = (e) => {
     e.preventDefault();
-    if (!formData.companyName.trim()) {
-      return toast.error('Please enter the Company / Office name');
-    }
-    if (!formData.location.trim()) {
-      return toast.error('Please enter the City / Location');
-    }
-    if (!formData.phone.trim()) {
-      return toast.error('Please enter the official phone number');
-    }
+    if (!formData.companyName.trim()) return toast.error('Please enter the Company / Office name');
+    if (!formData.location.trim()) return toast.error('Please enter the City / Location');
+    if (!formData.phone.trim()) return toast.error('Please enter the official phone number');
     setStep(2);
   };
 
-  // Step 2 Validation
   const handleNextToPayment = (e) => {
     e.preventDefault();
-    if (!formData.adminName.trim()) {
-      return toast.error('Please enter the Administrator Full Name');
-    }
-    if (!formData.adminEmail.trim()) {
-      return toast.error('Please enter the Administrator Email');
-    }
-    if (!formData.adminPassword || formData.adminPassword.length < 6) {
+    if (!formData.adminName.trim()) return toast.error('Please enter the Administrator Full Name');
+    if (!formData.adminEmail.trim()) return toast.error('Please enter the Administrator Email');
+    if (!formData.adminPassword || formData.adminPassword.length < 6)
       return toast.error('Password must be at least 6 characters');
-    }
-    if (formData.adminPassword !== formData.confirmPassword) {
+    if (formData.adminPassword !== formData.confirmPassword)
       return toast.error('Password and Confirm Password do not match');
-    }
     setStep(3);
   };
 
-  // Complete Onboarding API Call
   const executeOnboarding = async (paymentPayload = {}) => {
     setIsSubmitting(true);
     try {
@@ -103,12 +85,11 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
         adminPassword: formData.adminPassword,
         adminDesignation: formData.adminDesignation,
         planId: selectedPlan._id,
-        ...paymentPayload
+        ...paymentPayload,
       };
 
       const { data } = await api.post('/companies/public-onboard', payload);
-      
-      // Store user session for immediate login
+
       if (data.user && data.token) {
         setAuthSession({ ...data.user, token: data.token });
       }
@@ -124,12 +105,9 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
     }
   };
 
-  // Helper to dynamically load Razorpay Checkout Script
   const loadRazorpaySDK = () => {
     return new Promise((resolve) => {
-      if (window.Razorpay) {
-        return resolve(true);
-      }
+      if (window.Razorpay) return resolve(true);
       const existingScript = document.getElementById('razorpay-checkout-js');
       if (existingScript) {
         existingScript.onload = () => resolve(true);
@@ -146,18 +124,15 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
     });
   };
 
-  // Initiate Razorpay Checkout or Direct Onboarding
   const handleProceedToPayment = async () => {
-    // 1. If Gateway is disabled in Super Admin, allow sandbox direct activation
     if (!paymentGateway?.isEnabled) {
       await executeOnboarding({
         razorpayPaymentId: `sandbox_pay_${Date.now()}`,
-        razorpayOrderId: `sandbox_ord_${Date.now()}`
+        razorpayOrderId: `sandbox_ord_${Date.now()}`,
       });
       return;
     }
 
-    // 2. Ensure Razorpay SDK script is loaded
     setIsSubmitting(true);
     const isSdkLoaded = await loadRazorpaySDK();
     if (!isSdkLoaded) {
@@ -167,9 +142,8 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
     }
 
     try {
-      // 3. Create server-side Razorpay order
       const { data: orderData } = await api.post('/site-content/create-order', {
-        planId: selectedPlan._id
+        planId: selectedPlan._id,
       });
 
       const keyId = orderData.keyId || paymentGateway.razorpayKeyId;
@@ -184,25 +158,23 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
         prefill: {
           name: formData.adminName,
           email: formData.adminEmail,
-          contact: formData.phone
+          contact: formData.phone,
         },
-        theme: {
-          color: '#4f46e5'
-        },
+        theme: { color: '#4f46e5' },
         handler: async function (response) {
           toast.success('Payment authorized via Razorpay! Provisioning workspace...');
           await executeOnboarding({
             razorpayPaymentId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
-            razorpaySignature: response.razorpay_signature
+            razorpaySignature: response.razorpay_signature,
           });
         },
         modal: {
           ondismiss: function () {
             setIsSubmitting(false);
             toast('Payment process was cancelled by user.');
-          }
-        }
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
@@ -210,7 +182,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
         setIsSubmitting(false);
         toast.error(`Payment failed: ${response.error?.description || 'Transaction declined'}`);
       });
-      
+
       rzp.open();
       setIsSubmitting(false);
     } catch (err) {
@@ -219,39 +191,45 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
       const serverErrMsg = err.response?.data?.message || err.message;
       toast.error(`Gateway Error: ${serverErrMsg}`);
 
-      // Fallback option only if the user explicitly requests it
       if (window.confirm(`Payment Gateway Error: ${serverErrMsg}\n\nWould you like to activate this company in sandbox/trial mode instead?`)) {
-        await executeOnboarding({
-          razorpayPaymentId: `fallback_pay_${Date.now()}`
-        });
+        await executeOnboarding({ razorpayPaymentId: `fallback_pay_${Date.now()}` });
       }
     }
   };
 
-  // Calculate pricing breakdown
   const basePrice = Number(selectedPlan.price) || 0;
   const gstAmount = Math.round(basePrice * 0.18);
   const totalAmount = basePrice + gstAmount;
 
+  // Reusable design tokens (CRM-style consistency)
+  const inputBase =
+    'w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-colors';
+  const labelBase =
+    'block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5';
+  const btnPrimary =
+    'inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer';
+  const btnGhost =
+    'inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 my-8 flex flex-col max-h-[92vh] overflow-hidden">
-        
-        {/* Header with Step Progress */}
-        <div className="bg-white px-6 sm:px-8 py-5 text-slate-900 flex items-center justify-between border-b border-slate-200">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                New Enterprise Subscription
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white sm:rounded-2xl w-full sm:max-w-2xl shadow-2xl border-0 sm:border border-slate-200 my-0 sm:my-8 flex flex-col h-screen sm:h-auto sm:max-h-[92vh] overflow-hidden">
+
+        {/* ---------- HEADER ---------- */}
+        <div className="bg-white px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-slate-200 flex items-start justify-between gap-3 shrink-0">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+                New Subscription
               </span>
-              <span className="text-xs text-slate-500 font-medium">
+              <span className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
                 Plan: <strong className="text-slate-900">{selectedPlan.name}</strong>
               </span>
             </div>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 mt-1.5">
+            <h2 className="text-sm sm:text-base lg:text-lg font-bold tracking-tight text-slate-900 mt-1.5 leading-snug">
               {step === 1 && 'Step 1: Company & Business Information'}
               {step === 2 && 'Step 2: Setup Admin Account & Login'}
-              {step === 3 && 'Step 3: Review Plan & Razorpay Checkout'}
+              {step === 3 && 'Step 3: Review Plan & Payment'}
               {step === 4 && 'Onboarding Completed Successfully'}
             </h2>
           </div>
@@ -259,7 +237,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
           {step !== 4 && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
               title="Close"
             >
               <HiOutlineXMark className="w-5 h-5" />
@@ -267,48 +245,49 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
           )}
         </div>
 
-        {/* Wizard Steps Indicator */}
+        {/* ---------- STEP INDICATOR ---------- */}
         {step !== 4 && (
-          <div className="bg-slate-50 border-b border-slate-200 px-6 sm:px-8 py-3">
-            <div className="flex items-center justify-between text-xs">
-              <div className={`flex items-center gap-2 ${step >= 1 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+          <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 shrink-0 overflow-x-auto">
+            <div className="flex items-center justify-between gap-2 min-w-[320px] text-[11px] sm:text-xs">
+              {/* Step 1 */}
+              <div className={`flex items-center gap-1.5 sm:gap-2 shrink-0 ${step >= 1 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
                   1
                 </span>
-                <span>Company Details</span>
+                <span className="hidden xs:inline sm:inline">Company</span>
               </div>
-              <div className="h-0.5 w-8 sm:w-16 bg-slate-200">
+              <div className="h-0.5 flex-1 min-w-[12px] sm:min-w-[24px] bg-slate-200 rounded-full overflow-hidden">
                 <div className={`h-full bg-indigo-600 transition-all duration-300 ${step >= 2 ? 'w-full' : 'w-0'}`} />
               </div>
-              <div className={`flex items-center gap-2 ${step >= 2 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+              {/* Step 2 */}
+              <div className={`flex items-center gap-1.5 sm:gap-2 shrink-0 ${step >= 2 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
                   2
                 </span>
-                <span>Admin Credentials</span>
+                <span className="hidden xs:inline sm:inline">Admin</span>
               </div>
-              <div className="h-0.5 w-8 sm:w-16 bg-slate-200">
+              <div className="h-0.5 flex-1 min-w-[12px] sm:min-w-[24px] bg-slate-200 rounded-full overflow-hidden">
                 <div className={`h-full bg-indigo-600 transition-all duration-300 ${step >= 3 ? 'w-full' : 'w-0'}`} />
               </div>
-              <div className={`flex items-center gap-2 ${step >= 3 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold ${step >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+              {/* Step 3 */}
+              <div className={`flex items-center gap-1.5 sm:gap-2 shrink-0 ${step >= 3 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 ${step >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
                   3
                 </span>
-                <span>Payment & Launch</span>
+                <span className="hidden xs:inline sm:inline">Payment</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal Scrollable Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto flex-1">
+        {/* ---------- SCROLLABLE BODY ---------- */}
+        <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto flex-1">
 
-          {/* STEP 1: COMPANY / OFFICE DETAILS */}
+          {/* ===================== STEP 1 ===================== */}
           {step === 1 && (
             <form onSubmit={handleNextToAdminSetup} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Company / Organization Name *
-                </label>
+                <label className={labelBase}>Company / Organization Name *</label>
                 <input
                   type="text"
                   required
@@ -316,15 +295,13 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   value={formData.companyName}
                   onChange={handleChange}
                   placeholder="e.g. Apex Infotech Solutions Pvt Ltd"
-                  className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                  className={inputBase}
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    City / Branch Location *
-                  </label>
+                  <label className={labelBase}>City / Branch Location *</label>
                   <input
                     type="text"
                     required
@@ -332,20 +309,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.location}
                     onChange={handleChange}
                     placeholder="e.g. Mumbai, Bangalore, Pune"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                    className={inputBase}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Estimated Employee Size *
-                  </label>
-                  <select
-                    name="employeeSize"
-                    value={formData.employeeSize}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
-                  >
+                  <label className={labelBase}>Estimated Employee Size *</label>
+                  <select name="employeeSize" value={formData.employeeSize} onChange={handleChange} className={inputBase}>
                     <option value="1-15">1 to 15 Employees</option>
                     <option value="16-50">16 to 50 Employees</option>
                     <option value="51-250">51 to 250 Employees</option>
@@ -355,54 +324,45 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Complete Office Address
-                </label>
+                <label className={labelBase}>Complete Office Address</label>
                 <textarea
                   rows={2}
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="e.g. Unit 402, High Street IT Park, Powai, Mumbai - 400076"
-                  className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                  className={`${inputBase} resize-none`}
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Company Registration / CIN No.
-                  </label>
+                  <label className={labelBase}>Company Registration / CIN No.</label>
                   <input
                     type="text"
                     name="registrationNumber"
                     value={formData.registrationNumber}
                     onChange={handleChange}
                     placeholder="e.g. U72200MH2021PTC123456"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs font-mono uppercase"
+                    className={`${inputBase} font-mono uppercase`}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    GST Number (Optional)
-                  </label>
+                  <label className={labelBase}>GST Number (Optional)</label>
                   <input
                     type="text"
                     name="gstNumber"
                     value={formData.gstNumber}
                     onChange={handleChange}
                     placeholder="e.g. 27ABCDE1234F1Z5"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs font-mono uppercase"
+                    className={`${inputBase} font-mono uppercase`}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Official Contact Phone *
-                  </label>
+                  <label className={labelBase}>Official Contact Phone *</label>
                   <input
                     type="tel"
                     required
@@ -410,37 +370,27 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="e.g. +91 98765 43210"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                    className={inputBase}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Official Billing Email
-                  </label>
+                  <label className={labelBase}>Official Billing Email</label>
                   <input
                     type="email"
                     name="contactEmail"
                     value={formData.contactEmail}
                     onChange={handleChange}
                     placeholder="e.g. billing@apextech.com"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                    className={inputBase}
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                >
+              <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-200">
+                <button type="button" onClick={onClose} className={btnGhost}>
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
-                >
+                <button type="submit" className={btnPrimary}>
                   <span>Next: Setup Admin Account</span>
                   <HiOutlineArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -448,17 +398,17 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
             </form>
           )}
 
-          {/* STEP 2: ADMIN CREDENTIALS SETUP */}
+          {/* ===================== STEP 2 ===================== */}
           {step === 2 && (
             <form onSubmit={handleNextToPayment} className="space-y-4">
-              <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex items-start gap-3">
+              <div className="bg-indigo-50 border border-indigo-200 p-3.5 sm:p-4 rounded-xl flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-indigo-100 border border-indigo-200 text-indigo-700 flex items-center justify-center shrink-0">
                   <HiOutlineShieldCheck className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h4 className="text-xs font-bold text-indigo-950">Master Administrator Account</h4>
                   <p className="text-[11px] text-indigo-700 mt-0.5 leading-relaxed">
-                    This account will hold primary managerial control for <strong>{formData.companyName}</strong>. 
+                    This account will hold primary managerial control for <strong>{formData.companyName}</strong>.
                     You will use these credentials to sign in, approve employee attendance, and process payroll.
                   </p>
                 </div>
@@ -466,9 +416,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Admin Full Name *
-                  </label>
+                  <label className={labelBase}>Admin Full Name *</label>
                   <input
                     type="text"
                     required
@@ -476,29 +424,24 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.adminName}
                     onChange={handleChange}
                     placeholder="e.g. Vikram Malhotra"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                    className={inputBase}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Designation / Title
-                  </label>
+                  <label className={labelBase}>Designation / Title</label>
                   <input
                     type="text"
                     name="adminDesignation"
                     value={formData.adminDesignation}
                     onChange={handleChange}
                     placeholder="e.g. Director, Managing Partner, HR Head"
-                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                    className={inputBase}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Admin Login Email (Username) *
-                </label>
+                <label className={labelBase}>Admin Login Email (Username) *</label>
                 <input
                   type="email"
                   required
@@ -506,16 +449,14 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   value={formData.adminEmail}
                   onChange={handleChange}
                   placeholder="e.g. admin@apextech.com"
-                  className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs font-medium"
+                  className={`${inputBase} font-medium`}
                 />
                 <p className="text-[11px] text-slate-500 mt-1">This email will be used as the Login ID on the portal.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Create Admin Password *
-                  </label>
+                  <label className={labelBase}>Create Admin Password *</label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -524,22 +465,19 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                       value={formData.adminPassword}
                       onChange={handleChange}
                       placeholder="Minimum 6 characters"
-                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs pr-12"
+                      className={`${inputBase} pr-14`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-[11px] text-slate-500 hover:text-indigo-600 font-semibold cursor-pointer rounded"
                     >
                       {showPassword ? 'Hide' : 'Show'}
                     </button>
                   </div>
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Confirm Admin Password *
-                  </label>
+                  <label className={labelBase}>Confirm Admin Password *</label>
                   <div className="relative">
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -548,12 +486,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Re-enter password"
-                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs pr-12"
+                      className={`${inputBase} pr-14`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-[11px] text-slate-500 hover:text-indigo-600 font-semibold cursor-pointer rounded"
                     >
                       {showConfirmPassword ? 'Hide' : 'Show'}
                     </button>
@@ -561,56 +499,53 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-between border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-                >
+              <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 border-t border-slate-200">
+                <button type="button" onClick={() => setStep(1)} className={btnGhost}>
                   <HiOutlineArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Company Info</span>
+                  <span>Back</span>
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
-                >
-                  <span>Next: Review Plan & Payment</span>
+                <button type="submit" className={btnPrimary}>
+                  <span>Next: Review & Payment</span>
                   <HiOutlineArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>
           )}
 
-          {/* STEP 3: PLAN REVIEW & RAZORPAY PAYMENT */}
+          {/* ===================== STEP 3 ===================== */}
           {step === 3 && (
-            <div className="space-y-5">
-              {/* Plan Summary Card */}
-              <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">Selected Plan</span>
-                    <h3 className="text-lg font-bold text-slate-900 mt-2">{selectedPlan.name}</h3>
+            <div className="space-y-4 sm:space-y-5">
+              {/* Plan Summary */}
+              <div className="bg-slate-50 border border-slate-200 p-4 sm:p-5 rounded-xl">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                      Selected Plan
+                    </span>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-2">{selectedPlan.name}</h3>
                     <p className="text-xs text-slate-500 mt-0.5">{selectedPlan.description}</p>
                   </div>
-                  <div className="text-right">
-                    <span className="text-2xl font-black text-slate-900">₹{basePrice.toLocaleString('en-IN')}</span>
+                  <div className="text-left sm:text-right shrink-0">
+                    <span className="text-xl sm:text-2xl font-black text-slate-900">₹{basePrice.toLocaleString('en-IN')}</span>
                     <span className="text-xs text-slate-500 block">/ {selectedPlan.billingCycle || 'month'}</span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-2 gap-3 text-xs">
+                <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs">
                   <div>
                     <span className="text-slate-500 block text-[11px]">Employee Seat Quota:</span>
                     <span className="font-bold text-slate-900">Up to {selectedPlan.maxEmployees} Employees</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block text-[11px]">Validity Duration:</span>
-                    <span className="font-bold text-slate-900">{selectedPlan.durationDays || (selectedPlan.billingCycle === 'yearly' ? 365 : 30)} Days</span>
+                    <span className="font-bold text-slate-900">
+                      {selectedPlan.durationDays || (selectedPlan.billingCycle === 'yearly' ? 365 : 30)} Days
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Price Calculation & Tax Invoice Table */}
+              {/* Invoice */}
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-600">
                   <span>Plan Subscription Fee</span>
@@ -620,59 +555,49 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   <span>Applicable GST (18%)</span>
                   <span className="font-medium text-slate-900 font-mono">₹{gstAmount.toLocaleString('en-IN')}.00</span>
                 </div>
-                <div className="pt-2 border-t border-slate-200 flex justify-between text-sm font-bold text-slate-900">
-                  <span>Total Payable Amount</span>
+                <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-bold text-slate-900">
+                  <span>Total Payable</span>
                   <span className="text-indigo-600 font-mono text-base font-extrabold">₹{totalAmount.toLocaleString('en-IN')}.00</span>
                 </div>
               </div>
 
-              {/* Summary of Onboarding Account */}
+              {/* Account Preview */}
               <div className="border border-slate-200 rounded-xl p-4 bg-white text-xs space-y-1.5">
-                <h4 className="font-bold text-slate-900 mb-2">Registration Account Preview:</h4>
-                <div className="grid grid-cols-2 gap-2 text-slate-600">
-                  <div><strong className="text-slate-800">Company:</strong> {formData.companyName}</div>
-                  <div><strong className="text-slate-800">Location:</strong> {formData.location}</div>
-                  <div><strong className="text-slate-800">Admin:</strong> {formData.adminName}</div>
-                  <div><strong className="text-slate-800">Login Email:</strong> {formData.adminEmail}</div>
-                  {formData.gstNumber && <div><strong className="text-slate-800">GSTIN:</strong> {formData.gstNumber}</div>}
-                  {formData.registrationNumber && <div><strong className="text-slate-800">Reg No:</strong> {formData.registrationNumber}</div>}
+                <h4 className="font-bold text-slate-900 mb-2">Registration Account Preview</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-slate-600">
+                  <div className="truncate"><strong className="text-slate-800">Company:</strong> {formData.companyName}</div>
+                  <div className="truncate"><strong className="text-slate-800">Location:</strong> {formData.location}</div>
+                  <div className="truncate"><strong className="text-slate-800">Admin:</strong> {formData.adminName}</div>
+                  <div className="truncate"><strong className="text-slate-800">Email:</strong> {formData.adminEmail}</div>
+                  {formData.gstNumber && <div className="truncate"><strong className="text-slate-800">GSTIN:</strong> {formData.gstNumber}</div>}
+                  {formData.registrationNumber && <div className="truncate"><strong className="text-slate-800">Reg No:</strong> {formData.registrationNumber}</div>}
                 </div>
               </div>
 
-              {/* Payment Gateway Status Badge */}
-              <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600">
+              {/* Gateway Badge */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Payment Gateway: <strong>Razorpay Encrypted Online Checkout</strong></span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                  <span>Gateway: <strong className="text-slate-800">Razorpay Secure Checkout</strong></span>
                 </div>
                 <span className="text-[11px] text-slate-500">Cards • UPI • NetBanking</span>
               </div>
 
-              {/* Buttons */}
-              <div className="pt-2 flex items-center justify-between border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer"
-                >
+              {/* Actions */}
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 border-t border-slate-200">
+                <button type="button" onClick={() => setStep(2)} disabled={isSubmitting} className={btnGhost}>
                   <HiOutlineArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Admin Setup</span>
+                  <span>Back</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={handleProceedToPayment}
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm transition-all shadow-xs disabled:opacity-50 cursor-pointer inline-flex items-center gap-2"
-                >
+                <button type="button" onClick={handleProceedToPayment} disabled={isSubmitting} className={btnPrimary}>
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Provisioning Workspace...</span>
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Provisioning...</span>
                     </>
                   ) : (
                     <>
-                      <span>Pay ₹{totalAmount.toLocaleString('en-IN')} with Razorpay</span>
+                      <span>Pay ₹{totalAmount.toLocaleString('en-IN')}</span>
                       <HiOutlineArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -681,73 +606,64 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
             </div>
           )}
 
-          {/* STEP 4: SUCCESS & INSTANT ONBOARDING LAUNCH */}
+          {/* ===================== STEP 4 ===================== */}
           {step === 4 && onboardedResult && (
-            <div className="text-center py-4 space-y-6 animate-in fade-in zoom-in-95">
-              <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 mx-auto flex items-center justify-center shadow-xs">
+            <div className="text-center py-2 sm:py-4 space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95">
+              <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 mx-auto flex items-center justify-center shadow-sm">
                 <HiOutlineCheckCircle className="w-8 h-8" />
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                   Congratulations! Workspace Activated
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto px-2">
                   <strong>{onboardedResult.company?.name}</strong> has been onboarded with a provisioned multi-tenant environment.
                 </p>
               </div>
 
-              {/* Account Details Card */}
-              <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-xl p-5 text-left text-xs space-y-2.5 shadow-xs">
-                <div className="flex justify-between pb-2 border-b border-slate-200">
-                  <span className="text-slate-500">Company Unique Code:</span>
-                  <span className="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+              <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 text-left text-xs space-y-2.5 shadow-sm">
+                <div className="flex justify-between items-center gap-2 pb-2 border-b border-slate-200">
+                  <span className="text-slate-500">Company Code:</span>
+                  <span className="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200 text-[11px] truncate">
                     {onboardedResult.company?.companyCode}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Admin Login Email:</span>
-                  <span className="font-bold text-slate-900">{onboardedResult.user?.email}</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-slate-500">Admin Email:</span>
+                  <span className="font-bold text-slate-900 truncate text-right">{onboardedResult.user?.email}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Active Subscription Plan:</span>
-                  <span className="font-semibold text-emerald-700">
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-slate-500">Active Plan:</span>
+                  <span className="font-semibold text-emerald-700 truncate text-right">
                     {onboardedResult.company?.subscription?.planName} (Active)
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Allowed Employee Seats:</span>
-                  <span className="font-semibold text-slate-800">
-                    Up to {onboardedResult.company?.subscription?.maxEmployees} Employees
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-slate-500">Employee Seats:</span>
+                  <span className="font-semibold text-slate-800 text-right">
+                    Up to {onboardedResult.company?.subscription?.maxEmployees}
                   </span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+              <div className="pt-3 flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center max-w-md mx-auto">
                 <button
-                  onClick={() => {
-                    onClose();
-                    navigate('/admin/dashboard');
-                  }}
-                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer inline-flex items-center justify-center gap-2"
+                  onClick={() => { onClose(); navigate('/admin/dashboard'); }}
+                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm transition-colors shadow-sm cursor-pointer inline-flex items-center justify-center gap-2"
                 >
-                  <span>Launch Admin Dashboard Now</span>
+                  <span>Launch Admin Dashboard</span>
                   <HiOutlineArrowRight className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => {
-                    onClose();
-                    navigate('/login');
-                  }}
+                  onClick={() => { onClose(); navigate('/login'); }}
                   className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
                 >
-                  Go to Login Screen
+                  Go to Login
                 </button>
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>

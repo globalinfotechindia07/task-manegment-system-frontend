@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
+/* ============================================================
+   THEME TOKENS — CRM Classic (Indigo/Slate)
+   ============================================================ */
 @layer base {
   :root {
+    /* HSL tokens (kept for shadcn/ui compat) */
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -14,182 +18,394 @@
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 221.2 83.2% 53.3%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+
+    /* Semantic hex tokens (used by custom rules below) */
+    --erp-bg: #f8fafc;
+    --erp-text: #0f172a;
+    --erp-text-muted: #64748b;
+    --erp-border: #e2e8f0;
+    --erp-border-muted: #f1f5f9;
+    --erp-input-border: #cbd5e1;
+    --erp-primary: #6366f1;
+    --erp-primary-bg: #eef2ff;
   }
 
+  /* Base reset */
   * {
-    border-color: #e2e8f0;
+    border-color: var(--erp-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--erp-bg);
+    color: var(--erp-text);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+      'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Smooth scrollbar (Chrome/Safari/Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  /* Reduced motion respect */
+  @media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-/* =========================================================
-   ERP Clean Design System Overrides
-   Transforms dark theme utility artifacts into crisp ERP UI
-   ========================================================= */
+/* ============================================================
+   ERP CLEAN DESIGN SYSTEM — Light theme overrides
+   ============================================================ */
+@layer components {
 
-/* Modern White ERP Card */
-.glass-panel {
-  background-color: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
-  color: #0f172a !important;
-}
+  /* ---------- Glass Panel (Card) ---------- */
+  .glass-panel {
+    background-color: #ffffff;
+    border: 1px solid var(--erp-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04),
+      0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    color: var(--erp-text);
+  }
 
-/* Ensure headings and text within ERP cards are crisp black/slate */
-.glass-panel h1,
-.glass-panel h2,
-.glass-panel h3,
-.glass-panel h4,
-.glass-panel h5,
-.glass-panel h6 {
-  color: #0f172a !important;
-}
+  /* Headings inside panels — force dark slate */
+  .glass-panel h1,
+  .glass-panel h2,
+  .glass-panel h3,
+  .glass-panel h4,
+  .glass-panel h5,
+  .glass-panel h6 {
+    color: var(--erp-text);
+  }
 
-/* Text white overrides inside light surfaces, except for colored buttons & badges */
-.glass-panel .text-white:not(button):not(button *):not(a.bg-indigo-600 *):not(a.bg-emerald-600 *):not(.bg-indigo-600):not(.bg-indigo-600 *):not(.bg-emerald-600):not(.bg-emerald-600 *):not(.bg-rose-600):not(.bg-rose-600 *):not(.bg-blue-600):not(.bg-blue-600 *):not(.badge-white):not(.bg-purple-600 *) {
-  color: #0f172a !important;
-}
+  /* Neutralize any leftover white-text artifacts inside panels
+     EXCEPT when inside a colored CTA button/badge */
+  .glass-panel :is(.text-white):not(button,
+    button *,
+    a[class*="bg-indigo-600"],
+    a[class*="bg-indigo-600"] *,
+    a[class*="bg-emerald-600"],
+    a[class*="bg-emerald-600"] *,
+    a[class*="bg-rose-600"],
+    a[class*="bg-rose-600"] *,
+    a[class*="bg-blue-600"],
+    a[class*="bg-blue-600"] *,
+    .bg-indigo-600,
+    .bg-indigo-600 *,
+    .bg-emerald-600,
+    .bg-emerald-600 *,
+    .bg-rose-600,
+    .bg-rose-600 *,
+    .bg-blue-600,
+    .bg-blue-600 *,
+    .bg-purple-600,
+    .bg-purple-600 *,
+    .badge-white) {
+    color: var(--erp-text);
+  }
 
-/* Secondary texts */
-.glass-panel .text-slate-400 {
-  color: #64748b !important;
-}
-.glass-panel .text-slate-300 {
-  color: #334155 !important;
-}
-.glass-panel .text-slate-200 {
-  color: #1e293b !important;
-}
+  /* Secondary/muted text inside panels */
+  .glass-panel .text-slate-400 {
+    color: var(--erp-text-muted);
+  }
 
-/* Borders & Dividers */
-.glass-panel .border-slate-800,
-.glass-panel .border-slate-750,
-.glass-panel .border-slate-700,
-.glass-panel .border-slate-700\/60,
-.glass-panel .border-slate-700\/50,
-.glass-panel .border-slate-700\/40 {
-  border-color: #e2e8f0 !important;
-}
+  .glass-panel .text-slate-300 {
+    color: #334155;
+  }
 
-.glass-panel .divide-slate-800,
-.glass-panel .divide-slate-700,
-.glass-panel .divide-slate-700\/50 {
-  border-color: #f1f5f9 !important;
-}
+  .glass-panel .text-slate-200 {
+    color: #1e293b;
+  }
 
-/* Nested slate card containers inside panels */
-.glass-panel .bg-slate-900,
-.glass-panel .bg-slate-900\/80,
-.glass-panel .bg-slate-900\/60,
-.glass-panel .bg-slate-900\/50,
-.glass-panel .bg-slate-900\/40,
-.glass-panel .bg-slate-850,
-.glass-panel .bg-slate-800,
-.glass-panel .bg-slate-800\/80,
-.glass-panel .bg-slate-800\/60,
-.glass-panel .bg-slate-800\/50,
-.glass-panel .bg-slate-800\/40,
-.glass-panel .bg-slate-800\/30,
-.glass-panel .bg-slate-800\/20 {
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-}
+  /* Borders inside panels — force light borders */
+  .glass-panel :is(.border-slate-800,
+    .border-slate-750,
+    .border-slate-700,
+    .border-slate-700\/60,
+    .border-slate-700\/50,
+    .border-slate-700\/40) {
+    border-color: var(--erp-border);
+  }
 
-/* Table styling within ERP panels */
-table thead {
-  background-color: #f8fafc !important;
-  color: #475569 !important;
-  border-bottom: 1px solid #e2e8f0 !important;
-}
+  .glass-panel :is(.divide-slate-800, .divide-slate-700, .divide-slate-700\/50) {
+    border-color: var(--erp-border-muted);
+  }
 
-table thead th {
-  color: #475569 !important;
-  font-weight: 600 !important;
-}
-
-table tbody tr:hover {
-  background-color: #f8fafc !important;
-}
-
-table tbody td {
-  color: #1e293b !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-}
-
-/* ERP Form Controls (Inputs, Selects, Textareas) */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-input[type="search"],
-select,
-textarea {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
+  /* Nested dark containers → light surfaces */
+  .glass-panel :is(.bg-slate-900,
+    .bg-slate-900\/80,
+    .bg-slate-900\/60,
+    .bg-slate-900\/50,
+    .bg-slate-900\/40,
+    .bg-slate-850,
+    .bg-slate-800,
+    .bg-slate-800\/80,
+    .bg-slate-800\/60,
+    .bg-slate-800\/50,
+    .bg-slate-800\/40,
+    .bg-slate-800\/30,
+    .bg-slate-800\/20) {
+    background-color: var(--erp-bg);
+    border-color: var(--erp-border);
+  }
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #94a3b8 !important;
+/* ============================================================
+   TABLES — Light ERP style
+   ============================================================ */
+@layer components {
+  table thead {
+    background-color: var(--erp-bg);
+    color: #475569;
+    border-bottom: 1px solid var(--erp-border);
+  }
+
+  table thead th {
+    color: #475569;
+    font-weight: 600;
+  }
+
+  table tbody tr:hover {
+    background-color: var(--erp-bg);
+  }
+
+  table tbody td {
+    color: #1e293b;
+    border-bottom: 1px solid var(--erp-border-muted);
+  }
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: #6366f1 !important;
-  outline: none !important;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+/* ============================================================
+   FORM CONTROLS — Crisp white + indigo focus
+   ============================================================ */
+@layer components {
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  select,
+  textarea {
+    background-color: #ffffff;
+    border: 1px solid var(--erp-input-border);
+    color: var(--erp-text);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94a3b8;
+  }
+
+  input:focus,
+  input:focus-visible,
+  select:focus,
+  select:focus-visible,
+  textarea:focus,
+  textarea:focus-visible {
+    border-color: var(--erp-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  /* Disabled state */
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    background-color: #f8fafc;
+    color: #64748b;
+    cursor: not-allowed;
+  }
 }
 
-/* ERP Modals & Dialogs */
-.fixed.inset-0.bg-black\/80,
-.fixed.inset-0.bg-slate-950\/80,
-.fixed.inset-0.bg-\[\#0f172a\]\/80 {
-  background-color: rgba(15, 23, 42, 0.45) !important;
-  backdrop-filter: blur(4px) !important;
+/* ============================================================
+   MODALS & BACKDROPS
+   ============================================================ */
+@layer components {
+
+  /* Any modal backdrop */
+  .fixed.inset-0[class*="bg-black/"],
+  .fixed.inset-0[class*="bg-slate-950/"],
+  .fixed.inset-0[class*="bg-slate-900/"],
+  .fixed.inset-0[class*="bg-\[\#0f172a\]"] {
+    background-color: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* Direct modal content surface */
+  .fixed.inset-0>div.bg-slate-900,
+  .fixed.inset-0>div.bg-slate-950,
+  .fixed.inset-0>div.glass-panel {
+    background-color: #ffffff;
+    color: var(--erp-text);
+    border: 1px solid var(--erp-border);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
 }
 
-.fixed.inset-0 > div.bg-slate-900,
-.fixed.inset-0 > div.bg-slate-950,
-.fixed.inset-0 > div.glass-panel {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+/* ============================================================
+   SWEETALERT2 — Light ERP theme
+   ============================================================ */
+@layer components {
+  .swal2-popup {
+    background: #ffffff;
+    color: var(--erp-text);
+    border: 1px solid var(--erp-border);
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    font-family: inherit;
+  }
+
+  .swal2-title {
+    color: var(--erp-text);
+    font-weight: 700;
+  }
+
+  .swal2-html-container {
+    color: #475569;
+  }
+
+  .swal2-confirm {
+    background-color: var(--erp-primary) !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+  }
+
+  .swal2-cancel {
+    background-color: #64748b !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+  }
+
+  .swal2-icon.swal2-success {
+    border-color: #10b981;
+    color: #10b981;
+  }
+
+  .swal2-icon.swal2-warning {
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .swal2-icon.swal2-error {
+    border-color: #e11d48;
+    color: #e11d48;
+  }
+
+  .swal2-icon.swal2-info {
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
 }
 
-/* SweetAlert2 Light ERP Theme */
-.swal2-popup {
-  background: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+/* ============================================================
+   FOCUS RINGS — Global accessibility
+   ============================================================ */
+@layer utilities {
+
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(99, 102, 241, 0.4);
+    border-radius: 0.5rem;
+  }
+
+  /* Ensure nested colored buttons get right focus color */
+  .bg-rose-600:focus-visible,
+  .bg-rose-500:focus-visible {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(225, 29, 72, 0.4);
+  }
+
+  .bg-emerald-600:focus-visible,
+  .bg-emerald-500:focus-visible {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(16, 185, 129, 0.4);
+  }
 }
 
-.swal2-title {
-  color: #0f172a !important;
-}
+/* ============================================================
+   PRINT STYLES — Clean reports
+   ============================================================ */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
 
-.swal2-html-container {
-  color: #475569 !important;
+  .no-print,
+  button,
+  .sidebar,
+  nav {
+    display: none !important;
+  }
+
+  .glass-panel {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  table thead th,
+  table tbody td {
+    border: 1px solid #ddd !important;
+    padding: 6px 8px !important;
+    color: #000 !important;
+  }
 }

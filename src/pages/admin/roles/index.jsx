@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
@@ -32,10 +32,12 @@ import {
   HiOutlineArrowsRightLeft,
   HiOutlineUsers,
   HiOutlineCheckBadge,
-  HiOutlineMinus
+  HiOutlineMinus,
 } from 'react-icons/hi2';
 
-// Standard System Module Definitions
+/* ============================================================
+   MODULE DEFINITIONS (unchanged data)
+   ============================================================ */
 const DEFAULT_MODULE_DEFINITIONS = [
   { key: 'users', label: 'User & Staff Management', icon: HiOutlineUsers, desc: 'View, create, edit, and manage staff members.' },
   { key: 'projects', label: 'Projects & Workspaces', icon: HiOutlineFolder, desc: 'Client project scopes, assignments and delivery tracking.' },
@@ -46,7 +48,7 @@ const DEFAULT_MODULE_DEFINITIONS = [
   { key: 'announcements', label: 'Office Announcements', icon: HiOutlineMegaphone, desc: 'Broadcast notices, updates, and organizational alerts.' },
   { key: 'chat', label: 'Chat & Video Meetings', icon: HiOutlineChatBubbleLeftRight, desc: 'Direct messages, team channels, and online meetings.' },
   { key: 'reports', label: 'Work & Daily Reports', icon: HiOutlineDocumentText, desc: 'Daily timesheets, task submission logs, and reporting.' },
-  { key: 'settings', label: 'Office Roles & Settings', icon: HiOutlineCog6Tooth, desc: 'Role permissions, office policies, and system defaults.' }
+  { key: 'settings', label: 'Office Roles & Settings', icon: HiOutlineCog6Tooth, desc: 'Role permissions, office policies, and system defaults.' },
 ];
 
 export const ROLE_TEMPLATES = [
@@ -69,8 +71,8 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: true, edit: true, delete: true },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: false, edit: false, delete: false },
-      settings: { view: false, create: false, edit: false, delete: false }
-    }
+      settings: { view: false, create: false, edit: false, delete: false },
+    },
   },
   {
     key: 'Team Head',
@@ -91,8 +93,8 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: false, edit: false, delete: false },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: true, edit: true, delete: false },
-      settings: { view: false, create: false, edit: false, delete: false }
-    }
+      settings: { view: false, create: false, edit: false, delete: false },
+    },
   },
   {
     key: 'User',
@@ -113,8 +115,8 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: false, edit: false, delete: false },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: true, edit: false, delete: false },
-      settings: { view: false, create: false, edit: false, delete: false }
-    }
+      settings: { view: false, create: false, edit: false, delete: false },
+    },
   },
   {
     key: 'Accountant',
@@ -135,11 +137,35 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: false, edit: false, delete: false },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: false, edit: false, delete: false },
-      settings: { view: false, create: false, edit: false, delete: false }
-    }
-  }
+      settings: { view: false, create: false, edit: false, delete: false },
+    },
+  },
 ];
 
+/* ============================================================
+   DESIGN TOKENS (same as other pages)
+   ============================================================ */
+const tokens = {
+  btnPrimary:
+    'inline-flex items-center justify-center gap-1.5 font-semibold rounded-lg bg-indigo-600 text-white shadow-sm ' +
+    'hover:bg-indigo-700 active:bg-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 ' +
+    'transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
+  btnSecondary:
+    'inline-flex items-center justify-center gap-1.5 font-semibold rounded-lg bg-white text-slate-700 border border-slate-300 shadow-sm ' +
+    'hover:bg-slate-50 active:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
+  input:
+    'w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 ' +
+    'placeholder:text-slate-400 transition-colors ' +
+    'focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 ' +
+    'disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed',
+  label:
+    'block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5',
+  card: 'bg-white border border-slate-200 rounded-xl shadow-sm',
+};
+
+/* ============================================================
+   HELPERS (unchanged)
+   ============================================================ */
 const getRoleIcon = (roleName) => {
   const r = (roleName || '').toLowerCase();
   if (r === 'admin' || r === 'cto' || r === 'super admin') return HiOutlineShieldCheck;
@@ -153,62 +179,40 @@ const getRoleIcon = (roleName) => {
 const getRoleStyling = (roleName) => {
   const r = (roleName || '').toLowerCase();
   if (r === 'admin' || r === 'cto' || r === 'super admin') {
-    return {
-      bg: 'bg-amber-50',
-      border: 'border-amber-200',
-      text: 'text-amber-700',
-      tag: 'border-amber-200 bg-amber-50 text-amber-800'
-    };
+    return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' };
   }
   if (r === 'hr manager' || r === 'hr') {
-    return {
-      bg: 'bg-purple-50',
-      border: 'border-purple-200',
-      text: 'text-purple-700',
-      tag: 'border-purple-200 bg-purple-50 text-purple-800'
-    };
+    return { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700' };
   }
   if (r === 'team head' || r === 'team lead') {
-    return {
-      bg: 'bg-blue-50',
-      border: 'border-blue-200',
-      text: 'text-blue-700',
-      tag: 'border-blue-200 bg-blue-50 text-blue-800'
-    };
+    return { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700' };
   }
   if (r === 'user' || r === 'employee') {
-    return {
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-200',
-      text: 'text-emerald-700',
-      tag: 'border-emerald-200 bg-emerald-50 text-emerald-800'
-    };
+    return { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700' };
   }
   if (r === 'accountant') {
-    return {
-      bg: 'bg-amber-50',
-      border: 'border-amber-200',
-      text: 'text-amber-700',
-      tag: 'border-amber-200 bg-amber-50 text-amber-800'
-    };
+    return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' };
   }
-  return {
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-200',
-    text: 'text-indigo-700',
-    tag: 'border-indigo-200 bg-indigo-50 text-indigo-800'
-  };
+  return { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-700' };
 };
 
+const Loader = () => (
+  <div className="flex justify-center items-center py-16">
+    <div className="w-10 h-10 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+  </div>
+);
+
+/* ============================================================
+   MAIN COMPONENT
+   ============================================================ */
 const RolesPage = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const [filterTab, setFilterTab] = useState('all'); // 'all', 'default', 'custom'
+  const [filterTab, setFilterTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRoleId, setExpandedRoleId] = useState(null);
 
-  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
   const [selectedTemplateKey, setSelectedTemplateKey] = useState(null);
@@ -216,46 +220,45 @@ const RolesPage = () => {
     name: '',
     displayName: '',
     description: '',
-    permissions: {}
+    permissions: {},
   });
 
-  // Custom module addition in modal
   const [newModuleName, setNewModuleName] = useState('');
   const [newModuleKey, setNewModuleKey] = useState('');
   const [showAddModuleInput, setShowAddModuleInput] = useState(false);
   const [customModules, setCustomModules] = useState([]);
 
-  // Fetch Roles
+  /* ---------------- Query (UNCHANGED) ---------------- */
   const { data: roles = [], isLoading } = useQuery({
     queryKey: ['roles'],
     queryFn: async () => {
       const { data } = await api.get('/roles');
       return Array.isArray(data) ? data : [];
-    }
+    },
   });
 
-  // Calculate all active module keys from all roles
+  /* ---------------- Derived data (UNCHANGED) ---------------- */
   const allAvailableModules = useMemo(() => {
-    const defaultKeys = new Set(DEFAULT_MODULE_DEFINITIONS.map(m => m.key));
+    const defaultKeys = new Set(DEFAULT_MODULE_DEFINITIONS.map((m) => m.key));
     const dynamicList = [...DEFAULT_MODULE_DEFINITIONS];
 
-    roles.forEach(r => {
+    roles.forEach((r) => {
       if (r.permissions && typeof r.permissions === 'object') {
-        Object.keys(r.permissions).forEach(k => {
-          if (!defaultKeys.has(k) && !dynamicList.some(m => m.key === k)) {
+        Object.keys(r.permissions).forEach((k) => {
+          if (!defaultKeys.has(k) && !dynamicList.some((m) => m.key === k)) {
             dynamicList.push({
               key: k,
               label: k.charAt(0).toUpperCase() + k.slice(1),
               icon: HiOutlineSparkles,
-              desc: `Custom module: ${k}`
+              desc: `Custom module: ${k}`,
             });
           }
         });
       }
     });
 
-    customModules.forEach(cm => {
-      if (!dynamicList.some(m => m.key === cm.key)) {
+    customModules.forEach((cm) => {
+      if (!dynamicList.some((m) => m.key === cm.key)) {
         dynamicList.push(cm);
       }
     });
@@ -265,13 +268,13 @@ const RolesPage = () => {
 
   const initEmptyMatrix = (modules) => {
     const matrix = {};
-    modules.forEach(m => {
+    modules.forEach((m) => {
       matrix[m.key] = { view: false, create: false, edit: false, delete: false };
     });
     return matrix;
   };
 
-  // Create Role Mutation
+  /* ---------------- Mutations (UNCHANGED) ---------------- */
   const createMutation = useMutation({
     mutationFn: async (payload) => {
       const { data } = await api.post('/roles', payload);
@@ -284,10 +287,9 @@ const RolesPage = () => {
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || 'Failed to create role');
-    }
+    },
   });
 
-  // Update Role Mutation
   const updateMutation = useMutation({
     mutationFn: async ({ id, payload }) => {
       const { data } = await api.put(`/roles/${id}`, payload);
@@ -300,10 +302,9 @@ const RolesPage = () => {
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || 'Failed to update role');
-    }
+    },
   });
 
-  // Delete Role Mutation
   const deleteMutation = useMutation({
     mutationFn: async (roleId) => {
       const { data } = await api.delete(`/roles/${roleId}`);
@@ -315,10 +316,9 @@ const RolesPage = () => {
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || 'Cannot delete role');
-    }
+    },
   });
 
-  // Reset Defaults Mutation
   const resetDefaultsMutation = useMutation({
     mutationFn: async (roleId) => {
       const { data } = await api.post(`/roles/${roleId}/reset-defaults`);
@@ -330,15 +330,16 @@ const RolesPage = () => {
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || 'Failed to reset role defaults');
-    }
+    },
   });
 
+  /* ---------------- Handlers (UNCHANGED logic) ---------------- */
   const handleOpenCreate = (presetKey = null) => {
     setEditingRole(null);
     setShowAddModuleInput(false);
 
     if (presetKey) {
-      const tmpl = ROLE_TEMPLATES.find(t => t.key === presetKey);
+      const tmpl = ROLE_TEMPLATES.find((t) => t.key === presetKey);
       if (tmpl) {
         handleApplyTemplate(tmpl);
         setIsModalOpen(true);
@@ -346,7 +347,7 @@ const RolesPage = () => {
       }
     }
 
-    const defaultTmpl = ROLE_TEMPLATES[0]; // HR Manager
+    const defaultTmpl = ROLE_TEMPLATES[0];
     setSelectedTemplateKey(defaultTmpl.key);
     const newPerms = initEmptyMatrix(allAvailableModules);
     Object.entries(defaultTmpl.permissions).forEach(([k, v]) => {
@@ -357,30 +358,32 @@ const RolesPage = () => {
       name: defaultTmpl.name,
       displayName: defaultTmpl.displayName,
       description: defaultTmpl.description,
-      permissions: newPerms
+      permissions: newPerms,
     });
     setIsModalOpen(true);
   };
 
   const handleApplyTemplate = (tmpl) => {
     setSelectedTemplateKey(tmpl.key);
-    setRoleForm(prev => {
+    setRoleForm((prev) => {
       const newPerms = initEmptyMatrix(allAvailableModules);
       Object.entries(tmpl.permissions).forEach(([modKey, acts]) => {
         newPerms[modKey] = {
           view: Boolean(acts.view),
           create: Boolean(acts.create),
           edit: Boolean(acts.edit),
-          delete: Boolean(acts.delete)
+          delete: Boolean(acts.delete),
         };
       });
 
       return {
         ...prev,
         name: editingRole ? prev.name : tmpl.name,
-        displayName: (!editingRole || prev.displayName === prev.name) ? tmpl.displayName : prev.displayName,
-        description: (!editingRole || !prev.description) ? tmpl.description : prev.description,
-        permissions: newPerms
+        displayName:
+          !editingRole || prev.displayName === prev.name ? tmpl.displayName : prev.displayName,
+        description:
+          !editingRole || !prev.description ? tmpl.description : prev.description,
+        permissions: newPerms,
       };
     });
     toast.success(`Standard default permissions for "${tmpl.displayName}" loaded`);
@@ -388,24 +391,25 @@ const RolesPage = () => {
 
   const handleOpenEdit = (role) => {
     setEditingRole(role);
-    const matchedTmpl = ROLE_TEMPLATES.find(t => 
-      t.name.toLowerCase() === role.name.toLowerCase() || 
-      (t.key === 'HR Manager' && (role.name === 'HR' || role.name === 'HR Manager')) ||
-      (t.key === 'Team Head' && (role.name === 'Team Lead' || role.name === 'Team Head')) ||
-      (t.key === 'User' && (role.name === 'Employee' || role.name === 'User')) ||
-      (t.key === 'Accountant' && role.name.toLowerCase().includes('account'))
+    const matchedTmpl = ROLE_TEMPLATES.find(
+      (t) =>
+        t.name.toLowerCase() === role.name.toLowerCase() ||
+        (t.key === 'HR Manager' && (role.name === 'HR' || role.name === 'HR Manager')) ||
+        (t.key === 'Team Head' && (role.name === 'Team Lead' || role.name === 'Team Head')) ||
+        (t.key === 'User' && (role.name === 'Employee' || role.name === 'User')) ||
+        (t.key === 'Accountant' && role.name.toLowerCase().includes('account'))
     );
     setSelectedTemplateKey(matchedTmpl ? matchedTmpl.key : null);
 
     const existingPerms = role.permissions || {};
     const filledPerms = {};
 
-    allAvailableModules.forEach(m => {
+    allAvailableModules.forEach((m) => {
       filledPerms[m.key] = {
         view: Boolean(existingPerms[m.key]?.view),
         create: Boolean(existingPerms[m.key]?.create),
         edit: Boolean(existingPerms[m.key]?.edit),
-        delete: Boolean(existingPerms[m.key]?.delete)
+        delete: Boolean(existingPerms[m.key]?.delete),
       };
     });
 
@@ -413,7 +417,7 @@ const RolesPage = () => {
       name: role.name,
       displayName: role.displayName || role.name,
       description: role.description || '',
-      permissions: filledPerms
+      permissions: filledPerms,
     });
     setIsModalOpen(true);
   };
@@ -426,7 +430,7 @@ const RolesPage = () => {
       showCancelButton: true,
       confirmButtonColor: '#4f46e5',
       cancelButtonColor: '#64748b',
-      confirmButtonText: 'Yes, Reset Defaults'
+      confirmButtonText: 'Yes, Reset Defaults',
     }).then((result) => {
       if (result.isConfirmed) {
         resetDefaultsMutation.mutate(role._id);
@@ -444,8 +448,10 @@ const RolesPage = () => {
   };
 
   const handlePermissionToggle = (moduleKey, action) => {
-    setRoleForm(prev => {
-      const current = prev.permissions[moduleKey] || { view: false, create: false, edit: false, delete: false };
+    setRoleForm((prev) => {
+      const current = prev.permissions[moduleKey] || {
+        view: false, create: false, edit: false, delete: false,
+      };
       const nextVal = !current[action];
       const updatedModule = { ...current, [action]: nextVal };
 
@@ -460,17 +466,16 @@ const RolesPage = () => {
 
       return {
         ...prev,
-        permissions: {
-          ...prev.permissions,
-          [moduleKey]: updatedModule
-        }
+        permissions: { ...prev.permissions, [moduleKey]: updatedModule },
       };
     });
   };
 
   const handleRowToggle = (moduleKey) => {
-    setRoleForm(prev => {
-      const current = prev.permissions[moduleKey] || { view: false, create: false, edit: false, delete: false };
+    setRoleForm((prev) => {
+      const current = prev.permissions[moduleKey] || {
+        view: false, create: false, edit: false, delete: false,
+      };
       const isFull = current.view && current.create && current.edit && current.delete;
       const nextVal = !isFull;
 
@@ -482,17 +487,17 @@ const RolesPage = () => {
             view: nextVal,
             create: nextVal,
             edit: nextVal,
-            delete: nextVal
-          }
-        }
+            delete: nextVal,
+          },
+        },
       };
     });
   };
 
   const handleBulkSetPermissions = (type) => {
-    setRoleForm(prev => {
+    setRoleForm((prev) => {
       const updated = {};
-      allAvailableModules.forEach(m => {
+      allAvailableModules.forEach((m) => {
         if (type === 'full') {
           updated[m.key] = { view: true, create: true, edit: true, delete: true };
         } else if (type === 'read') {
@@ -506,13 +511,15 @@ const RolesPage = () => {
   };
 
   const handleAddNewModule = () => {
-    const rawKey = newModuleKey.trim() || newModuleName.trim().toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
+    const rawKey =
+      newModuleKey.trim() ||
+      newModuleName.trim().toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
     if (!rawKey) {
       toast.error('Module name or key is required');
       return;
     }
 
-    if (allAvailableModules.some(m => m.key === rawKey)) {
+    if (allAvailableModules.some((m) => m.key === rawKey)) {
       toast.error(`Module '${rawKey}' already exists`);
       return;
     }
@@ -521,17 +528,17 @@ const RolesPage = () => {
       key: rawKey,
       label: newModuleName.trim() || rawKey,
       icon: HiOutlineSparkles,
-      desc: `Custom module: ${newModuleName || rawKey}`
+      desc: `Custom module: ${newModuleName || rawKey}`,
     };
 
-    setCustomModules(prev => [...prev, newModuleObj]);
+    setCustomModules((prev) => [...prev, newModuleObj]);
 
-    setRoleForm(prev => ({
+    setRoleForm((prev) => ({
       ...prev,
       permissions: {
         ...prev.permissions,
-        [rawKey]: { view: true, create: false, edit: false, delete: false }
-      }
+        [rawKey]: { view: true, create: false, edit: false, delete: false },
+      },
     }));
 
     toast.success(`Module '${newModuleObj.label}' added!`);
@@ -548,8 +555,8 @@ const RolesPage = () => {
         payload: {
           displayName: roleForm.displayName,
           description: roleForm.description,
-          permissions: roleForm.permissions
-        }
+          permissions: roleForm.permissions,
+        },
       });
     } else {
       createMutation.mutate(roleForm);
@@ -564,7 +571,7 @@ const RolesPage = () => {
       showCancelButton: true,
       confirmButtonColor: '#e11d48',
       cancelButtonColor: '#64748b',
-      confirmButtonText: 'Yes, Delete'
+      confirmButtonText: 'Yes, Delete',
     }).then((result) => {
       if (result.isConfirmed) {
         deleteMutation.mutate(role._id);
@@ -573,11 +580,14 @@ const RolesPage = () => {
   };
 
   const isDefaultCoreRole = (name) => {
-    return ['Admin', 'HR Manager', 'HR', 'Team Head', 'Team Lead', 'User', 'Employee', 'Accountant'].includes(name);
+    return [
+      'Admin', 'HR Manager', 'HR', 'Team Head', 'Team Lead', 'User', 'Employee', 'Accountant',
+    ].includes(name);
   };
 
+  /* ---------------- Filter + metrics (UNCHANGED) ---------------- */
   const filteredRoles = useMemo(() => {
-    return roles.filter(r => {
+    return roles.filter((r) => {
       if (filterTab === 'default' && !r.isSystemRole && !isDefaultCoreRole(r.name)) return false;
       if (filterTab === 'custom' && (r.isSystemRole || isDefaultCoreRole(r.name))) return false;
 
@@ -592,783 +602,862 @@ const RolesPage = () => {
     });
   }, [roles, filterTab, searchQuery]);
 
-  // Metrics
-  const totalStaffCount = useMemo(() => {
-    return roles.reduce((sum, r) => sum + (r.userCount || 0), 0);
-  }, [roles]);
+  const totalStaffCount = useMemo(
+    () => roles.reduce((sum, r) => sum + (r.userCount || 0), 0),
+    [roles]
+  );
+  const defaultRolesCount = useMemo(
+    () => roles.filter((r) => r.isSystemRole || isDefaultCoreRole(r.name)).length,
+    [roles]
+  );
+  const customRolesCount = useMemo(
+    () => roles.filter((r) => !r.isSystemRole && !isDefaultCoreRole(r.name)).length,
+    [roles]
+  );
 
-  const defaultRolesCount = useMemo(() => {
-    return roles.filter(r => r.isSystemRole || isDefaultCoreRole(r.name)).length;
-  }, [roles]);
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
-  const customRolesCount = useMemo(() => {
-    return roles.filter(r => !r.isSystemRole && !isDefaultCoreRole(r.name)).length;
-  }, [roles]);
+  /* ---------------- ESC to close modal ---------------- */
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen]);
 
+  /* ============================================================
+     RENDER
+     ============================================================ */
   return (
-    <div className="space-y-6">
-      {/* Header & Quick Action Toolbar */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
-              <HiOutlineShieldCheck className="w-4 h-4 text-indigo-400" />
-              Access Control & Permissions
+    <div className="w-full max-w-full space-y-4 sm:space-y-6">
+      {/* ===================== HEADER ===================== */}
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <div className="mb-1.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <HiOutlineShieldCheck className="w-3.5 h-3.5" />
+              Access Control &amp; Permissions
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Roles & Permissions Matrix
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Roles &amp; Permissions Matrix
           </h1>
-          <p className="text-slate-500 text-sm mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
             Configure default roles (HR Manager, Team Head, Staff) and add custom positions with granular Read, Create, Edit and Delete capabilities.
           </p>
         </div>
 
-        {/* Action Buttons with React Icons */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Actions — clean wrap on mobile */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
+            type="button"
             onClick={() => handleOpenCreate('HR Manager')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all shadow-xs"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-xs font-semibold transition-colors shadow-sm"
           >
-            <HiOutlineBriefcase className="w-4 h-4 text-purple-600" />
-            + HR Role
+            <HiOutlineBriefcase className="w-3.5 h-3.5" />
+            HR
           </button>
           <button
+            type="button"
             onClick={() => handleOpenCreate('Team Head')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition-all shadow-xs"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold transition-colors shadow-sm"
           >
-            <HiOutlineUserGroup className="w-4 h-4 text-blue-600" />
-            + Team Head
+            <HiOutlineUserGroup className="w-3.5 h-3.5" />
+            Team Head
           </button>
           <button
+            type="button"
             onClick={() => handleOpenCreate('User')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-all shadow-xs"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold transition-colors shadow-sm"
           >
-            <HiOutlineUser className="w-4 h-4 text-emerald-600" />
-            + Staff Role
+            <HiOutlineUser className="w-3.5 h-3.5" />
+            Staff
           </button>
           <button
+            type="button"
             onClick={() => handleOpenCreate('Accountant')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold transition-all shadow-xs"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-semibold transition-colors shadow-sm"
           >
-            <HiOutlineBanknotes className="w-4 h-4 text-amber-600" />
-            + Accountant
+            <HiOutlineBanknotes className="w-3.5 h-3.5" />
+            Accountant
           </button>
           <button
+            type="button"
             onClick={() => handleOpenCreate()}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs whitespace-nowrap"
+            className={`${tokens.btnPrimary} w-full sm:w-auto px-4 py-2.5 text-sm`}
           >
             <HiOutlinePlus className="w-4 h-4" />
-            Create Custom Role
+            <span>Create Custom Role</span>
           </button>
         </div>
       </div>
 
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-slate-500">Total Configured Roles</p>
-            <p className="text-2xl font-bold text-slate-900 mt-0.5">{roles.length}</p>
+      {/* ===================== METRICS ===================== */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          {
+            label: 'Total Roles',
+            value: roles.length,
+            Icon: HiOutlineShieldCheck,
+            iconBg: 'bg-indigo-50 border-indigo-200 text-indigo-600',
+            valueColor: 'text-slate-900',
+          },
+          {
+            label: 'System Core',
+            value: defaultRolesCount,
+            Icon: HiOutlineCheckBadge,
+            iconBg: 'bg-emerald-50 border-emerald-200 text-emerald-600',
+            valueColor: 'text-emerald-600',
+          },
+          {
+            label: 'Custom Positions',
+            value: customRolesCount,
+            Icon: HiOutlineSparkles,
+            iconBg: 'bg-purple-50 border-purple-200 text-purple-600',
+            valueColor: 'text-indigo-700',
+          },
+          {
+            label: 'Assigned Staff',
+            value: totalStaffCount,
+            Icon: HiOutlineUsers,
+            iconBg: 'bg-blue-50 border-blue-200 text-blue-600',
+            valueColor: 'text-blue-600',
+          },
+        ].map(({ label, value, Icon, iconBg, valueColor }) => (
+          <div key={label} className={`${tokens.card} p-3.5 sm:p-4 flex items-center justify-between`}>
+            <div className="min-w-0">
+              <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate">{label}</p>
+              <p className={`text-xl sm:text-2xl font-bold mt-0.5 ${valueColor}`}>{value}</p>
+            </div>
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center shrink-0 ${iconBg}`}>
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+            </div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
-            <HiOutlineShieldCheck className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-slate-500">System Core Roles</p>
-            <p className="text-2xl font-bold text-emerald-600 mt-0.5">{defaultRolesCount}</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-            <HiOutlineCheckBadge className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-slate-500">Custom Positions</p>
-            <p className="text-2xl font-bold text-indigo-700 mt-0.5">{customRolesCount}</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
-            <HiOutlineSparkles className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-slate-500">Assigned Staff</p>
-            <p className="text-2xl font-bold text-blue-600 mt-0.5">{totalStaffCount}</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
-            <HiOutlineUsers className="w-5 h-5" />
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 shadow-xs">
-        {/* Tabs */}
-        <div className="flex bg-slate-100 border border-slate-200 rounded-xl p-1 gap-1">
-          <button
-            onClick={() => setFilterTab('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filterTab === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            All Roles ({roles.length})
-          </button>
-          <button
-            onClick={() => setFilterTab('default')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filterTab === 'default' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Default Roles
-          </button>
-          <button
-            onClick={() => setFilterTab('custom')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filterTab === 'custom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Custom Positions ({customRolesCount})
-          </button>
+      {/* ===================== FILTER BAR ===================== */}
+      <div className={`${tokens.card} p-3 sm:p-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3`}>
+        <div className="flex bg-slate-100 border border-slate-200 rounded-xl p-1 gap-1 overflow-x-auto">
+          {[
+            { key: 'all', label: `All Roles (${roles.length})` },
+            { key: 'default', label: `Default Roles` },
+            { key: 'custom', label: `Custom (${customRolesCount})` },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setFilterTab(tab.key)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${filterTab === tab.key
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        {/* Search Input */}
         <div className="relative w-full sm:w-72">
-          <HiOutlineMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search roles or positions..."
-            className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-indigo-600 transition-colors shadow-xs"
+            placeholder="Search roles or positions…"
+            className={`${tokens.input} pl-9 text-xs`}
           />
         </div>
       </div>
 
-      {/* Roles List Table View */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+      {/* ===================== ROLES LIST ===================== */}
+      <div className={`${tokens.card} overflow-hidden`}>
         {isLoading ? (
-          <div className="p-16 flex justify-center">
-            <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
-          </div>
+          <Loader />
         ) : filteredRoles.length === 0 ? (
-          <div className="p-12 text-center text-slate-400">
-            <HiOutlineShieldCheck className="w-12 h-12 text-slate-600 mx-auto mb-2" />
-            <p className="font-semibold text-white mb-1">No matching roles found</p>
-            <p className="text-xs text-slate-500">Try adjusting your search query or create a new role.</p>
+          <div className="py-12 px-6 text-center">
+            <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
+              <HiOutlineShieldCheck className="w-7 h-7" />
+            </div>
+            <p className="font-semibold text-slate-900 mb-1">No matching roles found</p>
+            <p className="text-xs text-slate-500">
+              Try adjusting your search query or create a new role.
+            </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider">
-                <tr>
-                  <th className="px-6 py-4">Role / Position</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4">Staff Count</th>
-                  <th className="px-6 py-4">Allowed Modules Summary</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredRoles.map(role => {
-                  const isSystemAdmin = role.name === 'Admin';
-                  const isDefaultCore = role.isSystemRole || isDefaultCoreRole(role.name);
-                  const isExpanded = expandedRoleId === role._id;
-                  const styling = getRoleStyling(role.name);
-                  const RoleIconComp = getRoleIcon(role.name);
+          <ul className="divide-y divide-slate-100">
+            {filteredRoles.map((role) => {
+              const isSystemAdmin = role.name === 'Admin';
+              const isDefaultCore = role.isSystemRole || isDefaultCoreRole(role.name);
+              const isExpanded = expandedRoleId === role._id;
+              const styling = getRoleStyling(role.name);
+              const RoleIconComp = getRoleIcon(role.name);
 
-                  const permEntries = Object.entries(role.permissions || {});
-                  const allowedModules = permEntries.filter(([_, act]) => act?.view);
+              const permEntries = Object.entries(role.permissions || {});
+              const allowedModules = permEntries.filter(([_, act]) => act?.view);
 
-                  return (
-                    <tr key={role._id} className="group">
-                      <td colSpan="5" className="p-0">
-                        <div className="flex flex-col">
-                          <div className="flex items-center justify-between p-4 sm:px-6 hover:bg-slate-50 transition-colors border-b border-slate-100">
-                            {/* Role Name & Icon */}
-                            <div className="flex items-center gap-3.5 min-w-[240px]">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${styling.bg} ${styling.border} ${styling.text}`}>
-                                <RoleIconComp className="w-5 h-5" />
-                              </div>
-                              <div>
-                                <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                                  {role.displayName || role.name}
-                                </div>
-                                <div className="text-[11px] font-mono text-indigo-600 mt-0.5">
-                                  ID: <span className="text-slate-500">{role.name}</span>
-                                </div>
-                                {role.description && (
-                                  <p className="text-xs text-slate-500 mt-0.5 max-w-sm line-clamp-1">{role.description}</p>
-                                )}
-                              </div>
-                            </div>
+              return (
+                <li key={role._id} className="group">
+                  {/* ---------- ROW ---------- */}
+                  <div className="p-4 hover:bg-slate-50/70 transition-colors">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      {/* Left: icon + name + badges */}
+                      <div className="flex items-start gap-3 min-w-0 flex-1">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${styling.bg} ${styling.border} ${styling.text}`}>
+                          <RoleIconComp className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="font-bold text-slate-900 text-sm truncate">
+                              {role.displayName || role.name}
+                            </h3>
 
-                            {/* Role Type */}
-                            <div className="hidden sm:block min-w-[150px]">
-                              {isSystemAdmin ? (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                  <HiOutlineShieldCheck className="w-3.5 h-3.5" />
-                                  Full System Admin
-                                </span>
-                              ) : isDefaultCore ? (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                                  <HiOutlineCheckBadge className="w-3.5 h-3.5 text-emerald-600" />
-                                  Default Core Role
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                  <HiOutlineSparkles className="w-3.5 h-3.5" />
-                                  Custom Position
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Staff Count */}
-                            <div className="hidden md:block min-w-[110px]">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-700">
-                                <HiOutlineUsers className="w-3.5 h-3.5 text-indigo-600" />
-                                {role.userCount || 0} Staff
+                            {/* Type badges inline on mobile */}
+                            {isSystemAdmin ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                <HiOutlineShieldCheck className="w-3 h-3" />
+                                System Admin
                               </span>
-                            </div>
+                            ) : isDefaultCore ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                <HiOutlineCheckBadge className="w-3 h-3 text-emerald-600" />
+                                Default
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                <HiOutlineSparkles className="w-3 h-3" />
+                                Custom
+                              </span>
+                            )}
 
-                            {/* Allowed Modules Summary */}
-                            <div className="hidden lg:block flex-1 px-4">
-                              {isSystemAdmin ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-                                  <HiOutlineShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-                                  All Modules (Unrestricted Access)
-                                </span>
-                              ) : (
-                                <div className="flex flex-wrap gap-1 max-w-md">
-                                  {allowedModules.slice(0, 4).map(([mod, act]) => (
-                                    <span key={mod} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-50 border border-slate-200 text-slate-700">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                      {mod.charAt(0).toUpperCase() + mod.slice(1)}
-                                      <span className="text-[10px] text-slate-500">
-                                        ({[act.create && 'C', act.edit && 'E', act.delete && 'D'].filter(Boolean).join('') || 'R'})
-                                      </span>
-                                    </span>
-                                  ))}
-                                  {allowedModules.length > 4 && (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                                      +{allowedModules.length - 4} more
-                                    </span>
-                                  )}
-                                  {allowedModules.length === 0 && (
-                                    <span className="text-xs text-slate-500 italic">No modules granted</span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => setExpandedRoleId(isExpanded ? null : role._id)}
-                                className="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition-colors inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
-                              >
-                                <span>{isExpanded ? 'Hide' : 'Permissions'}</span>
-                                <HiOutlineChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                              </button>
-
-                              {!isSystemAdmin && (
-                                <button
-                                  onClick={() => handleOpenEdit(role)}
-                                  className="px-2.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
-                                >
-                                  <HiOutlinePencilSquare className="w-3.5 h-3.5" />
-                                  Edit
-                                </button>
-                              )}
-
-                              {isDefaultCore && !isSystemAdmin && (
-                                <button
-                                  onClick={() => handleResetRoleDefaults(role)}
-                                  title="Reset all permissions to standard default template"
-                                  className="px-2.5 py-1.5 text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
-                                >
-                                  <HiOutlineArrowPath className="w-3.5 h-3.5 text-amber-600" />
-                                  Reset
-                                </button>
-                              )}
-
-                              {!isDefaultCore && (
-                                <button
-                                  onClick={() => handleDelete(role)}
-                                  title="Delete Role"
-                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200 cursor-pointer"
-                                >
-                                  <HiOutlineTrash className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
+                            {/* Staff count chip */}
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-50 text-slate-700 border border-slate-200">
+                              <HiOutlineUsers className="w-3 h-3 text-indigo-600" />
+                              {role.userCount || 0}
+                            </span>
                           </div>
 
-                          {/* Expanded Permissions Drawer */}
-                          {isExpanded && (
-                            <div className="p-5 bg-slate-50 border-b border-slate-200 animate-in fade-in slide-in-from-top-1 duration-200">
-                              <div className="flex justify-between items-center mb-3">
-                                <div className="flex items-center gap-2">
-                                  <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
-                                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                                    Resolved Permissions Grid for {role.displayName || role.name}
-                                  </h4>
-                                </div>
-                                {!isSystemAdmin && (
-                                  <button
-                                    onClick={() => handleOpenEdit(role)}
-                                    className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold inline-flex items-center gap-1 cursor-pointer"
+                          <p className="text-[11px] font-mono text-indigo-600 mt-1 truncate">
+                            ID: <span className="text-slate-500">{role.name}</span>
+                          </p>
+
+                          {role.description && (
+                            <p className="text-xs text-slate-500 mt-1 line-clamp-2 sm:line-clamp-1">
+                              {role.description}
+                            </p>
+                          )}
+
+                          {/* Modules summary — mobile only */}
+                          <div className="lg:hidden mt-2 flex flex-wrap gap-1">
+                            {isSystemAdmin ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                <HiOutlineShieldCheck className="w-3 h-3" />
+                                All Modules
+                              </span>
+                            ) : allowedModules.length > 0 ? (
+                              <>
+                                {allowedModules.slice(0, 3).map(([mod, act]) => (
+                                  <span
+                                    key={mod}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-50 border border-slate-200 text-slate-700"
                                   >
-                                    <HiOutlinePencilSquare className="w-3.5 h-3.5" />
-                                    Modify Matrix
-                                  </button>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                    {mod.charAt(0).toUpperCase() + mod.slice(1)}
+                                    <span className="text-[9px] text-slate-500">
+                                      (
+                                      {[act.create && 'C', act.edit && 'E', act.delete && 'D']
+                                        .filter(Boolean)
+                                        .join('') || 'R'}
+                                      )
+                                    </span>
+                                  </span>
+                                ))}
+                                {allowedModules.length > 3 && (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                    +{allowedModules.length - 3}
+                                  </span>
                                 )}
-                              </div>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 italic">
+                                No modules granted
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
 
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
-                                {allAvailableModules.map(mod => {
-                                  const perm = role.permissions?.[mod.key] || { view: false, create: false, edit: false, delete: false };
-                                  const hasAny = perm.view || perm.create || perm.edit || perm.delete;
-                                  const ModIcon = mod.icon || HiOutlineSparkles;
-
-                                  return (
-                                    <div
-                                      key={mod.key}
-                                      className={`p-3 rounded-xl border transition-all ${
-                                        hasAny
-                                          ? 'bg-white border-slate-200 shadow-xs'
-                                          : 'bg-slate-100/60 border-slate-200 opacity-60'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-1.5 font-semibold text-xs text-slate-900 mb-2 truncate">
-                                        <ModIcon className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                                        <span className="truncate">{mod.label}</span>
-                                      </div>
-
-                                      <div className="grid grid-cols-4 gap-1 text-center text-[10px]">
-                                        <div className={`p-1 rounded ${perm.view ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-200' : 'bg-slate-100 text-slate-400'}`}>
-                                          R
-                                        </div>
-                                        <div className={`p-1 rounded ${perm.create ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-200' : 'bg-slate-100 text-slate-400'}`}>
-                                          C
-                                        </div>
-                                        <div className={`p-1 rounded ${perm.edit ? 'bg-amber-50 text-amber-700 font-bold border border-amber-200' : 'bg-slate-100 text-slate-400'}`}>
-                                          E
-                                        </div>
-                                        <div className={`p-1 rounded ${perm.delete ? 'bg-rose-50 text-rose-700 font-bold border border-rose-200' : 'bg-slate-100 text-slate-400'}`}>
-                                          D
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                      {/* Right: modules summary (desktop) + actions */}
+                      <div className="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-3 shrink-0">
+                        {/* Desktop modules summary */}
+                        <div className="hidden lg:block max-w-[280px]">
+                          {isSystemAdmin ? (
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                              <HiOutlineShieldCheck className="w-3.5 h-3.5" />
+                              All Modules (Unrestricted)
+                            </span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {allowedModules.slice(0, 3).map(([mod, act]) => (
+                                <span
+                                  key={mod}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-50 border border-slate-200 text-slate-700"
+                                >
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                  {mod.charAt(0).toUpperCase() + mod.slice(1)}
+                                  <span className="text-[9px] text-slate-500">
+                                    (
+                                    {[act.create && 'C', act.edit && 'E', act.delete && 'D']
+                                      .filter(Boolean)
+                                      .join('') || 'R'}
+                                    )
+                                  </span>
+                                </span>
+                              ))}
+                              {allowedModules.length > 3 && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                  +{allowedModules.length - 3}
+                                </span>
+                              )}
+                              {allowedModules.length === 0 && (
+                                <span className="text-[11px] text-slate-400 italic">
+                                  No modules granted
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setExpandedRoleId(isExpanded ? null : role._id)}
+                            className={`${tokens.btnSecondary} px-2.5 py-1.5 text-xs`}
+                          >
+                            <span>{isExpanded ? 'Hide' : 'Permissions'}</span>
+                            <HiOutlineChevronDown
+                              className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                            />
+                          </button>
+
+                          {!isSystemAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(role)}
+                              className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors cursor-pointer"
+                            >
+                              <HiOutlinePencilSquare className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Edit</span>
+                            </button>
+                          )}
+
+                          {isDefaultCore && !isSystemAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => handleResetRoleDefaults(role)}
+                              title="Reset all permissions to standard default template"
+                              className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg transition-colors cursor-pointer"
+                            >
+                              <HiOutlineArrowPath className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Reset</span>
+                            </button>
+                          )}
+
+                          {!isDefaultCore && (
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(role)}
+                              title="Delete Role"
+                              aria-label="Delete role"
+                              className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200 cursor-pointer"
+                            >
+                              <HiOutlineTrash className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ---------- EXPANDED PERMISSIONS ---------- */}
+                  {isExpanded && (
+                    <div className="px-4 pb-4 bg-slate-50 border-t border-slate-200">
+                      <div className="flex flex-wrap justify-between items-center gap-2 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-indigo-600" />
+                          <h4 className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">
+                            Permissions for {role.displayName || role.name}
+                          </h4>
+                        </div>
+                        {!isSystemAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(role)}
+                            className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold inline-flex items-center gap-1"
+                          >
+                            <HiOutlinePencilSquare className="w-3.5 h-3.5" />
+                            Modify Matrix
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {allAvailableModules.map((mod) => {
+                          const perm =
+                            role.permissions?.[mod.key] || {
+                              view: false, create: false, edit: false, delete: false,
+                            };
+                          const hasAny = perm.view || perm.create || perm.edit || perm.delete;
+                          const ModIcon = mod.icon || HiOutlineSparkles;
+
+                          return (
+                            <div
+                              key={mod.key}
+                              className={`p-2.5 rounded-lg border transition-all ${hasAny
+                                ? 'bg-white border-slate-200'
+                                : 'bg-slate-100/60 border-slate-200 opacity-60'
+                                }`}
+                            >
+                              <div className="flex items-center gap-1.5 font-semibold text-[11px] text-slate-900 mb-2">
+                                <ModIcon className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                <span className="truncate">{mod.label}</span>
+                              </div>
+
+                              <div className="grid grid-cols-4 gap-1 text-center text-[10px]">
+                                <div
+                                  className={`py-1 rounded font-semibold ${perm.view
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : 'bg-slate-100 text-slate-400'
+                                    }`}
+                                  title="View"
+                                >
+                                  R
+                                </div>
+                                <div
+                                  className={`py-1 rounded font-semibold ${perm.create
+                                    ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                    : 'bg-slate-100 text-slate-400'
+                                    }`}
+                                  title="Create"
+                                >
+                                  C
+                                </div>
+                                <div
+                                  className={`py-1 rounded font-semibold ${perm.edit
+                                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    : 'bg-slate-100 text-slate-400'
+                                    }`}
+                                  title="Edit"
+                                >
+                                  E
+                                </div>
+                                <div
+                                  className={`py-1 rounded font-semibold ${perm.delete
+                                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                    : 'bg-slate-100 text-slate-400'
+                                    }`}
+                                  title="Delete"
+                                >
+                                  D
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
 
-      {/* Create / Edit Role Modal */}
+      {/* ===================== CREATE / EDIT MODAL ===================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={closeModal}></div>
-          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            {/* Modal Header */}
-            <div className="p-5 border-b border-slate-200 flex justify-between items-center shrink-0 bg-slate-50">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
-                  <HiOutlineShieldCheck className="w-5 h-5" />
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-3 md:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="role-modal-title"
+        >
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            onClick={closeModal}
+            aria-hidden="true"
+          />
+          <div className="relative bg-white rounded-t-2xl sm:rounded-2xl border-0 sm:border border-slate-200 shadow-2xl w-full sm:max-w-5xl h-[96dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="px-4 sm:px-5 py-3.5 border-b border-slate-200 flex justify-between items-center gap-3 shrink-0 bg-slate-50">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
+                  <HiOutlineShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                    {editingRole ? `Edit Role: ${editingRole.displayName || editingRole.name}` : 'Create New Position & Permissions'}
+                <div className="min-w-0">
+                  <h3
+                    id="role-modal-title"
+                    className="text-sm sm:text-lg font-bold text-slate-900 truncate"
+                  >
+                    {editingRole
+                      ? `Edit: ${editingRole.displayName || editingRole.name}`
+                      : 'Create New Position & Permissions'}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Assign fine-grained access (View, Create, Edit, Delete) across software modules.
+                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1 hidden sm:block">
+                    Assign fine-grained access (View, Create, Edit, Delete) across modules.
                   </p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={closeModal}
-                className="text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                className="p-1.5 -mr-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-lg transition-colors shrink-0"
+                aria-label="Close"
               >
                 <HiOutlineXMark className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Form */}
-            <form id="role-matrix-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-              {/* Quick Base Role Template Cards */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2.5">
+            {/* Form */}
+            <form
+              id="role-matrix-form"
+              onSubmit={handleSubmit}
+              className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5"
+            >
+              {/* ---------- TEMPLATE SELECTOR ---------- */}
+              <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
                   <div>
-                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <HiOutlineSparkles className="w-4 h-4 text-indigo-600" />
-                      Select Base Role Template (Loads Default Permissions)
+                    <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <HiOutlineSparkles className="w-3.5 h-3.5" />
+                      Select Base Role Template
                     </span>
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      Pick a template to instantly apply default capabilities for HR, Team Head, Staff or Accountant.
+                      Pick a template to instantly apply default capabilities.
                     </p>
                   </div>
-
                   {selectedTemplateKey && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      "{selectedTemplateKey}" Defaults Loaded
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      "{selectedTemplateKey}" Loaded
                     </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
-                  {ROLE_TEMPLATES.map(tmpl => {
-                    const isSelected = selectedTemplateKey === tmpl.key || (!editingRole && roleForm.name === tmpl.name);
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {ROLE_TEMPLATES.map((tmpl) => {
+                    const isSelected =
+                      selectedTemplateKey === tmpl.key ||
+                      (!editingRole && roleForm.name === tmpl.name);
                     const TmplIcon = tmpl.icon;
                     return (
                       <button
                         key={tmpl.key}
                         type="button"
                         onClick={() => handleApplyTemplate(tmpl)}
-                        className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden group cursor-pointer ${
-                          isSelected
-                            ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500 shadow-xs'
-                            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'
-                        }`}
+                        className={`p-2.5 rounded-lg border text-left transition-all relative ${isSelected
+                          ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500'
+                          : 'bg-white border-slate-200 hover:bg-slate-50'
+                          }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 group-hover:text-indigo-600'
-                          }`}>
-                            <TmplIcon className="w-4 h-4" />
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div
+                            className={`w-7 h-7 rounded-lg flex items-center justify-center ${isSelected
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-slate-100 text-slate-600'
+                              }`}
+                          >
+                            <TmplIcon className="w-3.5 h-3.5" />
                           </div>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                            isSelected ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-slate-100 text-slate-600 border-slate-200'
-                          }`}>
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isSelected
+                              ? 'bg-indigo-100 text-indigo-700 border-indigo-200'
+                              : 'bg-slate-100 text-slate-600 border-slate-200'
+                              }`}
+                          >
                             {tmpl.badge}
                           </span>
                         </div>
-                        <div className="text-xs font-bold text-slate-900 truncate">{tmpl.displayName}</div>
-                        <div className="text-[10px] text-slate-500 truncate mt-0.5">{tmpl.category}</div>
+                        <div className="text-[11px] font-bold text-slate-900 truncate">
+                          {tmpl.displayName}
+                        </div>
+                        <div className="text-[10px] text-slate-500 truncate mt-0.5">
+                          {tmpl.category}
+                        </div>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Role Basic Info */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* ---------- BASIC INFO ---------- */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Role Display Name *
-                  </label>
+                  <label className={tokens.label}>Role Display Name *</label>
                   <input
                     type="text"
                     required
                     value={roleForm.displayName}
-                    onChange={(e) => setRoleForm(prev => ({ ...prev, displayName: e.target.value }))}
-                    placeholder="e.g. Senior Accountant / Operations Lead"
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    onChange={(e) =>
+                      setRoleForm((prev) => ({ ...prev, displayName: e.target.value }))
+                    }
+                    placeholder="e.g. Senior Accountant"
+                    className={tokens.input}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Unique System Key * {editingRole && <span className="text-slate-400 font-normal">(Permanent)</span>}
+                  <label className={tokens.label}>
+                    Unique System Key *{' '}
+                    {editingRole && <span className="text-slate-400 font-normal">(Permanent)</span>}
                   </label>
                   <input
                     type="text"
                     required
                     disabled={!!editingRole}
                     value={roleForm.name}
-                    onChange={(e) => setRoleForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="e.g. Accountant or Operations_Manager"
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:bg-slate-100"
+                    onChange={(e) => setRoleForm((prev) => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g. Accountant"
+                    className={tokens.input}
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Position Purpose / Description
-                  </label>
+                  <label className={tokens.label}>Position Purpose / Description</label>
                   <textarea
                     rows={2}
                     value={roleForm.description}
-                    onChange={(e) => setRoleForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe responsibility scope, reporting structure, or department ownership..."
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-xs text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-none transition-all"
+                    onChange={(e) =>
+                      setRoleForm((prev) => ({ ...prev, description: e.target.value }))
+                    }
+                    placeholder="Describe responsibility scope, reporting structure…"
+                    className={`${tokens.input} resize-none`}
                   />
                 </div>
               </div>
 
-              {/* Permissions Header & Bulk Tools */}
-              <div className="border-t border-slate-200 pt-5">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+              {/* ---------- PERMISSIONS MATRIX ---------- */}
+              <div className="border-t border-slate-200 pt-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
                       Modular Capabilities Matrix
                     </h4>
-                    <p className="text-xs text-slate-500 mt-0.5">Toggle exact View, Create, Edit, and Delete actions below.</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Toggle View, Create, Edit, and Delete actions.
+                    </p>
                   </div>
 
-                  {/* Bulk Actions with React Icons */}
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     {selectedTemplateKey && (
                       <button
                         type="button"
                         onClick={() => {
-                          const tmpl = ROLE_TEMPLATES.find(t => t.key === selectedTemplateKey);
+                          const tmpl = ROLE_TEMPLATES.find((t) => t.key === selectedTemplateKey);
                           if (tmpl) handleApplyTemplate(tmpl);
                         }}
-                        className="px-2.5 py-1.5 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
                       >
-                        <HiOutlineArrowPath className="w-3.5 h-3.5" />
-                        Reset to {selectedTemplateKey} Defaults
+                        <HiOutlineArrowPath className="w-3 h-3" />
+                        Reset
                       </button>
                     )}
                     <button
                       type="button"
                       onClick={() => handleBulkSetPermissions('full')}
-                      className="px-2.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors cursor-pointer"
                     >
-                      <HiOutlineCheck className="w-3.5 h-3.5" />
-                      Select All
+                      <HiOutlineCheck className="w-3 h-3" />
+                      All
                     </button>
                     <button
                       type="button"
                       onClick={() => handleBulkSetPermissions('read')}
-                      className="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg transition-colors cursor-pointer"
                     >
-                      <HiOutlineEye className="w-3.5 h-3.5" />
-                      Read-Only
+                      <HiOutlineEye className="w-3 h-3" />
+                      Read
                     </button>
                     <button
                       type="button"
                       onClick={() => handleBulkSetPermissions('clear')}
-                      className="px-2.5 py-1.5 text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors cursor-pointer"
                     >
-                      <HiOutlineXMark className="w-3.5 h-3.5" />
+                      <HiOutlineXMark className="w-3 h-3" />
                       Clear
                     </button>
                   </div>
                 </div>
 
-                {/* Modules Matrix Table */}
-                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 font-semibold uppercase tracking-wider">
-                      <tr>
-                        <th className="px-4 py-3">Module / Capability</th>
-                        <th className="px-4 py-3 text-center">View (Read)</th>
-                        <th className="px-4 py-3 text-center">Create (Add)</th>
-                        <th className="px-4 py-3 text-center">Edit (Update)</th>
-                        <th className="px-4 py-3 text-center">Delete (Remove)</th>
-                        <th className="px-4 py-3 text-right">Row Toggle</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {allAvailableModules.map(mod => {
-                        const perm = roleForm.permissions[mod.key] || { view: false, create: false, edit: false, delete: false };
-                        const activeTemplate = ROLE_TEMPLATES.find(t => t.key === selectedTemplateKey);
-                        const ModIcon = mod.icon || HiOutlineSparkles;
+                {/* Matrix — scrollable on mobile */}
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-slate-700 min-w-[600px]">
+                      <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 font-semibold uppercase tracking-wider text-[10px]">
+                        <tr>
+                          <th className="px-3 py-2.5">Module</th>
+                          <th className="px-2 py-2.5 text-center w-16">View</th>
+                          <th className="px-2 py-2.5 text-center w-16">Create</th>
+                          <th className="px-2 py-2.5 text-center w-16">Edit</th>
+                          <th className="px-2 py-2.5 text-center w-16">Delete</th>
+                          <th className="px-2 py-2.5 text-right w-20">Row</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {allAvailableModules.map((mod) => {
+                          const perm =
+                            roleForm.permissions[mod.key] || {
+                              view: false, create: false, edit: false, delete: false,
+                            };
+                          const activeTemplate = ROLE_TEMPLATES.find(
+                            (t) => t.key === selectedTemplateKey
+                          );
+                          const ModIcon = mod.icon || HiOutlineSparkles;
 
-                        return (
-                          <tr key={mod.key} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="px-4 py-3">
-                              <div className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-md bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
-                                  <ModIcon className="w-3.5 h-3.5" />
+                          return (
+                            <tr key={mod.key} className="hover:bg-slate-50/70 transition-colors">
+                              <td className="px-3 py-2.5">
+                                <div className="font-bold text-slate-900 text-[11px] flex items-center gap-1.5">
+                                  <div className="w-5 h-5 rounded bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
+                                    <ModIcon className="w-3 h-3" />
+                                  </div>
+                                  <span className="truncate">{mod.label}</span>
+                                  {activeTemplate?.permissions?.[mod.key]?.view && (
+                                    <span className="hidden sm:inline text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shrink-0">
+                                      Base
+                                    </span>
+                                  )}
                                 </div>
-                                <span>{mod.label}</span>
-                                {activeTemplate?.permissions?.[mod.key]?.view && (
-                                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
-                                    Base Default
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-[11px] text-slate-500 ml-8">{mod.desc}</div>
-                            </td>
+                                <div className="text-[10px] text-slate-500 ml-6.5 line-clamp-1">
+                                  {mod.desc}
+                                </div>
+                              </td>
 
-                            {/* View */}
-                            <td className="px-4 py-3 text-center">
-                              <div className="inline-flex items-center gap-1 justify-center">
-                                <input
-                                  type="checkbox"
-                                  checked={perm.view}
-                                  onChange={() => handlePermissionToggle(mod.key, 'view')}
-                                  className={`w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer ${
-                                    activeTemplate?.permissions?.[mod.key]?.view ? 'ring-1 ring-emerald-500' : ''
-                                  }`}
-                                />
-                                {perm.view && activeTemplate && !activeTemplate.permissions?.[mod.key]?.view && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1 py-0.2 rounded">
-                                    <HiOutlinePlus className="w-2.5 h-2.5" /> Added
-                                  </span>
-                                )}
-                                {!perm.view && activeTemplate?.permissions?.[mod.key]?.view && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1 py-0.2 rounded">
-                                    <HiOutlineMinus className="w-2.5 h-2.5" /> Revoked
-                                  </span>
-                                )}
-                              </div>
-                            </td>
+                              {['view', 'create', 'edit', 'delete'].map((action) => (
+                                <td key={action} className="px-2 py-2.5 text-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={perm[action]}
+                                    onChange={() => handlePermissionToggle(mod.key, action)}
+                                    className={`w-4 h-4 rounded cursor-pointer ${action === 'delete'
+                                      ? 'text-rose-600 border-slate-300 focus:ring-rose-500'
+                                      : 'text-indigo-600 border-slate-300 focus:ring-indigo-500'
+                                      } ${activeTemplate?.permissions?.[mod.key]?.[action]
+                                        ? action === 'delete'
+                                          ? 'ring-1 ring-rose-400'
+                                          : 'ring-1 ring-emerald-400'
+                                        : ''
+                                      }`}
+                                  />
+                                </td>
+                              ))}
 
-                            {/* Create */}
-                            <td className="px-4 py-3 text-center">
-                              <div className="inline-flex items-center gap-1 justify-center">
-                                <input
-                                  type="checkbox"
-                                  checked={perm.create}
-                                  onChange={() => handlePermissionToggle(mod.key, 'create')}
-                                  className={`w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer ${
-                                    activeTemplate?.permissions?.[mod.key]?.create ? 'ring-1 ring-emerald-500' : ''
-                                  }`}
-                                />
-                                {perm.create && activeTemplate && !activeTemplate.permissions?.[mod.key]?.create && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1 py-0.2 rounded">
-                                    <HiOutlinePlus className="w-2.5 h-2.5" /> Added
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Edit */}
-                            <td className="px-4 py-3 text-center">
-                              <div className="inline-flex items-center gap-1 justify-center">
-                                <input
-                                  type="checkbox"
-                                  checked={perm.edit}
-                                  onChange={() => handlePermissionToggle(mod.key, 'edit')}
-                                  className={`w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer ${
-                                    activeTemplate?.permissions?.[mod.key]?.edit ? 'ring-1 ring-emerald-500' : ''
-                                  }`}
-                                />
-                                {perm.edit && activeTemplate && !activeTemplate.permissions?.[mod.key]?.edit && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1 py-0.2 rounded">
-                                    <HiOutlinePlus className="w-2.5 h-2.5" /> Added
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Delete */}
-                            <td className="px-4 py-3 text-center">
-                              <div className="inline-flex items-center gap-1 justify-center">
-                                <input
-                                  type="checkbox"
-                                  checked={perm.delete}
-                                  onChange={() => handlePermissionToggle(mod.key, 'delete')}
-                                  className={`w-4 h-4 rounded text-rose-600 border-slate-300 focus:ring-rose-500 cursor-pointer ${
-                                    activeTemplate?.permissions?.[mod.key]?.delete ? 'ring-1 ring-rose-500' : ''
-                                  }`}
-                                />
-                                {perm.delete && activeTemplate && !activeTemplate.permissions?.[mod.key]?.delete && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1 py-0.2 rounded">
-                                    <HiOutlinePlus className="w-2.5 h-2.5" /> Added
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Quick Row Toggle */}
-                            <td className="px-4 py-3 text-right">
-                              <button
-                                type="button"
-                                onClick={() => handleRowToggle(mod.key)}
-                                className="text-[11px] font-semibold text-indigo-700 hover:text-indigo-800 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 cursor-pointer"
-                              >
-                                <HiOutlineArrowsRightLeft className="w-3 h-3" />
-                                Toggle
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                              <td className="px-2 py-2.5 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRowToggle(mod.key)}
+                                  className="text-[10px] font-semibold text-indigo-700 hover:text-indigo-800 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 cursor-pointer"
+                                  title="Toggle all for this row"
+                                >
+                                  <HiOutlineArrowsRightLeft className="w-2.5 h-2.5" />
+                                  All
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
-                {/* Add New Custom Module / Tab Bar */}
-                <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                  <div>
-                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                      <HiOutlineSparkles className="w-4 h-4 text-indigo-600" />
-                      Extend System with a Custom Module
+                {/* Add Custom Module */}
+                <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
+                      <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-600" />
+                      Extend System with Custom Module
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5 block">Define permissions for custom features like 'Inventory', 'CRM Leads', 'Fleet', etc.</span>
+                    <span className="text-[10px] text-slate-500 mt-0.5 block">
+                      e.g. Inventory, CRM Leads, Fleet, etc.
+                    </span>
                   </div>
 
                   {!showAddModuleInput ? (
                     <button
                       type="button"
                       onClick={() => setShowAddModuleInput(true)}
-                      className="px-3 py-1.5 bg-white hover:bg-slate-100 text-indigo-700 border border-slate-300 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-indigo-700 border border-slate-300 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0"
                     >
-                      <HiOutlinePlus className="w-3.5 h-3.5" />
-                      Add Custom Module
+                      <HiOutlinePlus className="w-3 h-3" />
+                      Add Module
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="flex items-center gap-1.5 w-full sm:w-auto">
                       <input
                         type="text"
                         value={newModuleName}
                         onChange={(e) => setNewModuleName(e.target.value)}
-                        placeholder="Module name (e.g. Inventory)"
-                        className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-indigo-500"
+                        placeholder="Module name"
+                        className="flex-1 sm:flex-initial sm:w-40 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-900 outline-none focus:border-indigo-500"
                       />
                       <button
                         type="button"
                         onClick={handleAddNewModule}
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                        className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-bold transition-colors shrink-0"
                       >
                         Add
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowAddModuleInput(false)}
-                        className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 cursor-pointer"
+                        className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 shrink-0"
+                        aria-label="Cancel"
                       >
-                        <HiOutlineXMark className="w-4 h-4" />
+                        <HiOutlineXMark className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* Modal Actions */}
-              <div className="border-t border-slate-200 pt-4 flex items-center justify-end gap-3 shrink-0">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-300 transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <HiOutlineCheck className="w-4 h-4" />
-                  {editingRole
-                    ? (updateMutation.isPending ? 'Updating...' : 'Update Permissions')
-                    : (createMutation.isPending ? 'Creating...' : 'Create Role & Permissions')
-                  }
-                </button>
-              </div>
             </form>
+
+            {/* Sticky Footer */}
+            <div className="border-t border-slate-200 px-4 sm:px-5 py-3 flex items-center justify-end gap-2 shrink-0 bg-white">
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={isSaving}
+                className={`${tokens.btnSecondary} px-4 py-2.5 text-sm`}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="role-matrix-form"
+                disabled={isSaving}
+                className={`${tokens.btnPrimary} px-4 py-2.5 text-sm`}
+              >
+                {isSaving && (
+                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                )}
+                <HiOutlineCheck className="w-4 h-4" />
+                <span>
+                  {editingRole
+                    ? isSaving
+                      ? 'Updating…'
+                      : 'Update Permissions'
+                    : isSaving
+                      ? 'Creating…'
+                      : 'Create Role'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       )}

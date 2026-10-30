@@ -8,90 +8,135 @@ const isImage = (filename) => {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
 };
 
+const getPriorityStyles = (priority) => {
+  switch (priority) {
+    case 'Urgent':
+      return 'bg-rose-50 text-rose-700 border-rose-200';
+    case 'Important':
+      return 'bg-amber-50 text-amber-700 border-amber-200';
+    default:
+      return 'bg-blue-50 text-blue-700 border-blue-200';
+  }
+};
+
 const AnnouncementsWidget = () => {
   const { data: announcements = [], isLoading } = useQuery({
     queryKey: ['announcements'],
     queryFn: async () => {
       const { data } = await api.get('/announcements');
       return Array.isArray(data) ? data : [];
-    }
+    },
   });
 
   if (isLoading) {
     return (
-      <div className="bg-white border border-slate-200 rounded-xl p-6 h-full flex justify-center items-center shadow-xs">
-        <div className="w-7 h-7 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+      <div className="bg-white border border-slate-200 rounded-xl p-6 h-full min-h-[200px] flex justify-center items-center shadow-sm">
+        <div className="w-7 h-7 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
       </div>
     );
   }
 
   const activeAnnouncements = announcements.filter(
-    ann => !ann.expireDate || new Date(ann.expireDate) >= new Date()
+    (ann) => !ann.expireDate || new Date(ann.expireDate) >= new Date()
   );
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4 shrink-0">
+    <div className="bg-white border border-slate-200 rounded-xl shadow-sm h-full flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-3.5 border-b border-slate-200 shrink-0">
         <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-          <HiOutlineMegaphone className="w-4 h-4 text-amber-500" />
-          Company Announcements
+          <span className="w-7 h-7 rounded-lg bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
+            <HiOutlineMegaphone className="w-4 h-4" />
+          </span>
+          <span className="truncate">Company Announcements</span>
+          {activeAnnouncements.length > 0 && (
+            <span className="ml-1 text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full shrink-0">
+              {activeAnnouncements.length}
+            </span>
+          )}
         </h2>
       </div>
-      
-      <div className="space-y-3 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
+
+      {/* Body */}
+      <div className="p-3 sm:p-4 space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
         {activeAnnouncements.length === 0 ? (
-          <p className="text-slate-400 text-xs italic py-6 text-center">No recent announcements.</p>
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2">
+              <HiOutlineMegaphone className="w-5 h-5" />
+            </div>
+            <p className="text-slate-500 text-xs font-medium">No recent announcements</p>
+            <p className="text-slate-400 text-[11px] mt-0.5">You're all caught up!</p>
+          </div>
         ) : (
-          activeAnnouncements.map(ann => (
-            <div key={ann._id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors">
-              <div className="flex justify-between items-start mb-1.5">
-                <h4 className="text-slate-900 font-semibold text-xs leading-snug">{ann.title}</h4>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ml-2 ${
-                  ann.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
-                  ann.priority === 'Important' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                  'bg-blue-50 text-blue-700 border border-blue-200'
-                }`}>
+          activeAnnouncements.map((ann) => (
+            <div
+              key={ann._id}
+              className="p-3 sm:p-3.5 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-white transition-colors"
+            >
+              {/* Title + Priority */}
+              <div className="flex justify-between items-start gap-2 mb-1.5">
+                <h4 className="text-slate-900 font-semibold text-xs leading-snug break-words min-w-0 flex-1">
+                  {ann.title}
+                </h4>
+                <span
+                  className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 border ${getPriorityStyles(
+                    ann.priority
+                  )}`}
+                >
                   {ann.priority}
                 </span>
               </div>
-              <p className="text-xs text-slate-600 whitespace-pre-wrap break-words mb-3">{ann.content}</p>
-              
+
+              {/* Content */}
+              <p className="text-xs text-slate-600 whitespace-pre-wrap break-words mb-3 leading-relaxed">
+                {ann.content}
+              </p>
+
+              {/* Attachments */}
               {ann.attachments && ann.attachments.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2.5">
-                  {ann.attachments.map((file, idx) => (
+                  {ann.attachments.map((file, idx) =>
                     isImage(file) ? (
-                      <a 
-                        key={idx} 
-                        href={`${API_BASE_URL}${file}`} 
-                        target="_blank" 
+                      <a
+                        key={idx}
+                        href={`${API_BASE_URL}${file}`}
+                        target="_blank"
                         rel="noreferrer"
-                        className="block w-full mt-1"
+                        className="block w-full mt-1 group"
                       >
-                        <img 
-                          src={`${API_BASE_URL}${file}`} 
-                          alt={`Attachment ${idx + 1}`} 
-                          className="max-w-full h-auto max-h-40 object-cover rounded-lg border border-slate-200 hover:border-indigo-500 transition-colors"
+                        <img
+                          src={`${API_BASE_URL}${file}`}
+                          alt={`Attachment ${idx + 1}`}
+                          className="w-full max-h-40 object-cover rounded-lg border border-slate-200 group-hover:border-indigo-400 transition-colors"
+                          loading="lazy"
                         />
                       </a>
                     ) : (
-                      <a 
-                        key={idx} 
-                        href={`${API_BASE_URL}${file}`} 
-                        target="_blank" 
+                      <a
+                        key={idx}
+                        href={`${API_BASE_URL}${file}`}
+                        target="_blank"
                         rel="noreferrer"
-                        className="text-xs flex items-center gap-1.5 bg-white border border-slate-300 text-slate-700 px-2.5 py-1 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-colors shadow-xs"
+                        className="text-[11px] sm:text-xs inline-flex items-center gap-1.5 bg-white border border-slate-300 text-slate-700 px-2.5 py-1.5 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 transition-colors shadow-sm"
                       >
-                        <HiOutlinePaperClip className="w-3.5 h-3.5" />
-                        Attachment {idx + 1}
+                        <HiOutlinePaperClip className="w-3.5 h-3.5 shrink-0" />
+                        <span>Attachment {idx + 1}</span>
                       </a>
                     )
-                  ))}
+                  )}
                 </div>
               )}
 
-              <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium pt-1 border-t border-slate-200/60">
-                <span>By {ann.createdBy?.name || 'HR'}</span>
-                <span>{new Date(ann.createdAt).toLocaleDateString()}</span>
+              {/* Footer */}
+              <div className="flex items-center justify-between gap-2 text-[10px] text-slate-500 font-medium pt-2 border-t border-slate-200/70">
+                <span className="truncate">By {ann.createdBy?.name || 'HR'}</span>
+                <span className="shrink-0">
+                  {new Date(ann.createdAt).toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
             </div>
           ))
