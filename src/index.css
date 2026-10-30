@@ -2,7 +2,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -24,39 +24,172 @@
     --radius: 0.5rem;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-}
-
-@layer base {
   * {
-    border-color: theme('colors.slate.700');
+    border-color: #e2e8f0;
   }
+
   body {
-    @apply bg-[#0f172a] text-slate-100;
-    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
   }
 }
 
+/* =========================================================
+   ERP Clean Design System Overrides
+   Transforms dark theme utility artifacts into crisp ERP UI
+   ========================================================= */
+
+/* Modern White ERP Card */
 .glass-panel {
-  @apply bg-slate-800/50 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+/* Ensure headings and text within ERP cards are crisp black/slate */
+.glass-panel h1,
+.glass-panel h2,
+.glass-panel h3,
+.glass-panel h4,
+.glass-panel h5,
+.glass-panel h6 {
+  color: #0f172a !important;
+}
+
+/* Text white overrides inside light surfaces, except for colored buttons & badges */
+.glass-panel .text-white:not(button):not(button *):not(a.bg-indigo-600 *):not(a.bg-emerald-600 *):not(.bg-indigo-600):not(.bg-indigo-600 *):not(.bg-emerald-600):not(.bg-emerald-600 *):not(.bg-rose-600):not(.bg-rose-600 *):not(.bg-blue-600):not(.bg-blue-600 *):not(.badge-white):not(.bg-purple-600 *) {
+  color: #0f172a !important;
+}
+
+/* Secondary texts */
+.glass-panel .text-slate-400 {
+  color: #64748b !important;
+}
+.glass-panel .text-slate-300 {
+  color: #334155 !important;
+}
+.glass-panel .text-slate-200 {
+  color: #1e293b !important;
+}
+
+/* Borders & Dividers */
+.glass-panel .border-slate-800,
+.glass-panel .border-slate-750,
+.glass-panel .border-slate-700,
+.glass-panel .border-slate-700\/60,
+.glass-panel .border-slate-700\/50,
+.glass-panel .border-slate-700\/40 {
+  border-color: #e2e8f0 !important;
+}
+
+.glass-panel .divide-slate-800,
+.glass-panel .divide-slate-700,
+.glass-panel .divide-slate-700\/50 {
+  border-color: #f1f5f9 !important;
+}
+
+/* Nested slate card containers inside panels */
+.glass-panel .bg-slate-900,
+.glass-panel .bg-slate-900\/80,
+.glass-panel .bg-slate-900\/60,
+.glass-panel .bg-slate-900\/50,
+.glass-panel .bg-slate-900\/40,
+.glass-panel .bg-slate-850,
+.glass-panel .bg-slate-800,
+.glass-panel .bg-slate-800\/80,
+.glass-panel .bg-slate-800\/60,
+.glass-panel .bg-slate-800\/50,
+.glass-panel .bg-slate-800\/40,
+.glass-panel .bg-slate-800\/30,
+.glass-panel .bg-slate-800\/20 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Table styling within ERP panels */
+table thead {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+table thead th {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+table tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+table tbody td {
+  color: #1e293b !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* ERP Form Controls (Inputs, Selects, Textareas) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="search"],
+select,
+textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #6366f1 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* ERP Modals & Dialogs */
+.fixed.inset-0.bg-black\/80,
+.fixed.inset-0.bg-slate-950\/80,
+.fixed.inset-0.bg-\[\#0f172a\]\/80 {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.fixed.inset-0 > div.bg-slate-900,
+.fixed.inset-0 > div.bg-slate-950,
+.fixed.inset-0 > div.glass-panel {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* SweetAlert2 Light ERP Theme */
+.swal2-popup {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.swal2-title {
+  color: #0f172a !important;
+}
+
+.swal2-html-container {
+  color: #475569 !important;
 }

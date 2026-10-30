@@ -1,42 +1,38 @@
 import { Link, useLocation } from 'react-router-dom';
+import { HiOutlineBuildingOffice2, HiOutlinePlus } from 'react-icons/hi2';
 
 const Navbar = () => {
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 w-full backdrop-blur-lg bg-slate-900/80 border-b border-slate-800">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+    <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-slate-200">
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-xs">
+            <HiOutlineBuildingOffice2 className="w-5 h-5" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-white group-hover:text-indigo-400 transition-colors">
+          <span className="font-bold text-base tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
             NexusCorp
           </span>
         </Link>
         
-        <div className="flex gap-4">
+        <div className="flex items-center gap-2">
           <Link
             to="/"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               location.pathname === '/' 
-                ? 'bg-slate-800 text-white' 
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                ? 'bg-slate-100 text-slate-900 font-bold' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             Dashboard
           </Link>
           <Link
             to="/add-company"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              location.pathname === '/add-company' 
-                ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)]' 
-                : 'bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white border border-indigo-500/20 hover:shadow-[0_0_15px_rgba(79,70,229,0.5)]'
-            }`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-xs"
           >
-            + Add Company
+            <HiOutlinePlus className="w-3.5 h-3.5" />
+            <span>Add Company</span>
           </Link>
         </div>
       </div>

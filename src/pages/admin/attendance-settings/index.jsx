@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { HiOutlineMapPin } from 'react-icons/hi2';
 import api from '../../../api/axios';
 
 const AttendanceSettings = () => {
@@ -99,50 +100,47 @@ const AttendanceSettings = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center p-10"><div className="animate-spin inline-block w-8 h-8 border-4 rounded-full border-indigo-500 border-t-transparent"></div></div>;
+    return <div className="text-center p-10"><div className="animate-spin inline-block w-8 h-8 border-4 rounded-full border-indigo-600 border-t-transparent"></div></div>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-200">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Attendance Policy Settings</h1>
-        <p className="text-slate-400">Configure global office timings, geofencing, and late mark policies.</p>
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Attendance Policy Settings</h1>
+        <p className="text-sm text-slate-500">Configure global office timings, geofencing, and late mark policies.</p>
       </div>
 
-      <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8 space-y-8">
           
           {/* Geofencing Section */}
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4 border-b border-slate-700 pb-2">Location & Geofencing</h2>
+            <h2 className="text-base font-semibold text-slate-900 mb-4 border-b border-slate-200 pb-2">Location & Geofencing</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Office Latitude</label>
-                <input type="number" step="any" {...register('officeLatitude', { required: true })} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Office Latitude</label>
+                <input type="number" step="any" {...register('officeLatitude', { required: true })} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Office Longitude</label>
-                <input type="number" step="any" {...register('officeLongitude', { required: true })} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Office Longitude</label>
+                <input type="number" step="any" {...register('officeLongitude', { required: true })} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
               </div>
               <div className="md:col-span-2">
-                <button type="button" onClick={handleGetCurrentLocation} className="text-sm bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 px-4 py-2 rounded-lg transition-colors">
+                <button type="button" onClick={handleGetCurrentLocation} className="text-sm font-medium bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 px-4 py-2 rounded-lg transition-colors">
                   Use My Current Location
                 </button>
               </div>
 
               {/* Display Address & Map */}
-              <div className="md:col-span-2 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-                <label className="block text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
+              <div className="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
+                  <HiOutlineMapPin className="w-5 h-5 text-indigo-600" />
                   Exact Location View
                 </label>
                 
                 {lat && lng ? (
                   <div className="space-y-4">
-                    <div className="w-full h-64 rounded-lg overflow-hidden border border-slate-700 bg-slate-900">
+                    <div className="w-full h-64 rounded-lg overflow-hidden border border-slate-200 bg-white">
                       <iframe 
                         title="Map View"
                         width="100%" 
@@ -153,33 +151,33 @@ const AttendanceSettings = () => {
                         src={`https://maps.google.com/maps?q=${lat},${lng}&t=&z=17&ie=UTF8&iwloc=&output=embed`}
                       ></iframe>
                     </div>
-                    <div className="text-slate-200 text-sm w-full">
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Editable Address Label</label>
+                    <div className="text-slate-800 text-sm w-full">
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Editable Address Label</label>
                       <div className="relative">
                         <textarea 
                           {...register('officeAddress')} 
                           rows={2}
-                          className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none resize-none"
+                          className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-none text-sm"
                           placeholder="Address will auto-fetch or you can enter manually..."
                         />
                         {isFetchingAddress && (
                           <div className="absolute right-3 top-3">
-                            <span className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin block"></span>
+                            <span className="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin block"></span>
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-slate-500 text-sm italic py-4 text-center bg-slate-900/50 rounded-lg border border-dashed border-slate-700">
+                  <div className="text-slate-500 text-sm italic py-4 text-center bg-white rounded-lg border border-dashed border-slate-300">
                     Enter latitude and longitude to see the exact map location
                   </div>
                 )}
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-1">Allowed Radius (Meters)</label>
-                <input type="number" {...register('allowedRadiusMeters', { required: true, min: 10 })} className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Allowed Radius (Meters)</label>
+                <input type="number" {...register('allowedRadiusMeters', { required: true, min: 10 })} className="w-full max-w-md bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
                 <p className="text-xs text-slate-500 mt-1">Maximum distance an employee can be from the office to punch in.</p>
               </div>
             </div>
@@ -187,34 +185,34 @@ const AttendanceSettings = () => {
 
           {/* Timings Section */}
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4 border-b border-slate-700 pb-2">Office Timings</h2>
+            <h2 className="text-base font-semibold text-slate-900 mb-4 border-b border-slate-200 pb-2">Office Timings</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Punch In Time</label>
-                <input type="time" {...register('inTime', { required: true })} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Punch In Time</label>
+                <input type="time" {...register('inTime', { required: true })} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Punch Out Time</label>
-                <input type="time" {...register('outTime', { required: true })} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Punch Out Time</label>
+                <input type="time" {...register('outTime', { required: true })} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Buffer Time (Minutes)</label>
-                <input type="number" {...register('bufferMinutes', { required: true, min: 0 })} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Buffer Time (Minutes)</label>
+                <input type="number" {...register('bufferMinutes', { required: true, min: 0 })} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
                 <p className="text-xs text-slate-500 mt-1">Grace period before marking as late (e.g., 15 mins).</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Allowed Late Marks</label>
-                <input type="number" {...register('allowedLateMarks', { required: true, min: 0 })} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Allowed Late Marks</label>
+                <input type="number" {...register('allowedLateMarks', { required: true, min: 0 })} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm" />
                 <p className="text-xs text-slate-500 mt-1">Number of late arrivals allowed before salary deduction.</p>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end pt-4 border-t border-slate-200">
             <button
               type="submit"
               disabled={updateMutation.isPending}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-colors shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors shadow-xs disabled:opacity-50 text-sm"
             >
               {updateMutation.isPending ? 'Saving...' : 'Save Settings'}
             </button>

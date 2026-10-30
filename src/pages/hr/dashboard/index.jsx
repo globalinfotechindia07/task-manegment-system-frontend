@@ -1,13 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../api/axios';
 import { useMemo } from 'react';
+import {
+  HiOutlineUsers,
+  HiOutlineBriefcase,
+  HiOutlineCalendarDays,
+  HiOutlineExclamationTriangle,
+  HiOutlineCheckCircle,
+  HiOutlineClock,
+  HiOutlineMegaphone
+} from 'react-icons/hi2';
 
 const HRDashboard = () => {
   const { data: users = [], isLoading: isLoadingUsers } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
       const { data } = await api.get('/users');
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
@@ -15,7 +24,7 @@ const HRDashboard = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       const { data } = await api.get('/tasks');
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
@@ -23,12 +32,11 @@ const HRDashboard = () => {
     queryKey: ['announcements'],
     queryFn: async () => {
       const { data } = await api.get('/announcements');
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
   const activeUsers = useMemo(() => users.filter(u => u.status === 'Active' || u.status === undefined), [users]);
-  
   const inProgressTasks = useMemo(() => tasks.filter(t => t.status === 'In Progress'), [tasks]);
   const completedTasks = useMemo(() => tasks.filter(t => t.status === 'Completed'), [tasks]);
   const pendingTasks = useMemo(() => tasks.filter(t => t.status === 'Pending' || t.status === 'On Hold'), [tasks]);
@@ -55,99 +63,93 @@ const HRDashboard = () => {
 
   if (isLoadingUsers || isLoadingTasks || isLoadingAnnouncements) {
     return (
-      <div className="flex items-center justify-center h-full min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white mb-2">HR Overview</h1>
-        <p className="text-slate-400">Monitor organization-wide activities and employee performance.</p>
+      {/* ERP Header */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">HR Operations & Overview</h1>
+        <p className="text-sm text-slate-500 mt-1">Monitor organization workforce, attendance, deadlines, and staff announcements.</p>
       </div>
 
-      {/* Top Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 mb-1">Total Active Users</p>
-            <h3 className="text-3xl font-bold text-white">{activeUsers.length}</h3>
-          </div>
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
+      {/* Top ERP KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs border-t-4 border-t-blue-500">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Active Users</p>
+          <h3 className="text-3xl font-extrabold text-slate-900">{activeUsers.length}</h3>
+          <p className="text-xs text-slate-400 mt-1">Registered staff</p>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 mb-1">Users Working</p>
-            <h3 className="text-3xl font-bold text-emerald-400">{usersWorking.length}</h3>
-          </div>
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs border-t-4 border-t-emerald-500">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Active on Tasks</p>
+          <h3 className="text-3xl font-extrabold text-emerald-600">{usersWorking.length}</h3>
+          <p className="text-xs text-emerald-600 font-medium mt-1">Currently working</p>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 mb-1">Today's Tasks</p>
-            <h3 className="text-3xl font-bold text-indigo-400">{todaysTasks.length}</h3>
-          </div>
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs border-t-4 border-t-indigo-500">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Today's Tasks</p>
+          <h3 className="text-3xl font-extrabold text-indigo-700">{todaysTasks.length}</h3>
+          <p className="text-xs text-slate-400 mt-1">Scheduled for today</p>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-5 border border-red-500/30 relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 mb-1">Overdue Tasks</p>
-            <h3 className="text-3xl font-bold text-red-400">{overdueTasks.length}</h3>
-          </div>
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs border-t-4 border-t-rose-500">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Overdue Deliverables</p>
+          <h3 className="text-3xl font-extrabold text-rose-600">{overdueTasks.length}</h3>
+          <p className="text-xs text-rose-600 font-medium mt-1">Requires follow-up</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Organization Task Status & Summaries */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-panel p-6">
-            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-              <svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Task Overview
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+            <h2 className="text-base font-bold text-slate-900 mb-5 flex items-center gap-2">
+              <HiOutlineBriefcase className="w-5 h-5 text-indigo-600" />
+              Workforce Task Overview
             </h2>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-slate-800/50 rounded-lg p-4 text-center">
-                <p className="text-3xl font-bold text-emerald-400 mb-1">{completedTasks.length}</p>
-                <p className="text-sm text-slate-400">Completed</p>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                <p className="text-3xl font-extrabold text-emerald-600 mb-1">{completedTasks.length}</p>
+                <p className="text-xs font-semibold text-slate-600">Completed</p>
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 text-center">
-                <p className="text-3xl font-bold text-indigo-400 mb-1">{inProgressTasks.length}</p>
-                <p className="text-sm text-slate-400">In Progress</p>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                <p className="text-3xl font-extrabold text-indigo-700 mb-1">{inProgressTasks.length}</p>
+                <p className="text-xs font-semibold text-slate-600">In Progress</p>
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 text-center">
-                <p className="text-3xl font-bold text-slate-300 mb-1">{pendingTasks.length}</p>
-                <p className="text-sm text-slate-400">Pending</p>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                <p className="text-3xl font-extrabold text-amber-600 mb-1">{pendingTasks.length}</p>
+                <p className="text-xs font-semibold text-slate-600">Pending</p>
               </div>
             </div>
           </div>
 
-          <div className="glass-panel p-6">
-            <h2 className="text-lg font-bold text-white mb-6">Delayed Tasks Tracking</h2>
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+            <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <HiOutlineExclamationTriangle className="w-5 h-5 text-rose-600" />
+              Delayed Tasks Tracking
+            </h2>
             {overdueTasks.length === 0 ? (
-              <p className="text-slate-400 text-sm">No tasks are currently overdue. Great job team!</p>
+              <p className="text-slate-400 text-xs italic py-4">No tasks are currently overdue. All deadlines on track.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {overdueTasks.slice(0, 5).map(task => {
                   const hoursOverdue = Math.floor((now - new Date(task.dueDate)) / (1000 * 60 * 60));
                   const daysOverdue = Math.floor(hoursOverdue / 24);
                   const delayText = daysOverdue > 0 ? `${daysOverdue} days` : `${hoursOverdue} hours`;
 
                   return (
-                    <div key={task._id} className="flex items-center justify-between p-4 bg-slate-800/50 border border-red-500/20 rounded-lg">
+                    <div key={task._id} className="flex items-center justify-between p-3.5 bg-slate-50 border border-rose-200 rounded-xl">
                       <div>
-                        <h4 className="text-white font-medium">{task.title}</h4>
-                        <p className="text-xs text-slate-400 mt-1">Assigned to: <span className="text-slate-300">{task.assignedTo?.name || 'Unknown'}</span></p>
+                        <h4 className="text-slate-900 font-semibold text-xs">{task.title}</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">Assigned to: <span className="text-slate-800 font-medium">{task.assignedTo?.name || 'Unknown'}</span></p>
                       </div>
                       <div className="text-right">
-                        <span className="inline-block px-3 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full">
+                        <span className="inline-block px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold rounded-full">
                           Overdue by {delayText}
                         </span>
                       </div>
@@ -161,34 +163,32 @@ const HRDashboard = () => {
 
         {/* Right Column: Announcements */}
         <div className="space-y-6">
-          <div className="glass-panel p-6 h-full">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                </svg>
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs h-full">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <HiOutlineMegaphone className="w-5 h-5 text-amber-500" />
                 Recent Announcements
               </h2>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               {announcements.length === 0 ? (
-                <p className="text-slate-400 text-sm">No recent announcements.</p>
+                <p className="text-slate-400 text-xs italic py-6 text-center">No recent announcements.</p>
               ) : (
                 announcements.slice(0, 4).map(ann => (
-                  <div key={ann._id} className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-indigo-500/50 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-white font-medium text-sm leading-tight">{ann.title}</h4>
+                  <div key={ann._id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors">
+                    <div className="flex justify-between items-start mb-1.5">
+                      <h4 className="text-slate-900 font-semibold text-xs leading-snug">{ann.title}</h4>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ml-2 ${
-                        ann.priority === 'Urgent' ? 'bg-red-500/20 text-red-400' :
-                        ann.priority === 'Important' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-blue-500/20 text-blue-400'
+                        ann.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                        ann.priority === 'Important' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        'bg-blue-50 text-blue-700 border border-blue-200'
                       }`}>
                         {ann.priority}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 line-clamp-2 mb-3">{ann.content}</p>
-                    <div className="flex justify-between items-center text-[10px] text-slate-500 font-medium">
+                    <p className="text-xs text-slate-600 line-clamp-2 mb-2">{ann.content}</p>
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium pt-1 border-t border-slate-200/60">
                       <span>By {ann.createdBy?.name || 'HR'}</span>
                       <span>{new Date(ann.createdAt).toLocaleDateString()}</span>
                     </div>

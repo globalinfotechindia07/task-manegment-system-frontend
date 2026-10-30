@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  HiOutlineVideoCamera, 
+  HiOutlinePlus, 
+  HiOutlineUserPlus, 
+  HiOutlineXMark, 
+  HiOutlineClipboardDocument 
+} from 'react-icons/hi2';
 import { useAuth } from '../../context/AuthContext';
 import { JitsiMeeting } from '@jitsi/react-sdk';
 import toast from 'react-hot-toast';
 import api from '../../api/axios';
+import { API_BASE_URL } from '../../config';
 
 const Meeting = () => {
   const { roomId } = useParams();
@@ -69,30 +77,26 @@ const Meeting = () => {
 
   if (!inMeeting) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-950 p-4">
-        <div className="glass-panel max-w-md w-full p-8 text-center flex flex-col items-center bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl">
-          <div className="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-3xl flex items-center justify-center mb-6 border border-indigo-500/30 rotate-3 shadow-lg">
-            <svg className="w-10 h-10 -rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
+      <div className="min-h-[85vh] w-full flex items-center justify-center p-4">
+        <div className="max-w-md w-full p-8 text-center flex flex-col items-center bg-white border border-slate-200 rounded-2xl shadow-xs">
+          <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-5 border border-indigo-200 shadow-xs">
+            <HiOutlineVideoCamera className="w-8 h-8" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Team Meetings</h2>
-          <p className="text-slate-400 mb-8">Video calls and screen sharing for your team.</p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-1">Team Meetings</h2>
+          <p className="text-slate-500 text-sm mb-6">Video calls and screen sharing for your team.</p>
 
           <button
             onClick={handleCreate}
-            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold mb-6 transition-all active:scale-[0.98] shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2"
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold mb-6 transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer text-sm"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <HiOutlinePlus className="w-5 h-5" />
             New Meeting
           </button>
 
-          <div className="flex items-center w-full my-2">
-            <hr className="flex-1 border-slate-700/50" />
-            <span className="px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">OR</span>
-            <hr className="flex-1 border-slate-700/50" />
+          <div className="flex items-center w-full my-1">
+            <hr className="flex-1 border-slate-200" />
+            <span className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">OR</span>
+            <hr className="flex-1 border-slate-200" />
           </div>
 
           <form onSubmit={handleJoin} className="w-full mt-6">
@@ -102,12 +106,12 @@ const Meeting = () => {
                 placeholder="Enter Meeting Code"
                 value={meetingIdInput}
                 onChange={(e) => setMeetingIdInput(e.target.value)}
-                className="flex-1 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-slate-500"
+                className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-slate-400"
               />
               <button
                 type="submit"
                 disabled={!meetingIdInput.trim()}
-                className="px-6 py-3 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white rounded-xl font-medium transition-colors border border-slate-600"
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 rounded-xl font-semibold text-sm transition-colors border border-slate-300 cursor-pointer"
               >
                 Join
               </button>
@@ -119,17 +123,15 @@ const Meeting = () => {
   }
 
   return (
-    <div className="h-screen w-full flex flex-col bg-slate-950 relative overflow-hidden">
+    <div className="h-screen w-full flex flex-col bg-slate-900 relative overflow-hidden">
       
       {/* Floating Invite Button over Jitsi */}
       <div className="absolute top-4 left-4 z-[100]">
         <button 
           onClick={openInviteModal}
-          className="flex items-center gap-2 text-sm font-medium px-4 py-2 bg-indigo-600/90 hover:bg-indigo-500 backdrop-blur-md text-white rounded-xl shadow-xl shadow-indigo-500/20 border border-indigo-500/50 transition-all hover:-translate-y-0.5"
+          className="flex items-center gap-2 text-xs font-semibold px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs transition-all cursor-pointer"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
+          <HiOutlineUserPlus className="w-4 h-4" />
           Invite Teammates
         </button>
       </div>
@@ -168,52 +170,53 @@ const Meeting = () => {
 
       {/* Invite Modal */}
       {showInviteModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[200] p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 w-full max-w-sm p-6 max-h-[80vh] flex flex-col border border-slate-700 shadow-2xl rounded-2xl">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-[200] p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-sm p-6 max-h-[80vh] flex flex-col border border-slate-200 shadow-xl rounded-2xl">
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold text-white">Invite Teammates</h2>
-              <button onClick={() => setShowInviteModal(false)} className="text-slate-400 hover:text-white">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <h2 className="text-lg font-bold text-slate-900">Invite Teammates</h2>
+              <button onClick={() => setShowInviteModal(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <HiOutlineXMark className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 mb-4 flex items-center justify-between">
-              <span className="font-mono text-sm text-slate-300 select-all">{roomId}</span>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4 flex items-center justify-between">
+              <span className="font-mono text-xs font-semibold text-slate-800 select-all">{roomId}</span>
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(roomId);
                   toast.success('Room ID copied to clipboard');
                 }}
-                className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-md transition-colors"
+                className="inline-flex items-center gap-1 text-xs bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-2.5 py-1 rounded-md transition-colors font-medium cursor-pointer shadow-xs"
               >
+                <HiOutlineClipboardDocument className="w-3.5 h-3.5" />
                 Copy
               </button>
             </div>
 
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Or send via chat</p>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2.5">Or send via chat</p>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1 min-h-[200px]">
               {inviteLoading ? (
                 <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-indigo-600 border-t-transparent"></div>
                 </div>
               ) : inviteConversations.length === 0 ? (
-                <p className="text-slate-500 text-center py-4 text-sm">No contacts found</p>
+                <p className="text-slate-400 text-center py-4 text-xs">No contacts found</p>
               ) : (
                 inviteConversations.map(conv => (
-                  <div key={conv._id} className="flex items-center justify-between p-2 hover:bg-slate-800/50 rounded-lg border border-transparent hover:border-slate-700 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${conv.isGroup ? 'bg-indigo-900/60 text-indigo-400' : 'bg-slate-700'}`}>
-                        {conv.isGroup ? 'G' : (conv.profilePicture ? <img src={`http://localhost:5000${conv.profilePicture}`} alt="" className="w-full h-full rounded-full object-cover"/> : conv.name.charAt(0))}
+                  <div key={conv._id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-200 transition-colors">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${conv.isGroup ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'}`}>
+                        {conv.isGroup ? 'G' : (conv.profilePicture ? <img src={`${API_BASE_URL}${conv.profilePicture}`} alt="" className="w-full h-full rounded-full object-cover"/> : conv.name.charAt(0))}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-slate-200">{conv.name}</span>
+                        <span className="text-xs font-semibold text-slate-900">{conv.name}</span>
                         <span className="text-[10px] text-slate-500">{conv.isGroup ? 'Group' : conv.role}</span>
                       </div>
                     </div>
                     <button 
                       onClick={() => sendInvite(conv)}
-                      className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-medium rounded border border-indigo-500/30 transition-colors"
+                      className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded border border-indigo-200 transition-colors cursor-pointer"
                     >
                       Invite
                     </button>

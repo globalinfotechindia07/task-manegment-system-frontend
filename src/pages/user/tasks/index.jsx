@@ -3,6 +3,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { 
+  HiOutlinePlus, 
+  HiOutlineMagnifyingGlass, 
+  HiOutlineClipboardDocumentList, 
+  HiOutlinePaperClip, 
+  HiOutlineXMark,
+  HiOutlinePencilSquare,
+  HiOutlineCheckCircle
+} from 'react-icons/hi2';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
 import { useSocket } from '../../../context/SocketContext';
@@ -96,6 +105,7 @@ const UserTasksPage = () => {
     onSuccess: () => {
       toast.success('Task created successfully');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['myDailyTasks'] });
       setIsTaskModalOpen(false);
       reset();
     },
@@ -118,7 +128,6 @@ const UserTasksPage = () => {
       }
     });
 
-    // Automatically assign the task to the current user
     formData.append('assignedTo', user._id);
     createTaskMutation.mutate(formData);
   };
@@ -138,6 +147,7 @@ const UserTasksPage = () => {
     if (socket) {
       const handleTaskUpdated = async (updatedTaskPayload) => {
         queryClient.invalidateQueries(['tasks']);
+        queryClient.invalidateQueries({ queryKey: ['myDailyTasks'] });
         if (isDetailsModalOpenRef.current && selectedTaskRef.current?._id === updatedTaskPayload._id) {
           try {
             const { data } = await api.get(`/tasks/${updatedTaskPayload._id}`);
@@ -151,6 +161,7 @@ const UserTasksPage = () => {
       socket.on('task_updated', handleTaskUpdated);
       socket.on('task_assigned', () => {
         queryClient.invalidateQueries(['tasks']);
+        queryClient.invalidateQueries({ queryKey: ['myDailyTasks'] });
       });
 
       return () => {
@@ -170,7 +181,7 @@ const UserTasksPage = () => {
     onSuccess: (updatedTask) => {
       toast.success('Task updated');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      // If we are updating the task via the modal, reload the details to get the populated history
+      queryClient.invalidateQueries({ queryKey: ['myDailyTasks'] });
       openDetails({ _id: updatedTask._id });
     },
     onError: (error) => {
@@ -186,6 +197,7 @@ const UserTasksPage = () => {
     onSuccess: (updatedTask) => {
       toast.success('Comment added');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['myDailyTasks'] });
       setSelectedTask(updatedTask);
       setCommentText('');
     },
@@ -202,6 +214,7 @@ const UserTasksPage = () => {
     onSuccess: (updatedTask) => {
       toast.success('Daily report submitted');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['myDailyTasks'] });
       setSelectedTask(updatedTask);
       setReportText('');
     },
@@ -232,7 +245,7 @@ const UserTasksPage = () => {
 
     updateTaskMutation.mutate({ taskId: selectedTask._id, formData });
     setAttachments(null);
-    e.target.reset(); // Clear the file input
+    e.target.reset();
   };
 
   const handleAddComment = (e) => {
@@ -248,11 +261,11 @@ const UserTasksPage = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-end mb-6">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">Daily Tasks</h1>
-          <p className="text-sm text-slate-400 mt-1">Manage and track your assigned tasks</p>
+          <h1 className="text-2xl font-bold text-slate-900">Daily Tasks</h1>
+          <p className="text-sm text-slate-500">Manage and track your assigned tasks.</p>
         </div>
         
         <button
@@ -260,23 +273,21 @@ const UserTasksPage = () => {
             reset();
             setIsTaskModalOpen(true);
           }}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-500/20"
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <HiOutlinePlus className="w-5 h-5" />
           New Task
         </button>
       </div>
       
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Filter by Project</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">Filter by Project</label>
           <select
             value={selectedProjectId}
             onChange={(e) => setSelectedProjectId(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-800 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
           >
             <option value="">All Projects</option>
             {projects?.map(p => (
@@ -285,11 +296,11 @@ const UserTasksPage = () => {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">Status</label>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-800 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
           >
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -300,43 +311,39 @@ const UserTasksPage = () => {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1">Search Task or Project</label>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">Search Task or Project</label>
           <div className="relative">
             <input
               type="text"
               placeholder="Search by task title or project..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+              className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-slate-800 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
             />
-            <svg className="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <HiOutlineMagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           </div>
         </div>
       </div>
       
-      <div className="glass-panel overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         {tasksLoading ? (
-          <div className="p-8 flex justify-center">
-            <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+          <div className="p-12 flex justify-center">
+            <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : displayedTasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center py-12">
-            <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400">
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+          <div className="flex flex-col items-center justify-center text-center p-12">
+            <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400">
+              <HiOutlineClipboardDocumentList className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-medium text-white mb-1">No tasks found</h3>
-            <p className="text-slate-400 max-w-sm">
+            <h3 className="text-base font-semibold text-slate-900 mb-1">No tasks found</h3>
+            <p className="text-sm text-slate-500 max-w-sm">
               {tasks?.length === 0 ? "You currently have no tasks assigned to you." : "No tasks match the selected project or filter."}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-800/80 text-slate-200 border-b border-slate-700/50">
+            <table className="w-full text-left text-sm text-slate-700">
+              <thead className="bg-slate-50 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th className="px-6 py-4 font-semibold">Task Name</th>
                   <th className="px-6 py-4 font-semibold">Assigned By</th>
@@ -347,42 +354,43 @@ const UserTasksPage = () => {
                   <th className="px-6 py-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-slate-100">
                 {paginatedTasks.map(task => (
-                  <tr key={task._id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-6 py-4 font-medium text-white">
+                  <tr key={task._id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4 font-medium text-slate-900">
                       {task.title}
                       {task.project && (
-                        <div className="text-xs text-indigo-400 mt-0.5">{task.project.name}</div>
+                        <div className="text-xs text-indigo-600 font-normal mt-0.5">{task.project.name}</div>
                       )}
                     </td>
-                    <td className="px-6 py-4">{task.assignedBy?.name || 'Unknown'}</td>
+                    <td className="px-6 py-4 text-slate-600">{task.assignedBy?.name || 'Unknown'}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
-                        task.priority === 'High' ? 'bg-red-500/10 text-red-400' :
-                        task.priority === 'Medium' ? 'bg-yellow-500/10 text-yellow-400' :
-                        'bg-blue-500/10 text-blue-400'
+                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                        task.priority === 'High' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                        task.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        'bg-blue-50 text-blue-700 border border-blue-200'
                       }`}>
                         {task.priority}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
-                        task.status === 'Completed' ? 'bg-green-500/10 text-green-400' :
-                        task.status === 'In Progress' ? 'bg-indigo-500/10 text-indigo-400' :
-                        task.status === 'On Hold' ? 'bg-orange-500/10 text-orange-400' :
-                        'bg-slate-500/10 text-slate-400'
+                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                        task.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        task.status === 'In Progress' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                        task.status === 'On Hold' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                        'bg-slate-100 text-slate-700 border-slate-200'
                       }`}>
                         {task.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{task.startDate ? new Date(task.startDate).toLocaleDateString() : '-'}</td>
-                    <td className="px-6 py-4">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-6 py-4 text-slate-500">{task.startDate ? new Date(task.startDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-6 py-4 text-slate-500">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}</td>
                     <td className="px-6 py-4 text-right">
                       <button 
                         onClick={() => openDetails(task)}
-                        className="text-indigo-400 hover:text-indigo-300 px-3 py-1 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 px-3 py-1.5 border border-slate-200 hover:border-indigo-300 rounded-lg text-xs font-medium hover:bg-indigo-50 transition-colors cursor-pointer"
                       >
+                        <HiOutlinePencilSquare className="w-4 h-4" />
                         Update Task
                       </button>
                     </td>
@@ -393,25 +401,25 @@ const UserTasksPage = () => {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 border-t border-slate-700/50 bg-slate-800/30 gap-4">
-                <span className="text-sm text-slate-400">
+              <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 border-t border-slate-200 bg-slate-50 gap-4">
+                <span className="text-xs text-slate-500">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, displayedTasks.length)} of {displayedTasks.length} entries
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-sm text-slate-300 disabled:opacity-50 hover:bg-slate-700 transition-colors"
+                    className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                   >
                     Previous
                   </button>
-                  <span className="px-3 py-1 text-sm text-slate-400 flex items-center">
+                  <span className="px-3 py-1 text-xs text-slate-600 font-medium flex items-center">
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-sm text-slate-300 disabled:opacity-50 hover:bg-slate-700 transition-colors"
+                    className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                   >
                     Next
                   </button>
@@ -425,34 +433,30 @@ const UserTasksPage = () => {
       {/* Task Details Modal via Portal */}
       {isDetailsModalOpen && selectedTask && createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={() => setIsDetailsModalOpen(false)}></div>
-          <div className="relative bg-slate-900 border-0 sm:border border-slate-700 rounded-none sm:rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[100dvh] sm:h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-5 border-b border-slate-800 shrink-0">
-              <h3 className="text-xl font-bold text-white">{selectedTask.title}</h3>
-              <button onClick={() => setIsDetailsModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setIsDetailsModalOpen(false)}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 h-[100dvh] sm:h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-5 border-b border-slate-200 bg-slate-50 shrink-0">
+              <h3 className="text-lg font-bold text-slate-900">{selectedTask.title}</h3>
+              <button onClick={() => setIsDetailsModalOpen(false)} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
+                <HiOutlineXMark className="w-6 h-6" />
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Left Column - Details */}
               <div className="md:col-span-2 space-y-6 min-w-0">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-400 mb-2">Description</h4>
-                  <p className="text-slate-200 bg-slate-800/50 p-4 rounded-lg">{selectedTask.description}</p>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Description</h4>
+                  <p className="text-slate-800 bg-slate-50 border border-slate-200 p-4 rounded-xl text-sm leading-relaxed">{selectedTask.description}</p>
                 </div>
 
                 {selectedTask.attachments && selectedTask.attachments.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-400 mb-2">Attachments</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Attachments</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedTask.attachments.map((file, i) => (
-                        <a key={i} href={`${API_BASE_URL}${file}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm text-indigo-400 transition-colors">
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                          </svg>
+                        <a key={i} href={`${API_BASE_URL}${file}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:text-indigo-600 border border-slate-200 transition-colors">
+                          <HiOutlinePaperClip className="w-4 h-4 text-slate-400" />
                           Attachment {i + 1}
                         </a>
                       ))}
@@ -460,21 +464,21 @@ const UserTasksPage = () => {
                   </div>
                 )}
 
-                <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
-                  <h4 className="text-sm font-semibold text-slate-400 mb-3">Upload New File</h4>
-                  <form onSubmit={handleFileUpload} className="flex flex-col lg:flex-row gap-3 items-start lg:items-center w-full">
-                    <div className="w-full lg:flex-1 min-w-0 overflow-hidden">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3">Upload New File</h4>
+                  <form onSubmit={handleFileUpload} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full">
+                    <div className="w-full sm:flex-1 min-w-0 overflow-hidden">
                       <input
                         type="file"
                         multiple
                         onChange={(e) => setAttachments(e.target.files)}
-                        className="w-full text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-slate-300 hover:file:bg-slate-600 transition-colors cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap"
+                        className="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors cursor-pointer bg-white border border-slate-300 rounded-lg p-1.5"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={updateTaskMutation.isPending || !attachments}
-                      className="w-full lg:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 whitespace-nowrap shrink-0"
+                      className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50 whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
                     >
                       Upload Files
                     </button>
@@ -482,19 +486,19 @@ const UserTasksPage = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-400 mb-4 border-b border-slate-700 pb-2">Comments & Updates</h4>
-                  <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto pr-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 border-b border-slate-100 pb-2">Comments & Updates</h4>
+                  <div className="space-y-3 mb-4 max-h-[250px] overflow-y-auto pr-2">
                     {selectedTask.comments?.map((comment, i) => (
-                      <div key={i} className="bg-slate-800 p-4 rounded-lg">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-semibold text-indigo-400">{comment.user?.name || 'User'}</span>
-                          <span className="text-xs text-slate-500">{new Date(comment.createdAt).toLocaleString()}</span>
+                      <div key={i} className="bg-white p-3.5 rounded-xl border border-slate-200">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-semibold text-indigo-600 text-xs">{comment.user?.name || 'User'}</span>
+                          <span className="text-[11px] text-slate-400">{new Date(comment.createdAt).toLocaleString()}</span>
                         </div>
-                        <p className="text-slate-300 text-sm">{comment.text}</p>
+                        <p className="text-slate-700 text-xs leading-relaxed">{comment.text}</p>
                       </div>
                     ))}
                     {(!selectedTask.comments || selectedTask.comments.length === 0) && (
-                      <p className="text-slate-500 italic text-sm">No comments yet.</p>
+                      <p className="text-slate-400 italic text-xs">No comments yet.</p>
                     )}
                   </div>
                   
@@ -504,12 +508,12 @@ const UserTasksPage = () => {
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder="Add a progress update..."
-                      className="flex-1 min-w-0 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                      className="flex-1 min-w-0 bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-slate-900 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                     />
                     <button
                       type="submit"
                       disabled={addCommentMutation.isPending || !commentText.trim()}
-                      className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 shrink-0"
+                      className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shrink-0 cursor-pointer shadow-xs"
                     >
                       Send
                     </button>
@@ -517,19 +521,19 @@ const UserTasksPage = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-400 mb-4 border-b border-slate-700 pb-2">Daily Reports</h4>
-                  <div className="space-y-4 mb-4 max-h-[300px] overflow-y-auto pr-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 border-b border-slate-100 pb-2">Daily Reports</h4>
+                  <div className="space-y-3 mb-4 max-h-[250px] overflow-y-auto pr-2">
                     {selectedTask.reports?.map((report, i) => (
-                      <div key={i} className="bg-slate-800 p-4 rounded-lg border-l-4 border-emerald-500">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-semibold text-emerald-400">{report.user?.name || 'User'}</span>
-                          <span className="text-xs text-slate-500">{new Date(report.createdAt).toLocaleDateString()}</span>
+                      <div key={i} className="bg-white p-3.5 rounded-xl border-l-4 border-l-emerald-500 border border-slate-200">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-semibold text-emerald-600 text-xs">{report.user?.name || 'User'}</span>
+                          <span className="text-[11px] text-slate-400">{new Date(report.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <p className="text-slate-300 text-sm whitespace-pre-wrap">{report.description}</p>
+                        <p className="text-slate-700 text-xs whitespace-pre-wrap leading-relaxed">{report.description}</p>
                       </div>
                     ))}
                     {(!selectedTask.reports || selectedTask.reports.length === 0) && (
-                      <p className="text-slate-500 italic text-sm">No daily reports submitted yet.</p>
+                      <p className="text-slate-400 italic text-xs">No daily reports submitted yet.</p>
                     )}
                   </div>
                   
@@ -539,12 +543,12 @@ const UserTasksPage = () => {
                       onChange={(e) => setReportText(e.target.value)}
                       placeholder="What did you do today on this task?"
                       rows="3"
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all resize-none"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-slate-900 text-xs focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                     ></textarea>
                     <button
                       type="submit"
                       disabled={addDailyReportMutation.isPending || !reportText.trim()}
-                      className="self-end px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                      className="self-end px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
                     >
                       Submit Daily Report
                     </button>
@@ -554,13 +558,13 @@ const UserTasksPage = () => {
 
               {/* Right Column - Meta & History */}
               <div className="space-y-6 min-w-0">
-                <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 space-y-4">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3.5">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">Update Status</label>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1">Update Status</label>
                     <select
                       value={selectedTask.status}
                       onChange={handleUpdateStatus}
-                      className="w-full bg-slate-800 border border-indigo-500/50 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 outline-none appearance-none cursor-pointer"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-xs focus:border-indigo-500 outline-none cursor-pointer font-medium"
                     >
                       <option value="Pending">Pending</option>
                       <option value="In Progress">In Progress</option>
@@ -570,16 +574,16 @@ const UserTasksPage = () => {
                   </div>
                   
                   <div>
-                    <span className="block text-xs font-semibold text-slate-400">Assigned By</span>
-                    <span className="text-white text-sm">{selectedTask.assignedBy?.name}</span>
+                    <span className="block text-xs font-medium text-slate-500">Assigned By</span>
+                    <span className="text-slate-900 text-sm font-semibold">{selectedTask.assignedBy?.name}</span>
                   </div>
                   
                   <div>
-                    <span className="block text-xs font-semibold text-slate-400">Priority</span>
-                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold mt-1 ${
-                      selectedTask.priority === 'High' ? 'bg-red-500/10 text-red-400' :
-                      selectedTask.priority === 'Medium' ? 'bg-yellow-500/10 text-yellow-400' :
-                      'bg-blue-500/10 text-blue-400'
+                    <span className="block text-xs font-medium text-slate-500 mb-1">Priority</span>
+                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                      selectedTask.priority === 'High' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      selectedTask.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      'bg-blue-50 text-blue-700 border-blue-200'
                     }`}>
                       {selectedTask.priority}
                     </span>
@@ -587,35 +591,35 @@ const UserTasksPage = () => {
 
                   {selectedTask.startDate && (
                     <div>
-                      <span className="block text-xs font-semibold text-slate-400">Start Date</span>
-                      <span className="text-white text-sm">{new Date(selectedTask.startDate).toLocaleString()}</span>
+                      <span className="block text-xs font-medium text-slate-500">Start Date</span>
+                      <span className="text-slate-800 text-xs font-medium">{new Date(selectedTask.startDate).toLocaleString()}</span>
                     </div>
                   )}
 
                   {selectedTask.dueDate && (
                     <div>
-                      <span className="block text-xs font-semibold text-slate-400">Due Date</span>
-                      <span className="text-white text-sm">{new Date(selectedTask.dueDate).toLocaleString()}</span>
+                      <span className="block text-xs font-medium text-slate-500">Due Date</span>
+                      <span className="text-slate-800 text-xs font-medium">{new Date(selectedTask.dueDate).toLocaleString()}</span>
                     </div>
                   )}
                   
                   {selectedTask.estimatedTimeDuration && (
                     <div>
-                      <span className="block text-xs font-semibold text-slate-400">Estimated Duration</span>
-                      <span className="text-white text-sm">{selectedTask.estimatedTimeDuration} Hours</span>
+                      <span className="block text-xs font-medium text-slate-500">Estimated Duration</span>
+                      <span className="text-slate-800 text-xs font-medium">{selectedTask.estimatedTimeDuration} Hours</span>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-400 mb-3 border-b border-slate-700 pb-2">Activity History</h4>
-                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 border-b border-slate-100 pb-2">Activity History</h4>
+                  <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2">
                     {selectedTask.history?.slice().reverse().map((log, i) => (
-                      <div key={i} className="text-sm">
-                        <p className="text-slate-300 break-words whitespace-normal">
-                          <span className="font-medium text-slate-200">{log.user?.name || 'User'}</span> {log.action}
+                      <div key={i} className="text-xs border-b border-slate-100 pb-2 last:border-0">
+                        <p className="text-slate-700 break-words">
+                          <span className="font-semibold text-slate-900">{log.user?.name || 'User'}</span> {log.action}
                         </p>
-                        <span className="text-xs text-slate-500">{new Date(log.createdAt).toLocaleString()}</span>
+                        <span className="text-[11px] text-slate-400 mt-0.5 block">{new Date(log.createdAt).toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
@@ -629,56 +633,56 @@ const UserTasksPage = () => {
 
       {/* Create Task Modal */}
       {isTaskModalOpen && createPortal(
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-700 shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
-              <h2 className="text-xl font-bold text-white">Create New Task</h2>
-              <button onClick={() => setIsTaskModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="p-5 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-slate-50 z-10">
+              <h2 className="text-lg font-bold text-slate-900">Create New Task</h2>
+              <button onClick={() => setIsTaskModalOpen(false)} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
+                <HiOutlineXMark className="w-6 h-6" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit(onSubmitTask)} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit(onSubmitTask)} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Task Title <span className="text-red-400">*</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Task Title *</label>
                 <input
                   {...register('title', { required: 'Title is required' })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   placeholder="E.g., Implement new login page"
                 />
-                {errors.title && <span className="text-red-400 text-xs mt-1 block">{errors.title.message}</span>}
+                {errors.title && <span className="text-rose-600 text-xs mt-1 block">{errors.title.message}</span>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Description <span className="text-red-400">*</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Description *</label>
                 <textarea
                   {...register('description', { required: 'Description is required' })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all h-24 resize-none"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none h-24 resize-none"
                   placeholder="Detailed task description..."
                 ></textarea>
-                {errors.description && <span className="text-red-400 text-xs mt-1 block">{errors.description.message}</span>}
+                {errors.description && <span className="text-rose-600 text-xs mt-1 block">{errors.description.message}</span>}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Project <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Project *</label>
                   <select
                     {...register('project', { required: 'Project is required' })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   >
                     <option value="">Select Project</option>
                     {projects.map(p => (
                       <option key={p._id} value={p._id}>{p.name}</option>
                     ))}
                   </select>
-                  {errors.project && <span className="text-red-400 text-xs mt-1 block">{errors.project.message}</span>}
+                  {errors.project && <span className="text-rose-600 text-xs mt-1 block">{errors.project.message}</span>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Priority</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
                   <select
                     {...register('priority')}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   >
                     <option value="Normal">Normal</option>
                     <option value="Medium">Medium</option>
@@ -687,54 +691,51 @@ const UserTasksPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Start Date & Time <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Start Date & Time *</label>
                   <input
                     type="datetime-local"
                     {...register('startDate', { required: 'Start date is required' })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   />
-                  {errors.startDate && <span className="text-red-400 text-xs mt-1 block">{errors.startDate.message}</span>}
+                  {errors.startDate && <span className="text-rose-600 text-xs mt-1 block">{errors.startDate.message}</span>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">End Date & Time <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">End Date & Time *</label>
                   <input
                     type="datetime-local"
                     {...register('dueDate', { required: 'End date is required' })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   />
-                  {errors.dueDate && <span className="text-red-400 text-xs mt-1 block">{errors.dueDate.message}</span>}
+                  {errors.dueDate && <span className="text-rose-600 text-xs mt-1 block">{errors.dueDate.message}</span>}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Attachments (Max 5)</label>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Attachments (Max 5)</label>
                   <input
                     type="file"
                     multiple
                     {...register('attachments')}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30"
+                    className="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors bg-white border border-slate-300 rounded-lg p-1.5"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-200 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsTaskModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium text-sm"
+                  className="px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg transition-colors font-medium text-sm cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createTaskMutation.isPending}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white rounded-lg transition-colors shadow-lg shadow-indigo-500/20 font-medium text-sm flex items-center gap-2"
+                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg transition-colors shadow-xs font-medium text-sm flex items-center gap-2 cursor-pointer"
                 >
                   {createTaskMutation.isPending && (
-                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   )}
                   Create Task
                 </button>

@@ -154,49 +154,49 @@ const getRoleStyling = (roleName) => {
   const r = (roleName || '').toLowerCase();
   if (r === 'admin' || r === 'cto' || r === 'super admin') {
     return {
-      bg: 'bg-amber-500/10',
-      border: 'border-amber-500/20',
-      text: 'text-amber-400',
-      tag: 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      text: 'text-amber-700',
+      tag: 'border-amber-200 bg-amber-50 text-amber-800'
     };
   }
   if (r === 'hr manager' || r === 'hr') {
     return {
-      bg: 'bg-purple-500/10',
-      border: 'border-purple-500/20',
-      text: 'text-purple-400',
-      tag: 'border-purple-500/30 bg-purple-500/10 text-purple-300'
+      bg: 'bg-purple-50',
+      border: 'border-purple-200',
+      text: 'text-purple-700',
+      tag: 'border-purple-200 bg-purple-50 text-purple-800'
     };
   }
   if (r === 'team head' || r === 'team lead') {
     return {
-      bg: 'bg-blue-500/10',
-      border: 'border-blue-500/20',
-      text: 'text-blue-400',
-      tag: 'border-blue-500/30 bg-blue-500/10 text-blue-300'
+      bg: 'bg-blue-50',
+      border: 'border-blue-200',
+      text: 'text-blue-700',
+      tag: 'border-blue-200 bg-blue-50 text-blue-800'
     };
   }
   if (r === 'user' || r === 'employee') {
     return {
-      bg: 'bg-emerald-500/10',
-      border: 'border-emerald-500/20',
-      text: 'text-emerald-400',
-      tag: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-200',
+      text: 'text-emerald-700',
+      tag: 'border-emerald-200 bg-emerald-50 text-emerald-800'
     };
   }
   if (r === 'accountant') {
     return {
-      bg: 'bg-amber-500/10',
-      border: 'border-amber-500/20',
-      text: 'text-amber-400',
-      tag: 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      text: 'text-amber-700',
+      tag: 'border-amber-200 bg-amber-50 text-amber-800'
     };
   }
   return {
-    bg: 'bg-indigo-500/10',
-    border: 'border-indigo-500/20',
-    text: 'text-indigo-400',
-    tag: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-300'
+    bg: 'bg-indigo-50',
+    border: 'border-indigo-200',
+    text: 'text-indigo-700',
+    tag: 'border-indigo-200 bg-indigo-50 text-indigo-800'
   };
 };
 
@@ -616,10 +616,10 @@ const RolesPage = () => {
               Access Control & Permissions
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Roles & Permissions Matrix
           </h1>
-          <p className="text-slate-400 text-sm mt-1 max-w-2xl">
+          <p className="text-slate-500 text-sm mt-1 max-w-2xl">
             Configure default roles (HR Manager, Team Head, Staff) and add custom positions with granular Read, Create, Edit and Delete capabilities.
           </p>
         </div>
@@ -628,35 +628,35 @@ const RolesPage = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => handleOpenCreate('HR Manager')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-purple-300 border border-purple-500/30 rounded-xl text-xs font-bold transition-all shadow-sm hover:border-purple-500/50"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all shadow-xs"
           >
-            <HiOutlineBriefcase className="w-4 h-4 text-purple-400" />
+            <HiOutlineBriefcase className="w-4 h-4 text-purple-600" />
             + HR Role
           </button>
           <button
             onClick={() => handleOpenCreate('Team Head')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-blue-300 border border-blue-500/30 rounded-xl text-xs font-bold transition-all shadow-sm hover:border-blue-500/50"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition-all shadow-xs"
           >
-            <HiOutlineUserGroup className="w-4 h-4 text-blue-400" />
+            <HiOutlineUserGroup className="w-4 h-4 text-blue-600" />
             + Team Head
           </button>
           <button
             onClick={() => handleOpenCreate('User')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold transition-all shadow-sm hover:border-emerald-500/50"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-all shadow-xs"
           >
-            <HiOutlineUser className="w-4 h-4 text-emerald-400" />
+            <HiOutlineUser className="w-4 h-4 text-emerald-600" />
             + Staff Role
           </button>
           <button
             onClick={() => handleOpenCreate('Accountant')}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-bold transition-all shadow-sm hover:border-amber-500/50"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold transition-all shadow-xs"
           >
-            <HiOutlineBanknotes className="w-4 h-4 text-amber-400" />
+            <HiOutlineBanknotes className="w-4 h-4 text-amber-600" />
             + Accountant
           </button>
           <button
             onClick={() => handleOpenCreate()}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-600/30 whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs whitespace-nowrap"
           >
             <HiOutlinePlus className="w-4 h-4" />
             Create Custom Role
@@ -666,55 +666,55 @@ const RolesPage = () => {
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-        <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-400">Total Configured Roles</p>
-            <p className="text-2xl font-bold text-white mt-0.5">{roles.length}</p>
+            <p className="text-xs font-semibold text-slate-500">Total Configured Roles</p>
+            <p className="text-2xl font-bold text-slate-900 mt-0.5">{roles.length}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
             <HiOutlineShieldCheck className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-400">System Core Roles</p>
-            <p className="text-2xl font-bold text-emerald-400 mt-0.5">{defaultRolesCount}</p>
+            <p className="text-xs font-semibold text-slate-500">System Core Roles</p>
+            <p className="text-2xl font-bold text-emerald-600 mt-0.5">{defaultRolesCount}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
             <HiOutlineCheckBadge className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-400">Custom Positions</p>
-            <p className="text-2xl font-bold text-indigo-400 mt-0.5">{customRolesCount}</p>
+            <p className="text-xs font-semibold text-slate-500">Custom Positions</p>
+            <p className="text-2xl font-bold text-indigo-700 mt-0.5">{customRolesCount}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
             <HiOutlineSparkles className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-400">Assigned Staff</p>
-            <p className="text-2xl font-bold text-blue-400 mt-0.5">{totalStaffCount}</p>
+            <p className="text-xs font-semibold text-slate-500">Assigned Staff</p>
+            <p className="text-2xl font-bold text-blue-600 mt-0.5">{totalStaffCount}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
             <HiOutlineUsers className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+      <div className="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 shadow-xs">
         {/* Tabs */}
-        <div className="flex bg-slate-950/80 border border-slate-800 rounded-xl p-1 gap-1">
+        <div className="flex bg-slate-100 border border-slate-200 rounded-xl p-1 gap-1">
           <button
             onClick={() => setFilterTab('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filterTab === 'all' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              filterTab === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             All Roles ({roles.length})
@@ -722,7 +722,7 @@ const RolesPage = () => {
           <button
             onClick={() => setFilterTab('default')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filterTab === 'default' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              filterTab === 'default' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Default Roles
@@ -730,7 +730,7 @@ const RolesPage = () => {
           <button
             onClick={() => setFilterTab('custom')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              filterTab === 'custom' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              filterTab === 'custom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Custom Positions ({customRolesCount})
@@ -745,13 +745,13 @@ const RolesPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search roles or positions..."
-            className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition-colors"
+            className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-indigo-600 transition-colors shadow-xs"
           />
         </div>
       </div>
 
       {/* Roles List Table View */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         {isLoading ? (
           <div className="p-16 flex justify-center">
             <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
@@ -764,8 +764,8 @@ const RolesPage = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/80 text-slate-300 border-b border-slate-800 text-xs font-semibold uppercase tracking-wider">
+            <table className="w-full text-left text-sm text-slate-700">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider">
                 <tr>
                   <th className="px-6 py-4">Role / Position</th>
                   <th className="px-6 py-4">Type</th>
@@ -774,7 +774,7 @@ const RolesPage = () => {
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
+              <tbody className="divide-y divide-slate-100">
                 {filteredRoles.map(role => {
                   const isSystemAdmin = role.name === 'Admin';
                   const isDefaultCore = role.isSystemRole || isDefaultCoreRole(role.name);
@@ -789,21 +789,21 @@ const RolesPage = () => {
                     <tr key={role._id} className="group">
                       <td colSpan="5" className="p-0">
                         <div className="flex flex-col">
-                          <div className="flex items-center justify-between p-4 sm:px-6 hover:bg-slate-850/50 transition-colors border-b border-slate-800/50">
+                          <div className="flex items-center justify-between p-4 sm:px-6 hover:bg-slate-50 transition-colors border-b border-slate-100">
                             {/* Role Name & Icon */}
                             <div className="flex items-center gap-3.5 min-w-[240px]">
                               <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${styling.bg} ${styling.border} ${styling.text}`}>
                                 <RoleIconComp className="w-5 h-5" />
                               </div>
                               <div>
-                                <div className="font-bold text-white text-sm flex items-center gap-2">
+                                <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
                                   {role.displayName || role.name}
                                 </div>
-                                <div className="text-[11px] font-mono text-indigo-400 mt-0.5">
-                                  ID: <span className="text-slate-300">{role.name}</span>
+                                <div className="text-[11px] font-mono text-indigo-600 mt-0.5">
+                                  ID: <span className="text-slate-500">{role.name}</span>
                                 </div>
                                 {role.description && (
-                                  <p className="text-xs text-slate-400 mt-0.5 max-w-sm line-clamp-1">{role.description}</p>
+                                  <p className="text-xs text-slate-500 mt-0.5 max-w-sm line-clamp-1">{role.description}</p>
                                 )}
                               </div>
                             </div>
@@ -811,17 +811,17 @@ const RolesPage = () => {
                             {/* Role Type */}
                             <div className="hidden sm:block min-w-[150px]">
                               {isSystemAdmin ? (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
                                   <HiOutlineShieldCheck className="w-3.5 h-3.5" />
                                   Full System Admin
                                 </span>
                               ) : isDefaultCore ? (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-                                  <HiOutlineCheckBadge className="w-3.5 h-3.5 text-emerald-400" />
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                  <HiOutlineCheckBadge className="w-3.5 h-3.5 text-emerald-600" />
                                   Default Core Role
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
                                   <HiOutlineSparkles className="w-3.5 h-3.5" />
                                   Custom Position
                                 </span>
@@ -830,8 +830,8 @@ const RolesPage = () => {
 
                             {/* Staff Count */}
                             <div className="hidden md:block min-w-[110px]">
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-950/80 border border-slate-800 text-slate-300">
-                                <HiOutlineUsers className="w-3.5 h-3.5 text-indigo-400" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-700">
+                                <HiOutlineUsers className="w-3.5 h-3.5 text-indigo-600" />
                                 {role.userCount || 0} Staff
                               </span>
                             </div>
@@ -839,15 +839,15 @@ const RolesPage = () => {
                             {/* Allowed Modules Summary */}
                             <div className="hidden lg:block flex-1 px-4">
                               {isSystemAdmin ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
-                                  <HiOutlineShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                                  <HiOutlineShieldCheck className="w-3.5 h-3.5 text-amber-600" />
                                   All Modules (Unrestricted Access)
                                 </span>
                               ) : (
                                 <div className="flex flex-wrap gap-1 max-w-md">
                                   {allowedModules.slice(0, 4).map(([mod, act]) => (
-                                    <span key={mod} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-950/60 border border-slate-800 text-slate-300">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span key={mod} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-50 border border-slate-200 text-slate-700">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                       {mod.charAt(0).toUpperCase() + mod.slice(1)}
                                       <span className="text-[10px] text-slate-500">
                                         ({[act.create && 'C', act.edit && 'E', act.delete && 'D'].filter(Boolean).join('') || 'R'})
@@ -870,7 +870,7 @@ const RolesPage = () => {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => setExpandedRoleId(isExpanded ? null : role._id)}
-                                className="px-2.5 py-1.5 text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700/80 transition-colors inline-flex items-center gap-1.5"
+                                className="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition-colors inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
                               >
                                 <span>{isExpanded ? 'Hide' : 'Permissions'}</span>
                                 <HiOutlineChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
@@ -879,7 +879,7 @@ const RolesPage = () => {
                               {!isSystemAdmin && (
                                 <button
                                   onClick={() => handleOpenEdit(role)}
-                                  className="px-2.5 py-1.5 text-xs font-semibold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 rounded-lg transition-colors inline-flex items-center gap-1"
+                                  className="px-2.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
                                 >
                                   <HiOutlinePencilSquare className="w-3.5 h-3.5" />
                                   Edit
@@ -890,9 +890,9 @@ const RolesPage = () => {
                                 <button
                                   onClick={() => handleResetRoleDefaults(role)}
                                   title="Reset all permissions to standard default template"
-                                  className="px-2.5 py-1.5 text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-amber-300 border border-amber-500/30 rounded-lg transition-colors inline-flex items-center gap-1"
+                                  className="px-2.5 py-1.5 text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
                                 >
-                                  <HiOutlineArrowPath className="w-3.5 h-3.5 text-amber-400" />
+                                  <HiOutlineArrowPath className="w-3.5 h-3.5 text-amber-600" />
                                   Reset
                                 </button>
                               )}
@@ -901,7 +901,7 @@ const RolesPage = () => {
                                 <button
                                   onClick={() => handleDelete(role)}
                                   title="Delete Role"
-                                  className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors border border-rose-500/20"
+                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200 cursor-pointer"
                                 >
                                   <HiOutlineTrash className="w-4 h-4" />
                                 </button>
@@ -911,18 +911,18 @@ const RolesPage = () => {
 
                           {/* Expanded Permissions Drawer */}
                           {isExpanded && (
-                            <div className="p-5 bg-slate-950/90 border-b border-slate-800 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div className="p-5 bg-slate-50 border-b border-slate-200 animate-in fade-in slide-in-from-top-1 duration-200">
                               <div className="flex justify-between items-center mb-3">
                                 <div className="flex items-center gap-2">
-                                  <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
-                                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                                  <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                                     Resolved Permissions Grid for {role.displayName || role.name}
                                   </h4>
                                 </div>
                                 {!isSystemAdmin && (
                                   <button
                                     onClick={() => handleOpenEdit(role)}
-                                    className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold inline-flex items-center gap-1"
+                                    className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold inline-flex items-center gap-1 cursor-pointer"
                                   >
                                     <HiOutlinePencilSquare className="w-3.5 h-3.5" />
                                     Modify Matrix
@@ -941,26 +941,26 @@ const RolesPage = () => {
                                       key={mod.key}
                                       className={`p-3 rounded-xl border transition-all ${
                                         hasAny
-                                          ? 'bg-slate-900/90 border-slate-700/80'
-                                          : 'bg-slate-950/40 border-slate-800/60 opacity-60'
+                                          ? 'bg-white border-slate-200 shadow-xs'
+                                          : 'bg-slate-100/60 border-slate-200 opacity-60'
                                       }`}
                                     >
-                                      <div className="flex items-center gap-1.5 font-semibold text-xs text-white mb-2 truncate">
-                                        <ModIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                      <div className="flex items-center gap-1.5 font-semibold text-xs text-slate-900 mb-2 truncate">
+                                        <ModIcon className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                                         <span className="truncate">{mod.label}</span>
                                       </div>
 
                                       <div className="grid grid-cols-4 gap-1 text-center text-[10px]">
-                                        <div className={`p-1 rounded ${perm.view ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'bg-slate-800/80 text-slate-500'}`}>
+                                        <div className={`p-1 rounded ${perm.view ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-200' : 'bg-slate-100 text-slate-400'}`}>
                                           R
                                         </div>
-                                        <div className={`p-1 rounded ${perm.create ? 'bg-indigo-500/20 text-indigo-400 font-bold' : 'bg-slate-800/80 text-slate-500'}`}>
+                                        <div className={`p-1 rounded ${perm.create ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-200' : 'bg-slate-100 text-slate-400'}`}>
                                           C
                                         </div>
-                                        <div className={`p-1 rounded ${perm.edit ? 'bg-yellow-500/20 text-yellow-400 font-bold' : 'bg-slate-800/80 text-slate-500'}`}>
+                                        <div className={`p-1 rounded ${perm.edit ? 'bg-amber-50 text-amber-700 font-bold border border-amber-200' : 'bg-slate-100 text-slate-400'}`}>
                                           E
                                         </div>
-                                        <div className={`p-1 rounded ${perm.delete ? 'bg-rose-500/20 text-rose-400 font-bold' : 'bg-slate-800/80 text-slate-500'}`}>
+                                        <div className={`p-1 rounded ${perm.delete ? 'bg-rose-50 text-rose-700 font-bold border border-rose-200' : 'bg-slate-100 text-slate-400'}`}>
                                           D
                                         </div>
                                       </div>
@@ -984,26 +984,26 @@ const RolesPage = () => {
       {/* Create / Edit Role Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="relative bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={closeModal}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="p-5 border-b border-slate-800 flex justify-between items-center shrink-0 bg-slate-900/90">
+            <div className="p-5 border-b border-slate-200 flex justify-between items-center shrink-0 bg-slate-50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
                   <HiOutlineShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900">
                     {editingRole ? `Edit Role: ${editingRole.displayName || editingRole.name}` : 'Create New Position & Permissions'}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Assign fine-grained access (View, Create, Edit, Delete) across software modules.
                   </p>
                 </div>
               </div>
               <button
                 onClick={closeModal}
-                className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors"
+                className="text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <HiOutlineXMark className="w-5 h-5" />
               </button>
@@ -1012,21 +1012,21 @@ const RolesPage = () => {
             {/* Modal Form */}
             <form id="role-matrix-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
               {/* Quick Base Role Template Cards */}
-              <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800 shadow-inner">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2.5">
                   <div>
-                    <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <HiOutlineSparkles className="w-4 h-4 text-indigo-400" />
+                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <HiOutlineSparkles className="w-4 h-4 text-indigo-600" />
                       Select Base Role Template (Loads Default Permissions)
                     </span>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-slate-500 mt-0.5">
                       Pick a template to instantly apply default capabilities for HR, Team Head, Staff or Accountant.
                     </p>
                   </div>
 
                   {selectedTemplateKey && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                       "{selectedTemplateKey}" Defaults Loaded
                     </span>
                   )}
@@ -1041,26 +1041,26 @@ const RolesPage = () => {
                         key={tmpl.key}
                         type="button"
                         onClick={() => handleApplyTemplate(tmpl)}
-                        className={`p-3 rounded-2xl border text-left transition-all relative overflow-hidden group ${
+                        className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden group cursor-pointer ${
                           isSelected
-                            ? 'bg-indigo-600/20 border-indigo-500 shadow-md shadow-indigo-500/20 ring-1 ring-indigo-500'
-                            : 'bg-slate-900/90 border-slate-800 hover:bg-slate-850 hover:border-slate-700'
+                            ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500 shadow-xs'
+                            : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                         }`}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isSelected ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-400 group-hover:text-white'
+                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 group-hover:text-indigo-600'
                           }`}>
                             <TmplIcon className="w-4 h-4" />
                           </div>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                            isSelected ? 'bg-indigo-500/30 text-indigo-300 border-indigo-400/40' : 'bg-slate-950 text-slate-400 border-slate-800'
+                            isSelected ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-slate-100 text-slate-600 border-slate-200'
                           }`}>
                             {tmpl.badge}
                           </span>
                         </div>
-                        <div className="text-xs font-bold text-white truncate">{tmpl.displayName}</div>
-                        <div className="text-[10px] text-slate-400 truncate mt-0.5">{tmpl.category}</div>
+                        <div className="text-xs font-bold text-slate-900 truncate">{tmpl.displayName}</div>
+                        <div className="text-[10px] text-slate-500 truncate mt-0.5">{tmpl.category}</div>
                       </button>
                     );
                   })}
@@ -1070,7 +1070,7 @@ const RolesPage = () => {
               {/* Role Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                     Role Display Name *
                   </label>
                   <input
@@ -1079,13 +1079,13 @@ const RolesPage = () => {
                     value={roleForm.displayName}
                     onChange={(e) => setRoleForm(prev => ({ ...prev, displayName: e.target.value }))}
                     placeholder="e.g. Senior Accountant / Operations Lead"
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-indigo-500 outline-none transition-all"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Unique System Key * {editingRole && <span className="text-slate-500 font-normal">(Permanent)</span>}
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Unique System Key * {editingRole && <span className="text-slate-400 font-normal">(Permanent)</span>}
                   </label>
                   <input
                     type="text"
@@ -1094,12 +1094,12 @@ const RolesPage = () => {
                     value={roleForm.name}
                     onChange={(e) => setRoleForm(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="e.g. Accountant or Operations_Manager"
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-indigo-500 outline-none transition-all disabled:opacity-50"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:bg-slate-100"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                     Position Purpose / Description
                   </label>
                   <textarea
@@ -1107,20 +1107,20 @@ const RolesPage = () => {
                     value={roleForm.description}
                     onChange={(e) => setRoleForm(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Describe responsibility scope, reporting structure, or department ownership..."
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-indigo-500 outline-none resize-none transition-all"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-xs text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-none transition-all"
                   />
                 </div>
               </div>
 
               {/* Permissions Header & Bulk Tools */}
-              <div className="border-t border-slate-800/80 pt-5">
+              <div className="border-t border-slate-200 pt-5">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                   <div>
-                    <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                       Modular Capabilities Matrix
                     </h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Toggle exact View, Create, Edit, and Delete actions below.</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Toggle exact View, Create, Edit, and Delete actions below.</p>
                   </div>
 
                   {/* Bulk Actions with React Icons */}
@@ -1132,7 +1132,7 @@ const RolesPage = () => {
                           const tmpl = ROLE_TEMPLATES.find(t => t.key === selectedTemplateKey);
                           if (tmpl) handleApplyTemplate(tmpl);
                         }}
-                        className="px-2.5 py-1.5 text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl transition-colors inline-flex items-center gap-1.5"
+                        className="px-2.5 py-1.5 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                       >
                         <HiOutlineArrowPath className="w-3.5 h-3.5" />
                         Reset to {selectedTemplateKey} Defaults
@@ -1141,7 +1141,7 @@ const RolesPage = () => {
                     <button
                       type="button"
                       onClick={() => handleBulkSetPermissions('full')}
-                      className="px-2.5 py-1.5 text-xs font-semibold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 rounded-xl transition-colors inline-flex items-center gap-1"
+                      className="px-2.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                       <HiOutlineCheck className="w-3.5 h-3.5" />
                       Select All
@@ -1149,7 +1149,7 @@ const RolesPage = () => {
                     <button
                       type="button"
                       onClick={() => handleBulkSetPermissions('read')}
-                      className="px-2.5 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl transition-colors inline-flex items-center gap-1"
+                      className="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                       <HiOutlineEye className="w-3.5 h-3.5" />
                       Read-Only
@@ -1157,7 +1157,7 @@ const RolesPage = () => {
                     <button
                       type="button"
                       onClick={() => handleBulkSetPermissions('clear')}
-                      className="px-2.5 py-1.5 text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl transition-colors inline-flex items-center gap-1"
+                      className="px-2.5 py-1.5 text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                       <HiOutlineXMark className="w-3.5 h-3.5" />
                       Clear
@@ -1166,9 +1166,9 @@ const RolesPage = () => {
                 </div>
 
                 {/* Modules Matrix Table */}
-                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="bg-slate-900 text-slate-300 border-b border-slate-800 font-semibold uppercase tracking-wider">
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 font-semibold uppercase tracking-wider">
                       <tr>
                         <th className="px-4 py-3">Module / Capability</th>
                         <th className="px-4 py-3 text-center">View (Read)</th>
@@ -1178,27 +1178,27 @@ const RolesPage = () => {
                         <th className="px-4 py-3 text-right">Row Toggle</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/80">
+                    <tbody className="divide-y divide-slate-100">
                       {allAvailableModules.map(mod => {
                         const perm = roleForm.permissions[mod.key] || { view: false, create: false, edit: false, delete: false };
                         const activeTemplate = ROLE_TEMPLATES.find(t => t.key === selectedTemplateKey);
                         const ModIcon = mod.icon || HiOutlineSparkles;
 
                         return (
-                          <tr key={mod.key} className="hover:bg-slate-900/60 transition-colors">
+                          <tr key={mod.key} className="hover:bg-slate-50/70 transition-colors">
                             <td className="px-4 py-3">
-                              <div className="font-bold text-white text-xs flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center text-indigo-400 shrink-0">
+                              <div className="font-bold text-slate-900 text-xs flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-md bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
                                   <ModIcon className="w-3.5 h-3.5" />
                                 </div>
                                 <span>{mod.label}</span>
                                 {activeTemplate?.permissions?.[mod.key]?.view && (
-                                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
                                     Base Default
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[11px] text-slate-400 ml-8">{mod.desc}</div>
+                              <div className="text-[11px] text-slate-500 ml-8">{mod.desc}</div>
                             </td>
 
                             {/* View */}
@@ -1208,17 +1208,17 @@ const RolesPage = () => {
                                   type="checkbox"
                                   checked={perm.view}
                                   onChange={() => handlePermissionToggle(mod.key, 'view')}
-                                  className={`w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-0 cursor-pointer ${
+                                  className={`w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer ${
                                     activeTemplate?.permissions?.[mod.key]?.view ? 'ring-1 ring-emerald-500' : ''
                                   }`}
                                 />
                                 {perm.view && activeTemplate && !activeTemplate.permissions?.[mod.key]?.view && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-400 bg-indigo-500/15 border border-indigo-500/25 px-1 py-0.2 rounded">
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1 py-0.2 rounded">
                                     <HiOutlinePlus className="w-2.5 h-2.5" /> Added
                                   </span>
                                 )}
                                 {!perm.view && activeTemplate?.permissions?.[mod.key]?.view && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/25 px-1 py-0.2 rounded">
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1 py-0.2 rounded">
                                     <HiOutlineMinus className="w-2.5 h-2.5" /> Revoked
                                   </span>
                                 )}
@@ -1232,12 +1232,12 @@ const RolesPage = () => {
                                   type="checkbox"
                                   checked={perm.create}
                                   onChange={() => handlePermissionToggle(mod.key, 'create')}
-                                  className={`w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-0 cursor-pointer ${
+                                  className={`w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer ${
                                     activeTemplate?.permissions?.[mod.key]?.create ? 'ring-1 ring-emerald-500' : ''
                                   }`}
                                 />
                                 {perm.create && activeTemplate && !activeTemplate.permissions?.[mod.key]?.create && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-400 bg-indigo-500/15 border border-indigo-500/25 px-1 py-0.2 rounded">
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1 py-0.2 rounded">
                                     <HiOutlinePlus className="w-2.5 h-2.5" /> Added
                                   </span>
                                 )}
@@ -1251,12 +1251,12 @@ const RolesPage = () => {
                                   type="checkbox"
                                   checked={perm.edit}
                                   onChange={() => handlePermissionToggle(mod.key, 'edit')}
-                                  className={`w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-0 cursor-pointer ${
+                                  className={`w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer ${
                                     activeTemplate?.permissions?.[mod.key]?.edit ? 'ring-1 ring-emerald-500' : ''
                                   }`}
                                 />
                                 {perm.edit && activeTemplate && !activeTemplate.permissions?.[mod.key]?.edit && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-400 bg-indigo-500/15 border border-indigo-500/25 px-1 py-0.2 rounded">
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1 py-0.2 rounded">
                                     <HiOutlinePlus className="w-2.5 h-2.5" /> Added
                                   </span>
                                 )}
@@ -1270,12 +1270,12 @@ const RolesPage = () => {
                                   type="checkbox"
                                   checked={perm.delete}
                                   onChange={() => handlePermissionToggle(mod.key, 'delete')}
-                                  className={`w-4 h-4 rounded text-rose-600 bg-slate-900 border-slate-700 focus:ring-0 cursor-pointer ${
+                                  className={`w-4 h-4 rounded text-rose-600 border-slate-300 focus:ring-rose-500 cursor-pointer ${
                                     activeTemplate?.permissions?.[mod.key]?.delete ? 'ring-1 ring-rose-500' : ''
                                   }`}
                                 />
                                 {perm.delete && activeTemplate && !activeTemplate.permissions?.[mod.key]?.delete && (
-                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-rose-400 bg-rose-500/15 border border-rose-500/25 px-1 py-0.2 rounded">
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1 py-0.2 rounded">
                                     <HiOutlinePlus className="w-2.5 h-2.5" /> Added
                                   </span>
                                 )}
@@ -1287,7 +1287,7 @@ const RolesPage = () => {
                               <button
                                 type="button"
                                 onClick={() => handleRowToggle(mod.key)}
-                                className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-500/10 hover:bg-indigo-500/20"
+                                className="text-[11px] font-semibold text-indigo-700 hover:text-indigo-800 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 cursor-pointer"
                               >
                                 <HiOutlineArrowsRightLeft className="w-3 h-3" />
                                 Toggle
@@ -1301,20 +1301,20 @@ const RolesPage = () => {
                 </div>
 
                 {/* Add New Custom Module / Tab Bar */}
-                <div className="mt-4 p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                   <div>
-                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <HiOutlineSparkles className="w-4 h-4 text-indigo-400" />
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <HiOutlineSparkles className="w-4 h-4 text-indigo-600" />
                       Extend System with a Custom Module
                     </span>
-                    <span className="text-[11px] text-slate-400 mt-0.5 block">Define permissions for custom features like 'Inventory', 'CRM Leads', 'Fleet', etc.</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5 block">Define permissions for custom features like 'Inventory', 'CRM Leads', 'Fleet', etc.</span>
                   </div>
 
                   {!showAddModuleInput ? (
                     <button
                       type="button"
                       onClick={() => setShowAddModuleInput(true)}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-white hover:bg-slate-100 text-indigo-700 border border-slate-300 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <HiOutlinePlus className="w-3.5 h-3.5" />
                       Add Custom Module
@@ -1326,19 +1326,19 @@ const RolesPage = () => {
                         value={newModuleName}
                         onChange={(e) => setNewModuleName(e.target.value)}
                         placeholder="Module name (e.g. Inventory)"
-                        className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-indigo-500"
+                        className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-indigo-500"
                       />
                       <button
                         type="button"
                         onClick={handleAddNewModule}
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors"
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors shadow-xs cursor-pointer"
                       >
                         Add
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowAddModuleInput(false)}
-                        className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                        className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 cursor-pointer"
                       >
                         <HiOutlineXMark className="w-4 h-4" />
                       </button>
@@ -1348,18 +1348,18 @@ const RolesPage = () => {
               </div>
 
               {/* Modal Actions */}
-              <div className="border-t border-slate-800 pt-4 flex items-center justify-end gap-3 shrink-0">
+              <div className="border-t border-slate-200 pt-4 flex items-center justify-end gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-slate-700 transition-colors"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-300 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                 >
                   <HiOutlineCheck className="w-4 h-4" />
                   {editingRole

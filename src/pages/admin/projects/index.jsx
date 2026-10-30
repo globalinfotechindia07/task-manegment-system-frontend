@@ -116,10 +116,10 @@ const AdminProjects = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Completed': return 'bg-green-500/10 text-green-400';
-      case 'In Progress': return 'bg-blue-500/10 text-blue-400';
-      case 'On Hold': return 'bg-orange-500/10 text-orange-400';
-      default: return 'bg-slate-500/10 text-slate-400';
+      case 'Completed': return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+      case 'In Progress': return 'bg-blue-50 text-blue-700 border border-blue-200';
+      case 'On Hold': return 'bg-amber-50 text-amber-700 border border-amber-200';
+      default: return 'bg-slate-100 text-slate-700 border border-slate-200';
     }
   };
 
@@ -138,24 +138,24 @@ const AdminProjects = () => {
   };
 
   return (
-    <div>
-      <div className="mb-6 flex justify-between items-end">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Company Projects</h1>
-          <p className="text-slate-400">Manage and track company projects.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Company Projects</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage and track company project lifecycles and milestones.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
         >
           + Add Project
         </button>
       </div>
 
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-900/50 text-xs uppercase text-slate-400">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-slate-50 text-xs uppercase text-slate-600 border-b border-slate-200 font-semibold">
               <tr>
                 <th scope="col" className="px-6 py-4 font-medium">Logo</th>
                 <th scope="col" className="px-6 py-4 font-medium">Project Name</th>
@@ -176,41 +176,41 @@ const AdminProjects = () => {
               ) : projects?.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="px-6 py-12 text-center">
-                    <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
-                    <p className="text-slate-400">Create a new project to get started.</p>
+                    <h3 className="text-base font-semibold text-slate-900 mb-1">No projects found</h3>
+                    <p className="text-xs text-slate-400">Create a new project to get started.</p>
                   </td>
                 </tr>
               ) : (
                 currentProjects.map((project) => (
-                  <tr key={project._id} className="hover:bg-slate-700/20 transition-colors">
+                  <tr key={project._id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
                       {project.logo ? (
-                        <img src={`${API_BASE_URL}${project.logo}`} alt={project.name} className="w-10 h-10 rounded object-cover border border-slate-700" />
+                        <img src={`${API_BASE_URL}${project.logo}`} alt={project.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
                       ) : (
-                        <div className="w-10 h-10 rounded bg-slate-700 flex items-center justify-center text-slate-400 text-xs border border-slate-600">
-                          N/A
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-semibold border border-slate-200">
+                          {project.name ? project.name.substring(0, 2).toUpperCase() : 'PR'}
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 font-medium text-white">{project.name}</td>
-                    <td className="px-6 py-4 text-slate-400 max-w-xs truncate" title={project.description}>
+                    <td className="px-6 py-4 font-semibold text-slate-900">{project.name}</td>
+                    <td className="px-6 py-4 text-slate-500 max-w-xs truncate" title={project.description}>
                       {project.description || '-'}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${getStatusColor(project.status)}`}>
+                      <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${getStatusColor(project.status)}`}>
                         {project.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-slate-600 text-xs">
                       {project.startDate ? new Date(project.startDate).toLocaleDateString() : '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-slate-600 text-xs">
                       {project.endDate ? new Date(project.endDate).toLocaleDateString() : '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-semibold space-x-1">
                       <button
                         onClick={() => handleEdit(project)}
-                        className="text-indigo-400 hover:text-indigo-300 px-2 py-1 hover:bg-indigo-500/10 rounded transition-colors mr-2"
+                        className="text-indigo-600 hover:text-indigo-800 px-2 py-1 hover:bg-indigo-50 rounded transition-colors"
                       >
                         Edit
                       </button>
@@ -220,7 +220,7 @@ const AdminProjects = () => {
                             deleteMutation.mutate(project._id);
                           }
                         }}
-                        className="text-red-400 hover:text-red-300 px-2 py-1 hover:bg-red-500/10 rounded transition-colors"
+                        className="text-rose-600 hover:text-rose-800 px-2 py-1 hover:bg-rose-50 rounded transition-colors"
                       >
                         Delete
                       </button>
@@ -234,15 +234,15 @@ const AdminProjects = () => {
 
         {/* Pagination Controls */}
         {!isLoading && projects?.length > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-700/50 bg-slate-900/30">
-            <span className="text-sm text-slate-400">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 bg-slate-50 text-xs">
+            <span className="text-slate-500">
               Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, projects.length)} of {projects.length} entries
             </span>
             <div className="flex items-center space-x-2">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-xs font-medium"
               >
                 Previous
               </button>
@@ -251,10 +251,10 @@ const AdminProjects = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`w-8 h-8 flex items-center justify-center text-sm rounded-md transition-colors ${
+                    className={`w-7 h-7 flex items-center justify-center rounded-md font-medium transition-colors ${
                       currentPage === page 
-                        ? 'bg-indigo-600 text-white' 
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        ? 'bg-indigo-600 text-white shadow-xs' 
+                        : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
                     }`}
                   >
                     {page}
@@ -264,7 +264,7 @@ const AdminProjects = () => {
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-xs font-medium"
               >
                 Next
               </button>
@@ -275,11 +275,11 @@ const AdminProjects = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-5 border-b border-slate-800">
-              <h3 className="text-lg font-bold text-white">{editingProject ? 'Edit Project' : 'New Project'}</h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-white transition-colors">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs" onClick={closeModal}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50/70">
+              <h3 className="text-base font-bold text-slate-900">{editingProject ? 'Edit Project' : 'New Project'}</h3>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-700 transition-colors">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -288,37 +288,37 @@ const AdminProjects = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Project Logo</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Project Logo</label>
                 <input
                   type="file"
                   accept="image/*"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-700 focus:border-indigo-600 outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                   {...register('logo')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Project Name</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Project Name</label>
                 <input
                   type="text"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 outline-none"
                   {...register('name', { required: 'Name is required' })}
                 />
-                {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
+                {errors.name && <p className="text-xs text-rose-600 mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Description</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Description</label>
                 <textarea
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none min-h-[100px]"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 outline-none min-h-[90px]"
                   {...register('description')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Status</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Status</label>
                 <select
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 outline-none"
                   {...register('status')}
                 >
                   <option value="Planning">Planning</option>
@@ -330,35 +330,35 @@ const AdminProjects = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Start Date</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Start Date</label>
                   <input
                     type="date"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 outline-none"
                     {...register('startDate')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">End Date</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">End Date</label>
                   <input
                     type="date"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 outline-none"
                     {...register('endDate')}
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 rounded-lg transition-colors border border-slate-300 shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addMutation.isPending || updateMutation.isPending}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors shadow-lg shadow-indigo-500/20 disabled:opacity-50 flex items-center"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-xs disabled:opacity-50 flex items-center"
                 >
                   {addMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save Project'}
                 </button>

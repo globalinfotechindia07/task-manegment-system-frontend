@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { HiOutlinePlus, HiOutlinePencilSquare, HiOutlineTrash, HiOutlinePaperClip, HiOutlineXMark } from 'react-icons/hi2';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
 
@@ -144,64 +145,62 @@ const AdminAnnouncements = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">Announcements</h1>
-          <p className="text-slate-400">Manage company-wide notices and important updates.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Announcements</h1>
+          <p className="text-sm text-slate-500">Manage company-wide notices and important updates.</p>
         </div>
         <button 
           onClick={openCreateModal}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <HiOutlinePlus className="w-5 h-5" />
           New Announcement
         </button>
       </div>
 
-      <div className="flex border-b border-slate-800">
+      <div className="flex border-b border-slate-200">
         <button
           onClick={() => setActiveTab('Active')}
-          className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'Active' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+          className={`px-6 py-3 font-semibold text-sm transition-colors relative cursor-pointer ${activeTab === 'Active' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-800'}`}
         >
           Active Announcements
           {activeTab === 'Active' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>
           )}
         </button>
         <button
           onClick={() => setActiveTab('Previous')}
-          className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'Previous' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+          className={`px-6 py-3 font-semibold text-sm transition-colors relative cursor-pointer ${activeTab === 'Previous' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-800'}`}
         >
           Previous Announcements
           {activeTab === 'Previous' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>
           )}
         </button>
       </div>
 
-      <div className="glass-panel p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
         {isLoading ? (
           <div className="flex justify-center p-12">
-             <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+             <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : filteredAnnouncements.length === 0 ? (
-          <div className="text-center p-12 text-slate-400">
+          <div className="text-center p-12 text-slate-500 text-sm">
             {activeTab === 'Active' ? 'No active announcements found. Create one to notify the organization.' : 'No previous announcements found.'}
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {filteredAnnouncements.map(ann => (
-              <div key={ann._id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600 transition-colors">
+              <div key={ann._id} className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="text-lg font-bold text-white">{ann.title}</h3>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                        ann.priority === 'Urgent' ? 'bg-red-500/20 text-red-400 border border-red-500/20' :
-                        ann.priority === 'Important' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/20' :
-                        'bg-blue-500/20 text-blue-400 border border-blue-500/20'
+                      <h3 className="text-base font-bold text-slate-900">{ann.title}</h3>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                        ann.priority === 'Urgent' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                        ann.priority === 'Important' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        'bg-blue-50 text-blue-700 border border-blue-200'
                       }`}>
                         {ann.priority}
                       </span>
@@ -211,45 +210,39 @@ const AdminAnnouncements = () => {
                     </p>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <button 
                       onClick={() => openEditModal(ann)}
-                      className="text-slate-400 hover:text-indigo-400 p-2 rounded-lg hover:bg-indigo-500/10 transition-colors"
+                      className="text-slate-400 hover:text-indigo-600 p-2 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
                       title="Edit Announcement"
                     >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
+                      <HiOutlinePencilSquare className="w-5 h-5" />
                     </button>
                     <button 
                       onClick={() => handleDelete(ann._id)}
-                      className="text-slate-400 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-colors"
+                      className="text-slate-400 hover:text-rose-600 p-2 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
                       title="Delete Announcement"
                     >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                      <HiOutlineTrash className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
 
-                <div className="text-slate-300 text-sm whitespace-pre-wrap mb-4">
+                <div className="text-slate-700 text-sm whitespace-pre-wrap mb-4 leading-relaxed">
                   {ann.content}
                 </div>
 
                 {ann.attachments && ann.attachments.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-700/50">
+                  <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
                     {ann.attachments.map((file, idx) => (
                       <a 
                         key={idx} 
                         href={`${API_BASE_URL}${file}`} 
                         target="_blank" 
                         rel="noreferrer"
-                        className="flex items-center gap-2 text-xs bg-slate-900 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg hover:text-indigo-400 hover:border-indigo-500/30 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:text-indigo-600 hover:border-indigo-200 transition-colors"
                       >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                        </svg>
+                        <HiOutlinePaperClip className="w-4 h-4 text-slate-400" />
                         Attachment {idx + 1}
                       </a>
                     ))}
@@ -264,49 +257,47 @@ const AdminAnnouncements = () => {
       {/* Create / Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-5 border-b border-slate-800">
-              <h3 className="text-xl font-bold text-white">{isEditing ? 'Edit Announcement' : 'New Announcement'}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-5 border-b border-slate-200 bg-slate-50">
+              <h3 className="text-lg font-bold text-slate-900">{isEditing ? 'Edit Announcement' : 'New Announcement'}</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
+                <HiOutlineXMark className="w-6 h-6" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Title *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={e => setFormData({...formData, title: e.target.value})}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm"
                   placeholder="Enter announcement title"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Content *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Content *</label>
                 <textarea
                   required
                   rows="5"
                   value={formData.content}
                   onChange={e => setFormData({...formData, content: e.target.value})}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all resize-none"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm resize-none"
                   placeholder="Type your message here..."
                 ></textarea>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Priority</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
                   <select
                     value={formData.priority}
                     onChange={e => setFormData({...formData, priority: e.target.value})}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm"
                   >
                     <option value="Normal">Normal</option>
                     <option value="Important">Important</option>
@@ -314,47 +305,47 @@ const AdminAnnouncements = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Schedule For (Optional)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Schedule For (Optional)</label>
                   <input
                     type="datetime-local"
                     value={formData.scheduledDate}
                     onChange={e => setFormData({...formData, scheduledDate: e.target.value})}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Expire Date (Optional)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Expire Date (Optional)</label>
                   <input
                     type="datetime-local"
                     value={formData.expireDate}
                     onChange={e => setFormData({...formData, expireDate: e.target.value})}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Attachments</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Attachments</label>
                 <input
                   type="file"
                   multiple
                   onChange={e => setAttachments(e.target.files)}
-                  className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition-all cursor-pointer bg-slate-800 border border-slate-700 rounded-lg p-2"
+                  className="block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer bg-white border border-slate-300 rounded-lg p-2"
                 />
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-slate-800 mt-6">
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-200 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-slate-300 hover:text-white transition-colors"
+                  className="px-4 py-2 text-slate-600 hover:text-slate-900 font-medium text-sm transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50 flex items-center gap-2 shadow-xs cursor-pointer"
                 >
                   {(createMutation.isPending || updateMutation.isPending) && (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

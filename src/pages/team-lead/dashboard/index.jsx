@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
 import AnnouncementsWidget from '../../../components/AnnouncementsWidget';
+import {
+  HiOutlineUsers,
+  HiOutlineClipboardDocumentList,
+  HiOutlineCheckCircle,
+  HiOutlineClock,
+  HiOutlineEllipsisHorizontalCircle,
+  HiOutlineExclamationTriangle
+} from 'react-icons/hi2';
 
 const TeamLeadDashboard = () => {
   const { user } = useAuth();
@@ -12,7 +20,7 @@ const TeamLeadDashboard = () => {
     queryKey: ['team-users'],
     queryFn: async () => {
       const { data } = await api.get('/users');
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
@@ -20,14 +28,14 @@ const TeamLeadDashboard = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       const { data } = await api.get('/tasks');
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
   if (usersLoading || tasksLoading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="flex h-full items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -57,127 +65,117 @@ const TeamLeadDashboard = () => {
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Team Dashboard</h1>
-        <p className="text-slate-400">Welcome back, {user?.name}. Here is an overview of your team's performance.</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Team Operations Dashboard</h1>
+        <p className="text-sm text-slate-500 mt-1">Welcome back, {user?.name}. Real-time tracking of team members and deliverables.</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div 
-          onClick={() => navigate('/team-lead/users')}
-          className="glass-panel p-6 border-t-4 border-t-blue-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-blue-500/10"
+          onClick={() => navigate('/admin/users')}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs border-t-4 border-t-blue-500 cursor-pointer hover:border-slate-300 hover:shadow transition-all"
         >
-          <p className="text-slate-400 text-sm font-medium mb-2">Team Members</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Team Members</p>
           <div className="flex items-end justify-between">
-            <h3 className="text-4xl font-bold text-white">{teamMembersCount}</h3>
-            <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+            <h3 className="text-3xl font-extrabold text-slate-900">{teamMembersCount}</h3>
+            <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+              <HiOutlineUsers className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         <div 
-          onClick={() => navigate('/team-lead/reports')}
-          className="glass-panel p-6 border-t-4 border-t-indigo-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-indigo-500/10"
+          onClick={() => navigate('/admin/tasks')}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs border-t-4 border-t-indigo-600 cursor-pointer hover:border-slate-300 hover:shadow transition-all"
         >
-          <p className="text-slate-400 text-sm font-medium mb-2">Total Tasks Assigned</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Total Assigned Tasks</p>
           <div className="flex items-end justify-between">
-            <h3 className="text-4xl font-bold text-white">{totalTasks}</h3>
-            <div className="w-10 h-10 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
+            <h3 className="text-3xl font-extrabold text-slate-900">{totalTasks}</h3>
+            <div className="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+              <HiOutlineClipboardDocumentList className="w-5 h-5" />
             </div>
           </div>
         </div>
         
         <div 
-          onClick={() => navigate('/team-lead/reports')}
-          className="glass-panel p-6 border-t-4 border-t-green-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-green-500/10"
+          onClick={() => navigate('/admin/tasks')}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs border-t-4 border-t-emerald-500 cursor-pointer hover:border-slate-300 hover:shadow transition-all"
         >
-          <p className="text-slate-400 text-sm font-medium mb-2">Completed Tasks</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Completed Tasks</p>
           <div className="flex items-end justify-between">
-            <h3 className="text-4xl font-bold text-white">{completedTasks}</h3>
-            <div className="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-400">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+            <h3 className="text-3xl font-extrabold text-emerald-600">{completedTasks}</h3>
+            <div className="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+              <HiOutlineCheckCircle className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         <div 
-          onClick={() => navigate('/team-lead/reports')}
-          className="glass-panel p-6 border-t-4 border-t-yellow-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-yellow-500/10"
+          onClick={() => navigate('/admin/tasks')}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs border-t-4 border-t-amber-500 cursor-pointer hover:border-slate-300 hover:shadow transition-all"
         >
-          <p className="text-slate-400 text-sm font-medium mb-2">In Progress</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">In Progress</p>
           <div className="flex items-end justify-between">
-            <h3 className="text-4xl font-bold text-white">{inProgressTasks}</h3>
-            <div className="w-10 h-10 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-400">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <h3 className="text-3xl font-extrabold text-amber-600">{inProgressTasks}</h3>
+            <div className="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
+              <HiOutlineClock className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         <div 
-          onClick={() => navigate('/team-lead/reports')}
-          className="glass-panel p-6 border-t-4 border-t-slate-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-slate-500/10"
+          onClick={() => navigate('/admin/tasks')}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs border-t-4 border-t-slate-400 cursor-pointer hover:border-slate-300 hover:shadow transition-all"
         >
-          <p className="text-slate-400 text-sm font-medium mb-2">Pending</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Pending</p>
           <div className="flex items-end justify-between">
-            <h3 className="text-4xl font-bold text-white">{pendingTasks}</h3>
-            <div className="w-10 h-10 bg-slate-500/10 rounded-full flex items-center justify-center text-slate-400">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-              </svg>
+            <h3 className="text-3xl font-extrabold text-slate-700">{pendingTasks}</h3>
+            <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600">
+              <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         <div 
-          onClick={() => navigate('/team-lead/reports')}
-          className="glass-panel p-6 border-t-4 border-t-red-500 cursor-pointer hover:bg-slate-700/50 hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-red-500/10"
+          onClick={() => navigate('/admin/tasks')}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs border-t-4 border-t-rose-500 cursor-pointer hover:border-slate-300 hover:shadow transition-all"
         >
-          <p className="text-slate-400 text-sm font-medium mb-2">Overdue Tasks</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Overdue Tasks</p>
           <div className="flex items-end justify-between">
-            <h3 className="text-4xl font-bold text-white">{overdueTasks}</h3>
-            <div className="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center text-red-400">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
+            <h3 className="text-3xl font-extrabold text-rose-600">{overdueTasks}</h3>
+            <div className="w-9 h-9 bg-rose-50 rounded-lg flex items-center justify-center text-rose-600">
+              <HiOutlineExclamationTriangle className="w-5 h-5" />
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-panel overflow-hidden flex flex-col h-full">
-          <div className="p-6 border-b border-slate-700/50 shrink-0">
-            <h2 className="text-lg font-bold text-white">Recent Activities</h2>
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col h-full">
+          <div className="border-b border-slate-100 pb-3 mb-4 shrink-0">
+            <h2 className="text-base font-bold text-slate-900">Recent Deliverables & Tasks</h2>
           </div>
-          <div className="p-6 flex-1 overflow-y-auto">
-            <div className="space-y-4">
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-3">
               {tasks?.slice(0, 5).map(task => (
-                <div key={task._id} className="flex items-center gap-4 bg-slate-800/30 p-4 rounded-lg">
-                  <div className={`w-2 h-10 rounded-full ${
-                    task.status === 'Completed' ? 'bg-green-500' :
-                    task.status === 'In Progress' ? 'bg-indigo-500' :
-                    'bg-slate-500'
+                <div key={task._id} className="flex items-center gap-3.5 bg-slate-50 border border-slate-200/80 p-3 rounded-xl hover:bg-slate-100/60 transition-colors">
+                  <div className={`w-1.5 h-9 rounded-full shrink-0 ${
+                    task.status === 'Completed' ? 'bg-emerald-500' :
+                    task.status === 'In Progress' ? 'bg-indigo-600' :
+                    'bg-slate-400'
                   }`}></div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-white truncate">{task.title}</h4>
-                    <p className="text-xs text-slate-400 truncate">Assigned to: {task.assignedTo?.name || 'Unassigned'}</p>
+                    <h4 className="text-xs font-semibold text-slate-900 truncate">{task.title}</h4>
+                    <p className="text-[11px] text-slate-500 truncate">Assigned: {task.assignedTo?.name || 'Unassigned'}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
-                      task.status === 'Completed' ? 'bg-green-500/10 text-green-400' :
-                      task.status === 'In Progress' ? 'bg-indigo-500/10 text-indigo-400' :
-                      'bg-slate-500/10 text-slate-400'
+                    <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-semibold ${
+                      task.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                      task.status === 'In Progress' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' :
+                      'bg-slate-100 text-slate-700 border border-slate-200'
                     }`}>
                       {task.status}
                     </span>
@@ -185,13 +183,13 @@ const TeamLeadDashboard = () => {
                 </div>
               ))}
               {(!tasks || tasks.length === 0) && (
-                <p className="text-slate-500 text-sm italic">No recent activities found.</p>
+                <p className="text-slate-400 text-xs italic py-8 text-center">No recent activities found.</p>
               )}
             </div>
           </div>
         </div>
         
-        <div>
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
           <AnnouncementsWidget />
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../api/axios';
 import { API_BASE_URL } from '../../config';
+import { HiOutlineCalendarDays } from 'react-icons/hi2';
 
 const MyAttendance = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -11,33 +12,33 @@ const MyAttendance = () => {
     queryKey: ['myAttendanceReport', selectedMonth, selectedYear],
     queryFn: async () => {
       const { data } = await api.get(`/attendance/my-report?month=${selectedMonth}&year=${selectedYear}`);
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Present': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      case 'Late': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
-      case 'Half Day': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
-      case 'Absent': return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-      default: return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+      case 'Present': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'Late': return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'Half Day': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'Absent': return 'bg-rose-50 text-rose-700 border-rose-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-in fade-in zoom-in-95 duration-200">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">My Attendance Report</h1>
-          <p className="text-slate-400">View your daily punch-in records and attendance status.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Personal Attendance Records</h1>
+          <p className="text-sm text-slate-500 mt-1">View your daily time logs, punctuality metrics, and verification selfies.</p>
         </div>
 
-        <div className="flex items-center gap-4 bg-slate-800 p-2 rounded-xl border border-slate-700">
+        <div className="flex items-center gap-2.5 bg-white p-2 rounded-xl border border-slate-200 shadow-xs">
           <select 
             value={selectedMonth} 
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
+            className="bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-indigo-600 outline-none"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
               <option key={m} value={m}>{new Date(0, m - 1).toLocaleString('default', { month: 'long' })}</option>
@@ -46,7 +47,7 @@ const MyAttendance = () => {
           <select 
             value={selectedYear} 
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
+            className="bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs font-semibold focus:border-indigo-600 outline-none"
           >
             {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
               <option key={y} value={y}>{y}</option>
@@ -55,73 +56,77 @@ const MyAttendance = () => {
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-left text-sm text-slate-700">
             <thead>
-              <tr className="bg-slate-800/50 text-slate-300 border-b border-slate-700">
-                <th className="p-4 font-medium">Date</th>
-                <th className="p-4 font-medium">Punch In</th>
-                <th className="p-4 font-medium">Punch Out</th>
-                <th className="p-4 font-medium">Punctuality</th>
-                <th className="p-4 font-medium">Status</th>
-                <th className="p-4 font-medium">In Selfie</th>
-                <th className="p-4 font-medium">Out Selfie</th>
+              <tr className="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs font-semibold uppercase">
+                <th className="p-4">Date</th>
+                <th className="p-4">Punch In</th>
+                <th className="p-4">Punch Out</th>
+                <th className="p-4">Punctuality</th>
+                <th className="p-4">Status</th>
+                <th className="p-4">In Selfie</th>
+                <th className="p-4">Out Selfie</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {isLoading ? (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-slate-500">Loading your report...</td>
+                  <td colSpan="7" className="p-10 text-center text-slate-400">
+                    <div className="inline-block w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                  </td>
                 </tr>
               ) : logs?.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-slate-500">No attendance records found for this month.</td>
+                  <td colSpan="7" className="p-10 text-center text-slate-400">
+                    No attendance records found for this period.
+                  </td>
                 </tr>
               ) : (
                 logs?.map(log => (
-                  <tr key={log._id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="p-4 font-medium text-slate-200">
+                  <tr key={log._id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-4 font-semibold text-slate-900">
                       {new Date(log.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                     </td>
-                    <td className="p-4 text-slate-300 font-mono">
+                    <td className="p-4 text-slate-700 font-mono font-medium">
                       {new Date(log.punchIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </td>
-                    <td className="p-4 text-slate-300 font-mono">
+                    <td className="p-4 text-slate-700 font-mono font-medium">
                       {log.punchOut ? new Date(log.punchOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
                     </td>
                     <td className="p-4">
                       {log.lateByMinutes > 0 ? (
-                        <span className="text-orange-400 text-xs font-medium bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">
+                        <span className="text-amber-700 text-xs font-semibold bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
                           {Math.floor(log.lateByMinutes / 60) > 0 ? `${Math.floor(log.lateByMinutes / 60)}h ` : ''}{log.lateByMinutes % 60}m late
                         </span>
                       ) : (
-                        <span className="text-emerald-400 text-xs font-medium bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
+                        <span className="text-emerald-700 text-xs font-semibold bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
                           On Time
                         </span>
                       )}
                     </td>
                     <td className="p-4">
-                      <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-semibold border ${getStatusColor(log.status)}`}>
+                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(log.status)}`}>
                         {log.status}
                       </span>
                     </td>
                     <td className="p-4">
                       {log.punchInPhoto ? (
-                        <a href={`${API_BASE_URL}${log.punchInPhoto}`} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded border border-slate-700 overflow-hidden hover:opacity-80 transition-opacity" title="View Punch In Photo">
+                        <a href={`${API_BASE_URL}${log.punchInPhoto}`} target="_blank" rel="noreferrer" className="block w-9 h-9 rounded-lg border border-slate-200 overflow-hidden hover:opacity-80 transition-opacity shadow-xs" title="View Punch In Photo">
                           <img src={`${API_BASE_URL}${log.punchInPhoto}`} alt="In" className="w-full h-full object-cover" />
                         </a>
                       ) : (
-                        <span className="text-slate-500 text-xs">N/A</span>
+                        <span className="text-slate-400 text-xs">N/A</span>
                       )}
                     </td>
                     <td className="p-4">
                       {log.punchOutPhoto ? (
-                        <a href={`${API_BASE_URL}${log.punchOutPhoto}`} target="_blank" rel="noreferrer" className="block w-10 h-10 rounded border border-slate-700 overflow-hidden hover:opacity-80 transition-opacity" title="View Punch Out Photo">
+                        <a href={`${API_BASE_URL}${log.punchOutPhoto}`} target="_blank" rel="noreferrer" className="block w-9 h-9 rounded-lg border border-slate-200 overflow-hidden hover:opacity-80 transition-opacity shadow-xs" title="View Punch Out Photo">
                           <img src={`${API_BASE_URL}${log.punchOutPhoto}`} alt="Out" className="w-full h-full object-cover" />
                         </a>
                       ) : (
-                        <span className="text-slate-500 text-xs">-</span>
+                        <span className="text-slate-400 text-xs">-</span>
                       )}
                     </td>
                   </tr>

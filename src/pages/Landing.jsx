@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import CompanyOnboardingModal from '../components/subscription/CompanyOnboardingModal';
+import { HiOutlineCheck, HiStar } from 'react-icons/hi2';
 
 const Landing = () => {
   const { user } = useAuth();
@@ -489,7 +490,7 @@ const Landing = () => {
               <div className="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 hidden sm:block">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-                    ✓
+                    <HiOutlineCheck className="w-5 h-5 stroke-[2.5]" />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-slate-900">Multi-Tenant Verified</p>
@@ -521,9 +522,9 @@ const Landing = () => {
             {testimonials?.map((t, idx) => (
               <div key={idx} className="p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md shadow-slate-200/40 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-1 text-amber-400 mb-4 text-sm">
+                  <div className="flex items-center gap-1 text-amber-400 mb-4">
                     {[...Array(t.rating || 5)].map((_, i) => (
-                      <span key={i}>★</span>
+                      <HiStar key={i} className="w-4 h-4 fill-amber-400" />
                     ))}
                   </div>
                   <p className="text-sm text-slate-700 leading-relaxed italic mb-6">

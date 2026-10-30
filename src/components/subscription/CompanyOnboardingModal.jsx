@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import { 
+  HiOutlineXMark, 
+  HiOutlineShieldCheck, 
+  HiOutlineCheckCircle, 
+  HiOutlineArrowRight, 
+  HiOutlineArrowLeft 
+} from 'react-icons/hi2';
 
 const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway }) => {
   const navigate = useNavigate();
@@ -193,7 +200,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
         modal: {
           ondismiss: function () {
             setIsSubmitting(false);
-            toast('Payment process was cancelled by user.', { icon: 'ℹ️' });
+            toast('Payment process was cancelled by user.');
           }
         }
       };
@@ -227,37 +234,35 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
   const totalAmount = basePrice + gstAmount;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 my-8 flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 my-8 flex flex-col max-h-[92vh] overflow-hidden">
         
         {/* Header with Step Progress */}
-        <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 px-6 sm:px-8 py-5 text-white flex items-center justify-between border-b border-indigo-900/40">
+        <div className="bg-white px-6 sm:px-8 py-5 text-slate-900 flex items-center justify-between border-b border-slate-200">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
                 New Enterprise Subscription
               </span>
-              <span className="text-xs text-indigo-200/80 font-medium">
-                Plan: <strong className="text-white">{selectedPlan.name}</strong>
+              <span className="text-xs text-slate-500 font-medium">
+                Plan: <strong className="text-slate-900">{selectedPlan.name}</strong>
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white mt-1">
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 mt-1.5">
               {step === 1 && 'Step 1: Company & Business Information'}
               {step === 2 && 'Step 2: Setup Admin Account & Login'}
               {step === 3 && 'Step 3: Review Plan & Razorpay Checkout'}
-              {step === 4 && 'Onboarding Completed! 🎉'}
+              {step === 4 && 'Onboarding Completed Successfully'}
             </h2>
           </div>
 
           {step !== 4 && (
             <button
               onClick={onClose}
-              className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Close"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <HiOutlineXMark className="w-5 h-5" />
             </button>
           )}
         </div>
@@ -267,7 +272,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
           <div className="bg-slate-50 border-b border-slate-200 px-6 sm:px-8 py-3">
             <div className="flex items-center justify-between text-xs">
               <div className={`flex items-center gap-2 ${step >= 1 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
                   1
                 </span>
                 <span>Company Details</span>
@@ -276,7 +281,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 <div className={`h-full bg-indigo-600 transition-all duration-300 ${step >= 2 ? 'w-full' : 'w-0'}`} />
               </div>
               <div className={`flex items-center gap-2 ${step >= 2 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
                   2
                 </span>
                 <span>Admin Credentials</span>
@@ -285,7 +290,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 <div className={`h-full bg-indigo-600 transition-all duration-300 ${step >= 3 ? 'w-full' : 'w-0'}`} />
               </div>
               <div className={`flex items-center gap-2 ${step >= 3 ? 'text-indigo-600 font-bold' : 'text-slate-400 font-medium'}`}>
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] ${step >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold ${step >= 3 ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
                   3
                 </span>
                 <span>Payment & Launch</span>
@@ -301,7 +306,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
           {step === 1 && (
             <form onSubmit={handleNextToAdminSetup} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                   Company / Organization Name *
                 </label>
                 <input
@@ -311,13 +316,13 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   value={formData.companyName}
                   onChange={handleChange}
                   placeholder="e.g. Apex Infotech Solutions Pvt Ltd"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                  className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     City / Branch Location *
                   </label>
                   <input
@@ -327,19 +332,19 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.location}
                     onChange={handleChange}
                     placeholder="e.g. Mumbai, Bangalore, Pune"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Estimated Employee Size *
                   </label>
                   <select
                     name="employeeSize"
                     value={formData.employeeSize}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                   >
                     <option value="1-15">1 to 15 Employees</option>
                     <option value="16-50">16 to 50 Employees</option>
@@ -350,7 +355,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                   Complete Office Address
                 </label>
                 <textarea
@@ -359,13 +364,13 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="e.g. Unit 402, High Street IT Park, Powai, Mumbai - 400076"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                  className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Company Registration / CIN No.
                   </label>
                   <input
@@ -374,12 +379,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.registrationNumber}
                     onChange={handleChange}
                     placeholder="e.g. U72200MH2021PTC123456"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm font-mono uppercase"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs font-mono uppercase"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     GST Number (Optional)
                   </label>
                   <input
@@ -388,14 +393,14 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.gstNumber}
                     onChange={handleChange}
                     placeholder="e.g. 27ABCDE1234F1Z5"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm font-mono uppercase"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs font-mono uppercase"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Official Contact Phone *
                   </label>
                   <input
@@ -405,12 +410,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="e.g. +91 98765 43210"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Official Billing Email
                   </label>
                   <input
@@ -419,7 +424,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.contactEmail}
                     onChange={handleChange}
                     placeholder="e.g. billing@apextech.com"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                   />
                 </div>
               </div>
@@ -428,15 +433,16 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-600/20 cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
                 >
-                  Next: Setup Admin Account →
+                  <span>Next: Setup Admin Account</span>
+                  <HiOutlineArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>
@@ -445,9 +451,9 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
           {/* STEP 2: ADMIN CREDENTIALS SETUP */}
           {step === 2 && (
             <form onSubmit={handleNextToPayment} className="space-y-4">
-              <div className="bg-indigo-50/80 border border-indigo-200/60 p-4 rounded-2xl flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 font-bold text-sm">
-                  👑
+              <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-100 border border-indigo-200 text-indigo-700 flex items-center justify-center shrink-0">
+                  <HiOutlineShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-indigo-950">Master Administrator Account</h4>
@@ -460,7 +466,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Admin Full Name *
                   </label>
                   <input
@@ -470,12 +476,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.adminName}
                     onChange={handleChange}
                     placeholder="e.g. Vikram Malhotra"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Designation / Title
                   </label>
                   <input
@@ -484,13 +490,13 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     value={formData.adminDesignation}
                     onChange={handleChange}
                     placeholder="e.g. Director, Managing Partner, HR Head"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                   Admin Login Email (Username) *
                 </label>
                 <input
@@ -500,14 +506,14 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   value={formData.adminEmail}
                   onChange={handleChange}
                   placeholder="e.g. admin@apextech.com"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm font-medium"
+                  className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs font-medium"
                 />
                 <p className="text-[11px] text-slate-500 mt-1">This email will be used as the Login ID on the portal.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Create Admin Password *
                   </label>
                   <div className="relative">
@@ -518,12 +524,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                       value={formData.adminPassword}
                       onChange={handleChange}
                       placeholder="Minimum 6 characters"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm pr-10"
+                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs pr-12"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium"
+                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
                     >
                       {showPassword ? 'Hide' : 'Show'}
                     </button>
@@ -531,7 +537,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Confirm Admin Password *
                   </label>
                   <div className="relative">
@@ -542,12 +548,12 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Re-enter password"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm pr-10"
+                      className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs pr-12"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium"
+                      className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
                     >
                       {showConfirmPassword ? 'Hide' : 'Show'}
                     </button>
@@ -559,15 +565,17 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  ← Back to Company Info
+                  <HiOutlineArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Company Info</span>
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-600/20 cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
                 >
-                  Next: Review Plan & Payment →
+                  <span>Next: Review Plan & Payment</span>
+                  <HiOutlineArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>
@@ -575,35 +583,35 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
 
           {/* STEP 3: PLAN REVIEW & RAZORPAY PAYMENT */}
           {step === 3 && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Plan Summary Card */}
-              <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-5 rounded-2xl border border-indigo-900/50 shadow-lg">
+              <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl">
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300">Selected Plan</span>
-                    <h3 className="text-xl font-black text-white">{selectedPlan.name}</h3>
-                    <p className="text-xs text-slate-300 mt-0.5">{selectedPlan.description}</p>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">Selected Plan</span>
+                    <h3 className="text-lg font-bold text-slate-900 mt-2">{selectedPlan.name}</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">{selectedPlan.description}</p>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-white">₹{basePrice.toLocaleString('en-IN')}</span>
-                    <span className="text-xs text-slate-300 block">/ {selectedPlan.billingCycle || 'month'}</span>
+                    <span className="text-2xl font-black text-slate-900">₹{basePrice.toLocaleString('en-IN')}</span>
+                    <span className="text-xs text-slate-500 block">/ {selectedPlan.billingCycle || 'month'}</span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-3 text-xs">
+                <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Employee Seat Quota:</span>
-                    <span className="font-bold text-white">Up to {selectedPlan.maxEmployees} Employees</span>
+                    <span className="text-slate-500 block text-[11px]">Employee Seat Quota:</span>
+                    <span className="font-bold text-slate-900">Up to {selectedPlan.maxEmployees} Employees</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Validity Duration:</span>
-                    <span className="font-bold text-white">{selectedPlan.durationDays || (selectedPlan.billingCycle === 'yearly' ? 365 : 30)} Days</span>
+                    <span className="text-slate-500 block text-[11px]">Validity Duration:</span>
+                    <span className="font-bold text-slate-900">{selectedPlan.durationDays || (selectedPlan.billingCycle === 'yearly' ? 365 : 30)} Days</span>
                   </div>
                 </div>
               </div>
 
               {/* Price Calculation & Tax Invoice Table */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2 text-xs">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-600">
                   <span>Plan Subscription Fee</span>
                   <span className="font-medium text-slate-900 font-mono">₹{basePrice.toLocaleString('en-IN')}.00</span>
@@ -619,7 +627,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
               </div>
 
               {/* Summary of Onboarding Account */}
-              <div className="border border-slate-200 rounded-2xl p-4 bg-white text-xs space-y-1.5">
+              <div className="border border-slate-200 rounded-xl p-4 bg-white text-xs space-y-1.5">
                 <h4 className="font-bold text-slate-900 mb-2">Registration Account Preview:</h4>
                 <div className="grid grid-cols-2 gap-2 text-slate-600">
                   <div><strong className="text-slate-800">Company:</strong> {formData.companyName}</div>
@@ -632,9 +640,9 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
               </div>
 
               {/* Payment Gateway Status Badge */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                   <span>Payment Gateway: <strong>Razorpay Encrypted Online Checkout</strong></span>
                 </div>
                 <span className="text-[11px] text-slate-500">Cards • UPI • NetBanking</span>
@@ -646,30 +654,26 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                   type="button"
                   onClick={() => setStep(2)}
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  ← Back to Admin Setup
+                  <HiOutlineArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Admin Setup</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleProceedToPayment}
                   disabled={isSubmitting}
-                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-xs sm:text-sm transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm transition-all shadow-xs disabled:opacity-50 cursor-pointer inline-flex items-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                      </svg>
-                      Provisioning Workspace & Payment...
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Provisioning Workspace...</span>
                     </>
                   ) : (
                     <>
                       <span>Pay ₹{totalAmount.toLocaleString('en-IN')} with Razorpay</span>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
+                      <HiOutlineArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
@@ -680,24 +684,24 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
           {/* STEP 4: SUCCESS & INSTANT ONBOARDING LAUNCH */}
           {step === 4 && onboardedResult && (
             <div className="text-center py-4 space-y-6 animate-in fade-in zoom-in-95">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-3xl shadow-inner">
-                ✓
+              <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 mx-auto flex items-center justify-center shadow-xs">
+                <HiOutlineCheckCircle className="w-8 h-8" />
               </div>
 
               <div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">
                   Congratulations! Workspace Activated
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
                   <strong>{onboardedResult.company?.name}</strong> has been onboarded with a provisioned multi-tenant environment.
                 </p>
               </div>
 
               {/* Account Details Card */}
-              <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-5 text-left text-xs space-y-2.5 shadow-sm">
+              <div className="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-xl p-5 text-left text-xs space-y-2.5 shadow-xs">
                 <div className="flex justify-between pb-2 border-b border-slate-200">
                   <span className="text-slate-500">Company Unique Code:</span>
-                  <span className="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                  <span className="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
                     {onboardedResult.company?.companyCode}
                   </span>
                 </div>
@@ -707,7 +711,7 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Active Subscription Plan:</span>
-                  <span className="font-semibold text-emerald-600">
+                  <span className="font-semibold text-emerald-700">
                     {onboardedResult.company?.subscription?.planName} (Active)
                   </span>
                 </div>
@@ -726,16 +730,17 @@ const CompanyOnboardingModal = ({ isOpen, onClose, selectedPlan, paymentGateway 
                     onClose();
                     navigate('/admin/dashboard');
                   }}
-                  className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition-all shadow-lg shadow-indigo-600/30 cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer inline-flex items-center justify-center gap-2"
                 >
-                  <span>Launch Admin Dashboard Now →</span>
+                  <span>Launch Admin Dashboard Now</span>
+                  <HiOutlineArrowRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => {
                     onClose();
                     navigate('/login');
                   }}
-                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
                 >
                   Go to Login Screen
                 </button>

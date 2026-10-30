@@ -59,7 +59,7 @@ const App = () => {
   }, [location.pathname, clearUnreadChats, clearNewTasks, clearMeetingInvites]);
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-100 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500/20 font-sans">
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
@@ -139,9 +139,10 @@ const App = () => {
 
       <Toaster position="bottom-right" toastOptions={{
         style: {
-          background: '#1e293b',
-          color: '#f8fafc',
-          border: '1px solid #334155'
+          background: '#ffffff',
+          color: '#0f172a',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.08)'
         }
       }}/>
     </div>

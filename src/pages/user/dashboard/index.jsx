@@ -2,6 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../context/AuthContext';
 import api from '../../../api/axios';
 import AnnouncementsWidget from '../../../components/AnnouncementsWidget';
+import {
+  HiOutlineClipboardDocumentList,
+  HiOutlineClock,
+  HiOutlineCheckCircle,
+  HiOutlineEllipsisHorizontalCircle,
+  HiOutlineExclamationTriangle
+} from 'react-icons/hi2';
 
 const UserDashboard = () => {
   const { user } = useAuth();
@@ -10,7 +17,7 @@ const UserDashboard = () => {
     queryKey: ['myTasks'],
     queryFn: async () => {
       const { data } = await api.get('/tasks?myTasks=true');
-      return data;
+      return Array.isArray(data) ? data : [];
     }
   });
 
@@ -39,54 +46,55 @@ const UserDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="p-8 flex justify-center">
-        <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="flex h-full items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">My Dashboard</h1>
-        <p className="text-slate-400">Welcome, {user?.name} ({user?.designation})</p>
+      {/* Header */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Staff Workspace Dashboard</h1>
+        <p className="text-sm text-slate-500 mt-1">Welcome back, <span className="font-semibold text-slate-800">{user?.name}</span> ({user?.designation || user?.role})</p>
       </div>
       
       {/* Overview Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-slate-800/60 p-5 rounded-xl border border-slate-700/50 shadow-lg">
-          <p className="text-slate-400 text-sm font-medium mb-1">Total Assigned</p>
-          <p className="text-3xl font-bold text-white">{total}</p>
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs border-t-4 border-t-slate-400">
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Total Assigned</p>
+          <p className="text-3xl font-extrabold text-slate-900">{total}</p>
         </div>
-        <div className="bg-slate-800/60 p-5 rounded-xl border border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.1)]">
-          <p className="text-indigo-400 text-sm font-medium mb-1">In Progress</p>
-          <p className="text-3xl font-bold text-white">{inProgress}</p>
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs border-t-4 border-t-indigo-600">
+          <p className="text-indigo-600 text-xs font-semibold uppercase tracking-wider mb-1">In Progress</p>
+          <p className="text-3xl font-extrabold text-indigo-700">{inProgress}</p>
         </div>
-        <div className="bg-slate-800/60 p-5 rounded-xl border border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
-          <p className="text-green-400 text-sm font-medium mb-1">Completed</p>
-          <p className="text-3xl font-bold text-white">{completed}</p>
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs border-t-4 border-t-emerald-500">
+          <p className="text-emerald-600 text-xs font-semibold uppercase tracking-wider mb-1">Completed</p>
+          <p className="text-3xl font-extrabold text-emerald-600">{completed}</p>
         </div>
-        <div className="bg-slate-800/60 p-5 rounded-xl border border-slate-500/30 shadow-lg">
-          <p className="text-slate-400 text-sm font-medium mb-1">Pending/Hold</p>
-          <p className="text-3xl font-bold text-white">{pending + onHold}</p>
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs border-t-4 border-t-amber-500">
+          <p className="text-amber-600 text-xs font-semibold uppercase tracking-wider mb-1">Pending/Hold</p>
+          <p className="text-3xl font-extrabold text-amber-600">{pending + onHold}</p>
         </div>
-        <div className="bg-slate-800/60 p-5 rounded-xl border border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-          <p className="text-red-400 text-sm font-medium mb-1">Overdue</p>
-          <p className="text-3xl font-bold text-white">{overdue}</p>
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs border-t-4 border-t-rose-500">
+          <p className="text-rose-600 text-xs font-semibold uppercase tracking-wider mb-1">Overdue</p>
+          <p className="text-3xl font-extrabold text-rose-600">{overdue}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Productivity Summary */}
-        <div className="lg:col-span-1 glass-panel p-6 flex flex-col items-center justify-center text-center">
-          <h3 className="text-lg font-semibold text-white mb-6 w-full text-left">Productivity Summary</h3>
+        <div className="lg:col-span-1 bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
+          <h3 className="text-base font-bold text-slate-900 mb-6 w-full text-left">Productivity Summary</h3>
           <div className="relative w-40 h-40 mb-4">
             <svg className="w-full h-full transform -rotate-90">
-              <circle cx="80" cy="80" r="70" className="text-slate-800 stroke-current" strokeWidth="12" fill="none" />
+              <circle cx="80" cy="80" r="70" className="text-slate-100 stroke-current" strokeWidth="12" fill="none" />
               <circle 
                 cx="80" cy="80" r="70" 
-                className="text-indigo-500 stroke-current" 
+                className="text-indigo-600 stroke-current" 
                 strokeWidth="12" 
                 fill="none" 
                 strokeDasharray={`${2 * Math.PI * 70}`} 
@@ -95,37 +103,37 @@ const UserDashboard = () => {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-bold text-white">{completionRate}%</span>
-              <span className="text-xs text-slate-400">Completed</span>
+              <span className="text-3xl font-extrabold text-slate-900">{completionRate}%</span>
+              <span className="text-xs text-slate-500 font-medium">Completed</span>
             </div>
           </div>
-          <p className="text-slate-300 text-sm">
-            You have completed <span className="font-semibold text-white">{completed}</span> out of <span className="font-semibold text-white">{total}</span> tasks assigned to you.
+          <p className="text-slate-600 text-xs">
+            You resolved <span className="font-bold text-slate-900">{completed}</span> out of <span className="font-bold text-slate-900">{total}</span> deliverables assigned to you.
           </p>
         </div>
 
         {/* Upcoming Deadlines */}
-        <div className="lg:col-span-2 glass-panel p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Upcoming Deadlines</h3>
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+          <h3 className="text-base font-bold text-slate-900 mb-4">Upcoming Deadlines</h3>
           {upcomingDeadlines.length === 0 ? (
-            <p className="text-slate-400 text-sm py-4">No upcoming deadlines.</p>
+            <p className="text-slate-400 text-xs italic py-8 text-center">No upcoming deadlines.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {upcomingDeadlines.map(task => (
-                <div key={task._id} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 flex justify-between items-center hover:bg-slate-800 transition-colors">
+                <div key={task._id} className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex justify-between items-center hover:bg-slate-100/60 transition-colors">
                   <div>
-                    <h4 className="font-medium text-white">{task.title}</h4>
-                    <p className="text-xs text-slate-400 mt-1">Assigned by: {task.assignedBy?.name || 'Unknown'}</p>
+                    <h4 className="font-semibold text-slate-900 text-xs">{task.title}</h4>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Assigned by: <span className="text-slate-700 font-medium">{task.assignedBy?.name || 'Manager'}</span></p>
                   </div>
                   <div className="text-right">
-                    <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold mb-1 ${
-                        task.priority === 'High' ? 'bg-red-500/10 text-red-400' :
-                        task.priority === 'Medium' ? 'bg-yellow-500/10 text-yellow-400' :
-                        'bg-blue-500/10 text-blue-400'
+                    <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-semibold mb-1 ${
+                        task.priority === 'High' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                        task.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        'bg-blue-50 text-blue-700 border border-blue-200'
                       }`}>
                       {task.priority} Priority
                     </span>
-                    <p className="text-sm font-medium text-amber-400">
+                    <p className="text-xs font-semibold text-slate-700">
                       Due: {new Date(task.dueDate).toLocaleDateString()}
                     </p>
                   </div>
@@ -136,35 +144,32 @@ const UserDashboard = () => {
         </div>
       </div>
 
-        {/* Recent Activity & Announcements */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <div className="glass-panel p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Recent Task Activities</h3>
-            {recentActivities.length === 0 ? (
-              <p className="text-slate-400 text-sm py-4">No recent activity found.</p>
-            ) : (
-              <div className="space-y-0 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:ml-[0.5rem] before:h-full before:w-0.5 before:bg-slate-700">
-                {recentActivities.map((activity, i) => (
-                  <div key={i} className="relative pl-6 md:pl-8 py-3 group">
-                    <div className="absolute left-0 md:left-2 top-4 w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.8)] outline outline-4 outline-slate-900"></div>
-                    <div className="bg-slate-800/40 hover:bg-slate-800/80 transition-colors p-3 rounded-lg border border-slate-700/50 inline-block">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-1">
-                        <span className="font-medium text-slate-200 text-sm">{activity.taskTitle}</span>
-                        <span className="text-xs text-slate-500">{new Date(activity.createdAt).toLocaleString()}</span>
-                      </div>
-                      <p className="text-slate-400 text-sm">
-                        {activity.action}
-                      </p>
-                    </div>
+      {/* Recent Activity & Announcements */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+          <h3 className="text-base font-bold text-slate-900 mb-4">Recent Task Activities</h3>
+          {recentActivities.length === 0 ? (
+            <p className="text-slate-400 text-xs italic py-8 text-center">No recent activity logs.</p>
+          ) : (
+            <div className="space-y-3">
+              {recentActivities.map((activity, i) => (
+                <div key={i} className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+                    <span className="font-semibold text-slate-900 text-xs">{activity.taskTitle}</span>
+                    <span className="text-[10px] text-slate-400">{new Date(activity.createdAt).toLocaleString()}</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div>
-            <AnnouncementsWidget />
-          </div>
+                  <p className="text-slate-600 text-xs">
+                    {activity.action}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+          <AnnouncementsWidget />
+        </div>
+      </div>
 
     </div>
   );

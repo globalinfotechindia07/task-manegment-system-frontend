@@ -173,31 +173,31 @@ const UsersPage = () => {
   const teamHeads = users?.filter(u => u.role === 'Team Head' && u.status !== 'Inactive') || [];
 
   return (
-    <div>
-      <div className="mb-6 flex justify-between items-end">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">User Management</h1>
-          <p className="text-slate-400">Manage system roles and access.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">User & Staff Management</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage system roles, department assignments, and access levels.</p>
         </div>
         {canCreateUser && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
           >
-            + Add User
+            + Add Staff Member
           </button>
         )}
       </div>
 
-      <div className="glass-panel overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         {isLoading ? (
           <div className="p-8 flex justify-center">
-            <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-800/80 text-slate-200 border-b border-slate-700/50">
+            <table className="w-full text-left text-sm text-slate-700">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider">
                 <tr>
                   <th className="px-6 py-4 font-semibold">Name</th>
                   <th className="px-6 py-4 font-semibold">Email</th>
@@ -212,32 +212,32 @@ const UsersPage = () => {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-slate-100">
                 {paginatedUsers?.map((user) => (
-                  <tr key={user._id} className={`hover:bg-slate-800/30 transition-colors ${user.status === 'Inactive' ? 'opacity-50' : ''}`}>
-                    <td className="px-6 py-4 font-medium text-white">{user.name}</td>
-                    <td className="px-6 py-4">{user.email}</td>
+                  <tr key={user._id} className={`hover:bg-slate-50 transition-colors ${user.status === 'Inactive' ? 'opacity-60' : ''}`}>
+                    <td className="px-6 py-4 font-semibold text-slate-900">{user.name}</td>
+                    <td className="px-6 py-4 text-slate-600">{user.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
-                        user.role === 'Admin' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                        user.role === 'Team Head' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-                        user.role === 'HR Manager' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' :
-                        user.role === 'User' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                        'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                      <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${
+                        user.role === 'Admin' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                        user.role === 'Team Head' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                        user.role === 'HR Manager' ? 'bg-pink-50 text-pink-700 border border-pink-200' :
+                        user.role === 'User' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                        'bg-indigo-50 text-indigo-700 border border-indigo-200'
                       }`}>
                         {user.roleRef?.displayName || user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{user.department || 'Administration Staff'}</td>
-                    <td className="px-6 py-4">{user.teamHead?.name || 'Head'}</td>
-                    <td className="px-6 py-4">{user.designation}</td>
+                    <td className="px-6 py-4 text-slate-600">{user.department || 'Administration'}</td>
+                    <td className="px-6 py-4 text-slate-600">{user.teamHead?.name || 'Head'}</td>
+                    <td className="px-6 py-4 text-slate-600">{user.designation}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${user.status === 'Inactive' ? 'bg-slate-500/10 text-slate-400' : 'bg-green-500/10 text-green-400'
+                      <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${user.status === 'Inactive' ? 'bg-slate-100 text-slate-600 border border-slate-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         }`}>
                         {user.status || 'Active'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-slate-500 text-xs">{new Date(user.createdAt).toLocaleDateString()}</td>
                     {(canEditUser || canDeleteUser) && (
                       <td className="px-6 py-4 text-right space-x-2 flex justify-end">
                         {canEditUser && (
@@ -307,15 +307,15 @@ const UsersPage = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-6 py-4 flex items-center justify-between border-t border-slate-700/50 bg-slate-800/20">
-                <div className="text-sm text-slate-400">
-                  Showing <span className="font-medium text-white">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium text-white">{Math.min(currentPage * itemsPerPage, users?.length || 0)}</span> of <span className="font-medium text-white">{users?.length}</span> results
+              <div className="px-6 py-3 flex items-center justify-between border-t border-slate-200 bg-slate-50 text-xs">
+                <div className="text-slate-600">
+                  Showing <span className="font-semibold text-slate-900">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-semibold text-slate-900">{Math.min(currentPage * itemsPerPage, users?.length || 0)}</span> of <span className="font-semibold text-slate-900">{users?.length}</span> results
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 rounded border border-slate-600 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2.5 py-1 rounded border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                   >
                     Previous
                   </button>
@@ -323,7 +323,7 @@ const UsersPage = () => {
                     <button
                       key={i + 1}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`w-8 h-8 rounded flex items-center justify-center border ${currentPage === i + 1 ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'} transition-colors`}
+                      className={`w-7 h-7 rounded flex items-center justify-center border font-medium cursor-pointer ${currentPage === i + 1 ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'} transition-colors`}
                     >
                       {i + 1}
                     </button>
@@ -331,7 +331,7 @@ const UsersPage = () => {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 rounded border border-slate-600 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2.5 py-1 rounded border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                   >
                     Next
                   </button>
@@ -345,11 +345,11 @@ const UsersPage = () => {
       {/* Add/Edit User Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="relative bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-5 border-b border-slate-800">
-              <h3 className="text-lg font-bold text-white">{editingUser ? 'Edit User' : 'Add New User'}</h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-white transition-colors">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs" onClick={closeModal}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50/70">
+              <h3 className="text-base font-bold text-slate-900">{editingUser ? 'Edit Staff Member' : 'Add New Staff Member'}</h3>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-700 transition-colors">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -358,46 +358,46 @@ const UsersPage = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Full Name</label>
                 <input
                   type="text"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                   placeholder="John Doe"
                   {...register('name', { required: 'Name is required' })}
                 />
-                {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
+                {errors.name && <p className="text-xs text-rose-600 mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Email Address</label>
                 <input
                   type="email"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                   placeholder="john@globalinfotech.com"
                   {...register('email', { required: 'Email is required' })}
                 />
-                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
+                {errors.email && <p className="text-xs text-rose-600 mt-1">{errors.email.message}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Password {editingUser && <span className="text-slate-500 text-xs">(Leave blank to keep current)</span>}</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Password {editingUser && <span className="text-slate-400 text-xs font-normal">(Leave blank to keep current)</span>}</label>
                 <input
                   type="password"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                   placeholder="••••••••"
                   {...register('password', {
                     required: editingUser ? false : 'Password is required',
                     minLength: { value: 6, message: 'Minimum 6 characters' }
                   })}
                 />
-                {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>}
+                {errors.password && <p className="text-xs text-rose-600 mt-1">{errors.password.message}</p>}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Role</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Role</label>
                   <select
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                     {...register('role')}
                   >
                     {availableRoles.map(role => (
@@ -407,9 +407,9 @@ const UsersPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Type / Designation</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Type / Designation</label>
                   <select
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                     {...register('designation')}
                   >
                     {settings?.designations ? settings.designations.map(type => (
@@ -431,9 +431,9 @@ const UsersPage = () => {
               {selectedRole !== 'Admin' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Department</label>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Department</label>
                     <select
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                       {...register('department')}
                     >
                       {settings?.departments ? settings.departments.map(dept => (
@@ -449,9 +449,9 @@ const UsersPage = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Team Head</label>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Team Head</label>
                     <select
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                       {...register('teamHead', { required: selectedRole === 'User' ? 'Team Head is required' : false })}
                     >
                       <option value="">Select Team Head (Optional)</option>
@@ -459,16 +459,16 @@ const UsersPage = () => {
                         <option key={th._id} value={th._id}>{th.name}</option>
                       ))}
                     </select>
-                    {errors.teamHead && <p className="text-xs text-red-400 mt-1">{errors.teamHead.message}</p>}
+                    {errors.teamHead && <p className="text-xs text-rose-600 mt-1">{errors.teamHead.message}</p>}
                   </div>
                 </div>
               )}
 
               {editingUser && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Status</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Status</label>
                   <select
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 outline-none transition-all"
                     {...register('status')}
                   >
                     <option value="Active">Active</option>
@@ -477,20 +477,20 @@ const UsersPage = () => {
                 </div>
               )}
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 rounded-lg transition-colors border border-slate-300 shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addMutation.isPending || updateMutation.isPending}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors shadow-lg shadow-indigo-500/20 disabled:opacity-50 flex items-center"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-xs disabled:opacity-50 flex items-center"
                 >
-                  {addMutation.isPending || updateMutation.isPending ? 'Saving...' : editingUser ? 'Update User' : 'Add User'}
+                  {addMutation.isPending || updateMutation.isPending ? 'Saving...' : editingUser ? 'Update Staff' : 'Add Staff'}
                 </button>
               </div>
             </form>

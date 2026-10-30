@@ -1,6 +1,21 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { 
+  HiOutlineCreditCard, 
+  HiOutlineShieldCheck, 
+  HiOutlineCurrencyRupee, 
+  HiOutlineArrowPath, 
+  HiOutlineDocumentText, 
+  HiOutlineInformationCircle, 
+  HiOutlineStar, 
+  HiOutlineEnvelope, 
+  HiOutlinePlus, 
+  HiOutlinePencilSquare, 
+  HiOutlineTrash, 
+  HiOutlineXMark, 
+  HiOutlineCheck 
+} from 'react-icons/hi2';
 import api from '../../../api/axios';
 
 const SuperAdminCMS = () => {
@@ -100,27 +115,19 @@ const SuperAdminCMS = () => {
       const { data } = await api.put('/site-content', payload);
       return data;
     },
-    onSuccess: (data) => {
-      toast.success(data.message || 'Changes saved successfully!');
+    onSuccess: () => {
+      toast.success('Website content updated successfully!');
       queryClient.invalidateQueries({ queryKey: ['adminSiteContent'] });
       queryClient.invalidateQueries({ queryKey: ['publicSiteContent'] });
     },
     onError: (err) => {
-      toast.error(err.response?.data?.message || 'Failed to save changes');
+      toast.error(err.response?.data?.message || 'Failed to update content');
     }
   });
 
   const handleSaveGateway = (e) => {
     e.preventDefault();
-    let keyId = (paymentGateway.razorpayKeyId || '').trim();
-    if (keyId.startsWith('zp_test_')) keyId = 'r' + keyId;
-    if (keyId.startsWith('zp_live_')) keyId = 'r' + keyId;
-    const sanitized = {
-      ...paymentGateway,
-      razorpayKeyId: keyId,
-      razorpayKeySecret: (paymentGateway.razorpayKeySecret || '').trim()
-    };
-    updateMutation.mutate({ paymentGateway: sanitized });
+    updateMutation.mutate({ paymentGateway });
   };
 
   const handleSaveAbout = (e) => {
@@ -197,68 +204,71 @@ const SuperAdminCMS = () => {
 
   if (isLoading) {
     return (
-      <div className="p-12 flex justify-center">
-        <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+      <div className="p-12 flex justify-center items-center min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
+
+  const tabs = [
+    { id: 'gateway', name: 'Razorpay Gateway', icon: HiOutlineCreditCard },
+    { id: 'privacy', name: 'Privacy Policy', icon: HiOutlineShieldCheck },
+    { id: 'payment-policy', name: 'Payment Policy & Billing', icon: HiOutlineCurrencyRupee },
+    { id: 'refund-policy', name: 'Refund & Cancellation', icon: HiOutlineArrowPath },
+    { id: 'terms', name: 'Terms & Conditions', icon: HiOutlineDocumentText },
+    { id: 'about', name: 'About Us Page', icon: HiOutlineInformationCircle },
+    { id: 'testimonials', name: 'User Reviews', icon: HiOutlineStar },
+    { id: 'contact', name: 'Contact Us', icon: HiOutlineEnvelope }
+  ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Main Website CMS & Payment Gateway</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Main Website CMS & Payment Gateway</h1>
+        <p className="text-slate-500 text-sm mt-0.5">
           Dynamically manage the public landing page content, terms, privacy, reviews, and Razorpay API credentials.
         </p>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
-        {[
-          { id: 'gateway', name: 'Razorpay Gateway', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-          { id: 'privacy', name: 'Privacy Policy', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
-          { id: 'payment-policy', name: 'Payment Policy & Billing', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { id: 'refund-policy', name: 'Refund & Cancellation', icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' },
-          { id: 'terms', name: 'Terms & Conditions', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { id: 'about', name: 'About Us Page', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { id: 'testimonials', name: 'User Reviews', icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' },
-          { id: 'contact', name: 'Contact Us', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-              activeTab === tab.id
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={tab.icon} />
-            </svg>
-            {tab.name}
-          </button>
-        ))}
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === tab.id
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.name}
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: RAZORPAY PAYMENT GATEWAY */}
       {activeTab === 'gateway' && (
-        <div className="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl animate-in fade-in">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs max-w-3xl animate-in fade-in">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
             <div>
-              <h2 className="text-lg font-bold text-white">Razorpay API Credentials</h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h2 className="text-lg font-bold text-slate-900">Razorpay API Credentials</h2>
+              <p className="text-xs text-slate-500 mt-0.5">
                 Enable online payments so organizations can directly subscribe and renew plans via cards, UPI, and NetBanking.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-slate-400">Gateway Status:</span>
+              <span className="text-xs font-semibold text-slate-500">Status:</span>
               <span
-                className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                   paymentGateway.isEnabled
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    : 'bg-slate-800 text-slate-400 border border-slate-700'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : 'bg-slate-100 text-slate-600 border-slate-200'
                 }`}
               >
                 {paymentGateway.isEnabled ? 'Enabled & Live' : 'Disabled'}
@@ -266,22 +276,22 @@ const SuperAdminCMS = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSaveGateway} className="space-y-5">
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+          <form onSubmit={handleSaveGateway} className="space-y-4">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200">
               <input
                 type="checkbox"
                 id="enableGateway"
                 checked={paymentGateway.isEnabled}
                 onChange={(e) => setPaymentGateway({ ...paymentGateway, isEnabled: e.target.checked })}
-                className="w-5 h-5 rounded border-slate-600 text-indigo-600 focus:ring-indigo-500 bg-slate-900"
+                className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
               />
-              <label htmlFor="enableGateway" className="text-sm font-medium text-slate-200 cursor-pointer">
+              <label htmlFor="enableGateway" className="text-sm font-medium text-slate-800 cursor-pointer">
                 Enable Online Razorpay Gateway on Subscription Plans
               </label>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 RAZORPAY_KEY_ID *
               </label>
               <input
@@ -289,13 +299,13 @@ const SuperAdminCMS = () => {
                 value={paymentGateway.razorpayKeyId}
                 onChange={(e) => setPaymentGateway({ ...paymentGateway, razorpayKeyId: e.target.value })}
                 placeholder="rzp_live_xxxxxxxx or rzp_test_xxxxxxxx"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono"
+                className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono"
               />
               <p className="text-[11px] text-slate-400 mt-1">This key is exposed to the frontend checkout modal safely.</p>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 RAZORPAY_KEY_SECRET *
               </label>
               <div className="relative">
@@ -304,12 +314,12 @@ const SuperAdminCMS = () => {
                   value={paymentGateway.razorpayKeySecret}
                   onChange={(e) => setPaymentGateway({ ...paymentGateway, razorpayKeySecret: e.target.value })}
                   placeholder="Enter your confidential Razorpay Key Secret"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono pr-10"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono pr-12"
                 />
                 <button
                   type="button"
                   onClick={() => setShowSecret(!showSecret)}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-white"
+                  className="absolute right-3 top-2 text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
                 >
                   {showSecret ? 'Hide' : 'Show'}
                 </button>
@@ -318,21 +328,21 @@ const SuperAdminCMS = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Currency Code</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Currency Code</label>
               <input
                 type="text"
                 value={paymentGateway.currency}
                 onChange={(e) => setPaymentGateway({ ...paymentGateway, currency: e.target.value.toUpperCase() })}
                 placeholder="INR"
-                className="w-32 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono"
+                className="w-32 bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono"
               />
             </div>
 
-            <div className="pt-4 border-t border-slate-800 flex justify-end">
+            <div className="pt-4 border-t border-slate-200 flex justify-end">
               <button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
               >
                 {updateMutation.isPending ? 'Saving...' : 'Save Razorpay Credentials'}
               </button>
@@ -343,82 +353,82 @@ const SuperAdminCMS = () => {
 
       {/* TAB 2: ABOUT US */}
       {activeTab === 'about' && (
-        <div className="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl animate-in fade-in">
-          <h2 className="text-lg font-bold text-white mb-1">About Us Page Content</h2>
-          <p className="text-xs text-slate-400 mb-6">Manage company overview, mission, vision, and hero image shown on the landing page.</p>
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs max-w-3xl animate-in fade-in">
+          <h2 className="text-lg font-bold text-slate-900 mb-0.5">About Us Page Content</h2>
+          <p className="text-xs text-slate-500 mb-6">Manage company overview, mission, vision, and hero image shown on the landing page.</p>
 
           <form onSubmit={handleSaveAbout} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Section Badge Tag</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Section Badge Tag</label>
                 <input
                   type="text"
                   value={aboutUs.badge}
                   onChange={(e) => setAboutUs({ ...aboutUs, badge: e.target.value })}
                   placeholder="e.g. About Global Infotech"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Feature Image URL</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Feature Image URL</label>
                 <input
                   type="text"
                   value={aboutUs.imageUrl}
                   onChange={(e) => setAboutUs({ ...aboutUs, imageUrl: e.target.value })}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Main Headline</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Main Headline</label>
               <input
                 type="text"
                 value={aboutUs.title}
                 onChange={(e) => setAboutUs({ ...aboutUs, title: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Company Description</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Company Description</label>
               <textarea
                 rows={4}
                 value={aboutUs.description}
                 onChange={(e) => setAboutUs({ ...aboutUs, description: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Our Mission</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Our Mission</label>
                 <textarea
                   rows={3}
                   value={aboutUs.mission}
                   onChange={(e) => setAboutUs({ ...aboutUs, mission: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Our Vision</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Our Vision</label>
                 <textarea
                   rows={3}
                   value={aboutUs.vision}
                   onChange={(e) => setAboutUs({ ...aboutUs, vision: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
                 />
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-800 flex justify-end">
+            <div className="pt-4 border-t border-slate-200 flex justify-end">
               <button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
               >
                 {updateMutation.isPending ? 'Saving...' : 'Save About Us Content'}
               </button>
@@ -432,55 +442,52 @@ const SuperAdminCMS = () => {
         <div className="space-y-4 animate-in fade-in">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white">Client Testimonials & Reviews</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Customer feedback showcased on the landing page.</p>
+              <h2 className="text-lg font-bold text-slate-900">Client Testimonials & Reviews</h2>
+              <p className="text-xs text-slate-500 mt-0.5">Customer feedback showcased on the landing page.</p>
             </div>
             <button
               onClick={handleOpenAddTestimonial}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
-              + Add Review
+              <HiOutlinePlus className="w-4 h-4" />
+              Add Review
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {testimonialsList?.map((item, idx) => (
-              <div key={idx} className="glass-panel p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+              <div key={idx} className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-1 mb-2 text-amber-400">
+                  <div className="flex items-center gap-1 mb-2 text-amber-500">
                     {[...Array(item.rating || 5)].map((_, i) => (
-                      <span key={i}>★</span>
+                      <HiOutlineStar key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <p className="text-xs text-slate-300 italic mb-4">"{item.review}"</p>
+                  <p className="text-xs text-slate-700 italic mb-4 leading-relaxed">"{item.review}"</p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <img src={item.avatar} alt={item.name} className="w-8 h-8 rounded-full object-cover border border-slate-700" />
+                    <img src={item.avatar} alt={item.name} className="w-8 h-8 rounded-full object-cover border border-slate-200" />
                     <div>
-                      <p className="text-xs font-semibold text-white">{item.name}</p>
-                      <p className="text-[10px] text-slate-400">{item.designation}, {item.company}</p>
+                      <p className="text-xs font-semibold text-slate-900">{item.name}</p>
+                      <p className="text-[10px] text-slate-500">{item.designation}, {item.company}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEditTestimonial(idx)}
-                      className="p-1 rounded text-slate-400 hover:text-white"
+                      className="p-1 rounded text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
                       title="Edit"
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
+                      <HiOutlinePencilSquare className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteTestimonial(idx)}
-                      className="p-1 rounded text-rose-400 hover:text-rose-300"
+                      className="p-1 rounded text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                       title="Delete"
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                      <HiOutlineTrash className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -492,78 +499,78 @@ const SuperAdminCMS = () => {
 
       {/* TAB 4: CONTACT US */}
       {activeTab === 'contact' && (
-        <div className="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl animate-in fade-in">
-          <h2 className="text-lg font-bold text-white mb-1">Contact Us Settings</h2>
-          <p className="text-xs text-slate-400 mb-6">Contact details displayed on the landing page and footer.</p>
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs max-w-3xl animate-in fade-in">
+          <h2 className="text-lg font-bold text-slate-900 mb-0.5">Contact Us Settings</h2>
+          <p className="text-xs text-slate-500 mb-6">Contact details displayed on the landing page and footer.</p>
 
           <form onSubmit={handleSaveContact} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Section Title</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Section Title</label>
               <input
                 type="text"
                 value={contactInfo.title}
                 onChange={(e) => setContactInfo({ ...contactInfo, title: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Subtitle / Description</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Subtitle / Description</label>
               <input
                 type="text"
                 value={contactInfo.description}
                 onChange={(e) => setContactInfo({ ...contactInfo, description: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Support Email</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Support Email</label>
                 <input
                   type="email"
                   value={contactInfo.email}
                   onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Phone Number</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
                 <input
                   type="text"
                   value={contactInfo.phone}
                   onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Office Address</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Office Address</label>
               <input
                 type="text"
                 value={contactInfo.address}
                 onChange={(e) => setContactInfo({ ...contactInfo, address: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Working / Support Hours</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Working / Support Hours</label>
               <input
                 type="text"
                 value={contactInfo.supportHours}
                 onChange={(e) => setContactInfo({ ...contactInfo, supportHours: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
-            <div className="pt-4 border-t border-slate-800 flex justify-end">
+            <div className="pt-4 border-t border-slate-200 flex justify-end">
               <button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
               >
                 {updateMutation.isPending ? 'Saving...' : 'Save Contact Info'}
               </button>
@@ -638,94 +645,100 @@ const SuperAdminCMS = () => {
 
       {/* MODAL: ADD / EDIT TESTIMONIAL */}
       {isTestimonialModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in-95">
-            <h3 className="text-base font-bold text-white mb-4">
-              {editingTestimonialIdx !== null ? 'Edit Testimonial' : 'Add Testimonial'}
-            </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setIsTestimonialModalOpen(false)}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="text-base font-bold text-slate-900">
+                {editingTestimonialIdx !== null ? 'Edit Testimonial' : 'Add Testimonial'}
+              </h3>
+              <button onClick={() => setIsTestimonialModalOpen(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <HiOutlineXMark className="w-5 h-5" />
+              </button>
+            </div>
 
             <form onSubmit={handleSaveTestimonialModal} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Client Full Name *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Client Full Name *</label>
                 <input
                   type="text"
                   required
                   value={testimonialForm.name}
                   onChange={(e) => setTestimonialForm({ ...testimonialForm, name: e.target.value })}
                   placeholder="e.g. Sumanth Rao"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Designation</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Designation</label>
                   <input
                     type="text"
                     value={testimonialForm.designation}
                     onChange={(e) => setTestimonialForm({ ...testimonialForm, designation: e.target.value })}
                     placeholder="CEO, Director, etc."
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Company</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Company</label>
                   <input
                     type="text"
                     value={testimonialForm.company}
                     onChange={(e) => setTestimonialForm({ ...testimonialForm, company: e.target.value })}
                     placeholder="Apex Systems"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Avatar Image URL</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Avatar Image URL</label>
                 <input
                   type="text"
                   value={testimonialForm.avatar}
                   onChange={(e) => setTestimonialForm({ ...testimonialForm, avatar: e.target.value })}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Rating (1 to 5 Stars)</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Rating (1 to 5 Stars)</label>
                 <select
                   value={testimonialForm.rating}
                   onChange={(e) => setTestimonialForm({ ...testimonialForm, rating: parseInt(e.target.value) || 5 })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 >
-                  <option value={5}>★★★★★ (5 Stars)</option>
-                  <option value={4}>★★★★☆ (4 Stars)</option>
-                  <option value={3}>★★★☆☆ (3 Stars)</option>
+                  <option value={5}>5 Stars</option>
+                  <option value={4}>4 Stars</option>
+                  <option value={3}>3 Stars</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Review Quote *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Review Quote *</label>
                 <textarea
                   rows={3}
                   required
                   value={testimonialForm.review}
                   onChange={(e) => setTestimonialForm({ ...testimonialForm, review: e.target.value })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsTestimonialModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white text-xs font-medium"
+                  className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+                  className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer shadow-xs"
                 >
                   Save Review
                 </button>
@@ -826,7 +839,7 @@ const PolicyEditorTab = ({
   defaultTemplate,
   saveButtonText
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState('editor'); // 'editor', 'preview', 'split'
+  const [activeSubTab, setActiveSubTab] = useState('editor');
 
   const handleResetToDefault = () => {
     if (window.confirm('Reset this policy to the recommended standard template? Any unsaved edits will be replaced.')) {
@@ -840,12 +853,12 @@ const PolicyEditorTab = ({
   const charCount = value ? value.length : 0;
 
   return (
-    <div className="glass-panel p-6 rounded-2xl border border-slate-800 max-w-5xl animate-in fade-in">
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs max-w-5xl animate-in fade-in">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 mb-6 gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
               {badgeText}
             </span>
             {lastUpdated && (
@@ -854,8 +867,8 @@ const PolicyEditorTab = ({
               </span>
             )}
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">{title}</h2>
-          <p className="text-xs text-slate-400 mt-1 max-w-2xl">{subtitle}</p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h2>
+          <p className="text-xs text-slate-500 mt-1 max-w-2xl">{subtitle}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -863,7 +876,7 @@ const PolicyEditorTab = ({
             <button
               type="button"
               onClick={handleResetToDefault}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium border border-slate-200 transition-colors cursor-pointer"
               title="Load clean default draft"
             >
               Reset to Template
@@ -873,21 +886,11 @@ const PolicyEditorTab = ({
             type="button"
             onClick={onSave}
             disabled={isPending}
-            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
-            {isPending ? (
+            {isPending ? 'Saving...' : (
               <>
-                <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
-                Saving Changes...
-              </>
-            ) : (
-              <>
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+                <HiOutlineCheck className="w-4 h-4" />
                 {saveButtonText}
               </>
             )}
@@ -897,14 +900,14 @@ const PolicyEditorTab = ({
 
       {/* View Toggle Tabs & Stats */}
       <div className="flex items-center justify-between mb-3 text-xs">
-        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
           <button
             type="button"
             onClick={() => setActiveSubTab('editor')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
               activeSubTab === 'editor'
-                ? 'bg-slate-800 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Markdown Editor
@@ -912,10 +915,10 @@ const PolicyEditorTab = ({
           <button
             type="button"
             onClick={() => setActiveSubTab('preview')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
               activeSubTab === 'preview'
-                ? 'bg-slate-800 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Live Preview
@@ -923,17 +926,17 @@ const PolicyEditorTab = ({
           <button
             type="button"
             onClick={() => setActiveSubTab('split')}
-            className={`hidden lg:block px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+            className={`hidden lg:block px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
               activeSubTab === 'split'
-                ? 'bg-slate-800 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Side-by-Side
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+        <div className="hidden sm:flex items-center gap-3 text-slate-500 font-mono text-[11px]">
           <span>{lineCount} lines</span>
           <span>•</span>
           <span>{wordCount} words</span>
@@ -944,31 +947,29 @@ const PolicyEditorTab = ({
 
       {/* Layout: Editor / Preview */}
       <div className={`grid gap-4 ${activeSubTab === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
-        {/* Textarea Editor */}
         {(activeSubTab === 'editor' || activeSubTab === 'split') && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
               <span>Supports Markdown headings (###), bullet lists (-), and **bold**</span>
-              <span className="text-indigo-400 font-medium">Publicly visible</span>
+              <span className="text-indigo-600 font-medium">Publicly visible</span>
             </div>
             <textarea
               rows={18}
               value={value}
               onChange={(e) => onChange(e.target.value)}
               placeholder="Enter comprehensive policy terms here..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-xs font-mono text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 leading-relaxed resize-y shadow-inner"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs font-mono text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 leading-relaxed resize-y"
             />
           </div>
         )}
 
-        {/* Live Formatted Preview */}
         {(activeSubTab === 'preview' || activeSubTab === 'split') && (
           <div className="flex flex-col">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 mb-2">
-              <span className="font-semibold text-slate-300">Live Client View (Public Modal Preview)</span>
-              <span className="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-[10px]">Real-time rendering</span>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 mb-2">
+              <span className="font-semibold text-slate-700">Live Client View (Public Modal Preview)</span>
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">Real-time rendering</span>
             </div>
-            <div className="flex-1 bg-white border border-slate-200 rounded-xl p-6 text-slate-800 text-xs sm:text-sm leading-relaxed overflow-y-auto max-h-[500px] shadow-sm">
+            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-6 text-slate-800 text-xs sm:text-sm leading-relaxed overflow-y-auto max-h-[500px]">
               {renderFormattedPolicy(value)}
             </div>
           </div>
@@ -976,15 +977,15 @@ const PolicyEditorTab = ({
       </div>
 
       {/* Bottom Save Bar */}
-      <div className="pt-5 mt-6 border-t border-slate-800 flex items-center justify-between">
-        <p className="text-[11px] text-slate-400">
+      <div className="pt-4 mt-6 border-t border-slate-200 flex items-center justify-between">
+        <p className="text-[11px] text-slate-500">
           Changes will reflect immediately on the main landing page footer and customer checkout modal.
         </p>
         <button
           type="button"
           onClick={onSave}
           disabled={isPending}
-          className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50 cursor-pointer"
+          className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
         >
           {isPending ? 'Saving...' : saveButtonText}
         </button>

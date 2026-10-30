@@ -1,5 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { 
+  HiOutlineChatBubbleLeftRight, 
+  HiOutlineUserGroup, 
+  HiOutlineMagnifyingGlass, 
+  HiOutlinePencilSquare, 
+  HiOutlinePaperClip, 
+  HiOutlineMicrophone, 
+  HiOutlinePaperAirplane, 
+  HiOutlineXMark, 
+  HiOutlineCamera,
+  HiOutlineDocumentText
+} from 'react-icons/hi2';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
@@ -477,39 +489,35 @@ const Chat = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-slate-900">
+    <div className="flex flex-col h-[calc(100vh-5rem)] bg-slate-50">
       {/* Main Container */}
-      <div className="flex-1 flex flex-col max-w-7xl w-full mx-auto p-2 md:p-4 overflow-hidden">
-        <div className="flex-1 glass-panel overflow-hidden border border-slate-700/50 shadow-2xl rounded-2xl flex flex-col bg-slate-900/80 backdrop-blur-sm">
+      <div className="flex-1 flex flex-col w-full h-full p-2 md:p-4 overflow-hidden">
+        <div className="flex-1 overflow-hidden border border-slate-200 shadow-xs rounded-xl flex flex-col bg-white">
 
           {/* Header */}
-          <div className="p-3 md:p-4 border-b border-slate-700/50 flex flex-wrap items-center justify-between gap-2 bg-slate-800/40 backdrop-blur-sm rounded-t-2xl">
+          <div className="p-3 md:p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-white rounded-t-xl">
             <div className="flex items-center gap-2 md:gap-3">
-              <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
-                <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <HiOutlineChatBubbleLeftRight className="w-6 h-6 text-indigo-600" />
                 Messages
               </h1>
               {socket ? (
-                <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 bg-green-500/20 text-green-400 rounded-full border border-green-500/30">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   Connected
                 </span>
               ) : (
-                <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 bg-red-500/20 text-red-400 rounded-full border border-red-500/30">
-                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 bg-rose-50 text-rose-700 rounded-full border border-rose-200">
+                  <span className="w-2 h-2 rounded-full bg-rose-500"></span>
                   Disconnected
                 </span>
               )}
             </div>
             <button
               onClick={openCreateGroupModal}
-              className="px-3 py-1.5 md:px-4 md:py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-indigo-500/20 flex items-center gap-1.5"
+              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+              <HiOutlineUserGroup className="w-4 h-4" />
               New Group
             </button>
           </div>
@@ -517,18 +525,16 @@ const Chat = () => {
           {/* Chat Body */}
           <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
             {/* Sidebar */}
-            <div className="w-full md:w-80 lg:w-96 border-b md:border-b-0 md:border-r border-slate-700/50 flex flex-col bg-slate-800/20">
-              <div className="p-3 border-b border-slate-700/50">
+            <div className="w-full md:w-80 lg:w-96 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col bg-slate-50">
+              <div className="p-3 border-b border-slate-200 bg-white">
                 <div className="relative">
-                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Search chats..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-slate-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-900 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-slate-400"
                   />
                 </div>
               </div>
@@ -536,11 +542,11 @@ const Chat = () => {
               <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
                 {conversationsLoading ? (
                   <div className="flex flex-col items-center justify-center py-10 opacity-60">
-                    <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-                    <p className="text-slate-400 text-sm">Loading chats...</p>
+                    <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+                    <p className="text-slate-500 text-xs">Loading chats...</p>
                   </div>
                 ) : filteredConversations?.length === 0 ? (
-                  <p className="text-slate-500 text-center py-10 text-sm">No conversations found.</p>
+                  <p className="text-slate-400 text-center py-10 text-xs">No conversations found.</p>
                 ) : (
                   filteredConversations?.map(chat => (
                     <button
@@ -553,26 +559,24 @@ const Chat = () => {
                           });
                         }
                       }}
-                      className={`w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left ${selectedChat?._id === chat._id
-                        ? 'bg-indigo-500/20 border border-indigo-500/30 shadow-inner'
-                        : 'hover:bg-slate-700/40 border border-transparent'
+                      className={`w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left cursor-pointer ${selectedChat?._id === chat._id
+                        ? 'bg-indigo-50 border border-indigo-200 text-indigo-900'
+                        : 'hover:bg-slate-100 border border-transparent text-slate-800'
                         }`}
                     >
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 relative ${chat.isGroup ? 'bg-indigo-900/60 border border-indigo-500/30 text-indigo-400' : 'bg-slate-700'
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold flex-shrink-0 relative ${chat.isGroup ? 'bg-indigo-100 border border-indigo-200 text-indigo-700' : 'bg-slate-200 text-slate-700'
                         }`}>
                         {chat.profilePicture ? (
                           <img src={`${API_BASE_URL}${chat.profilePicture}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                         ) : chat.isGroup ? (
-                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
+                          <HiOutlineUserGroup className="w-5 h-5 text-indigo-700" />
                         ) : (
                           chat.name.charAt(0).toUpperCase()
                         )}
                       </div>
                       <div className="overflow-hidden flex-1 mt-0.5">
                         <div className="flex justify-between items-baseline mb-0.5">
-                          <p className="text-sm font-semibold text-slate-100 truncate pr-2">{chat.name}</p>
+                          <p className="text-xs font-bold text-slate-900 truncate pr-2">{chat.name}</p>
                           {chat.latestMessage && (
                             <span className="text-[10px] text-slate-400 flex-shrink-0">
                               {new Date(chat.latestMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -580,17 +584,17 @@ const Chat = () => {
                           )}
                         </div>
                         {chat.latestMessage ? (
-                          <p className={`text-xs truncate pr-4 ${chat.unreadCount > 0 ? 'text-white font-medium' : 'text-slate-400'}`}>
+                          <p className={`text-xs truncate pr-4 ${chat.unreadCount > 0 ? 'text-slate-900 font-semibold' : 'text-slate-500'}`}>
                             {chat.isGroup && typeof chat.latestMessage.sender === 'object' && chat.latestMessage.sender._id === user._id ? 'You: ' : ''}
                             {chat.isGroup && typeof chat.latestMessage.sender === 'object' && chat.latestMessage.sender._id !== user._id ? `${chat.latestMessage.sender.name}: ` : ''}
                             {chat.latestMessage.mediaType ? `Sent a ${chat.latestMessage.mediaType}` : chat.latestMessage.text}
                           </p>
                         ) : (
-                          <p className="text-xs text-slate-500 italic">Tap to start chatting</p>
+                          <p className="text-xs text-slate-400 italic">Tap to start chatting</p>
                         )}
                       </div>
                       {chat.unreadCount > 0 && (
-                        <div className="flex-shrink-0 flex items-center justify-center min-w-[20px] h-5 bg-indigo-500 rounded-full px-1.5 ml-1 mt-6 shadow-sm shadow-indigo-500/30">
+                        <div className="flex-shrink-0 flex items-center justify-center min-w-[18px] h-4.5 bg-indigo-600 rounded-full px-1.5 ml-1 mt-6 shadow-xs">
                           <span className="text-[10px] font-bold text-white">{chat.unreadCount}</span>
                         </div>
                       )}
@@ -601,27 +605,25 @@ const Chat = () => {
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 flex flex-col bg-slate-900/40 relative">
+            <div className="flex-1 flex flex-col bg-white relative">
               {selectedChat ? (
                 <>
                   {/* Chat Header */}
-                  <div className="p-3 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/40 shadow-sm z-10">
+                  <div className="p-3 border-b border-slate-200 flex items-center justify-between bg-white shadow-xs z-10">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${selectedChat.isGroup ? 'bg-indigo-900/60 border border-indigo-500/30 text-indigo-400' : 'bg-slate-700 text-white'
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${selectedChat.isGroup ? 'bg-indigo-100 border border-indigo-200 text-indigo-700' : 'bg-slate-200 text-slate-700'
                         }`}>
                         {selectedChat.profilePicture ? (
                           <img src={`${API_BASE_URL}${selectedChat.profilePicture}`} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                         ) : selectedChat.isGroup ? (
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
+                          <HiOutlineUserGroup className="w-5 h-5 text-indigo-700" />
                         ) : (
                           selectedChat.name.charAt(0).toUpperCase()
                         )}
                       </div>
                       <div className="min-w-0">
-                        <h2 className="text-base font-semibold text-white truncate">{selectedChat.name}</h2>
-                        <p className="text-xs text-slate-400 truncate">
+                        <h2 className="text-sm font-bold text-slate-900 truncate">{selectedChat.name}</h2>
+                        <p className="text-[11px] text-slate-500 truncate">
                           {selectedChat.isGroup ? `${selectedChat.members?.length || 0} members` : selectedChat.role}
                         </p>
                       </div>
@@ -630,12 +632,10 @@ const Chat = () => {
                       {selectedChat.isGroup && selectedChat.admin === user._id && (
                         <button
                           onClick={() => openEditGroupModal(selectedChat)}
-                          className="p-2 rounded-full hover:bg-slate-700/50 text-slate-400 hover:text-indigo-400 transition-colors"
+                          className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
                           title="Edit Group"
                         >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
+                          <HiOutlinePencilSquare className="w-5 h-5" />
                         </button>
                       )}
                     </div>
@@ -645,20 +645,20 @@ const Chat = () => {
                   <div 
                     ref={chatContainerRef}
                     onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar bg-[url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'4\' height=\'4\' viewBox=\'0 0 4 4\'%3E%3Cpath fill=\'%23334155\' fill-opacity=\'0.1\' d=\'M1 3h1v1H1V3zm2-2h1v1H3V1z\'/%3E%3C/svg%3E')]"
+                    className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-slate-50/50"
                   >
                     {isFetchingNextPage && (
                       <div className="flex justify-center py-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500 border-t-transparent"></div>
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-600 border-t-transparent"></div>
                       </div>
                     )}
                     {messagesLoading ? (
                       <div className="flex justify-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 border-t-transparent"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent"></div>
                       </div>
                     ) : messages?.length === 0 ? (
                       <div className="h-full flex items-center justify-center">
-                        <div className="bg-slate-800/80 px-4 py-2 rounded-full text-slate-400 text-sm shadow-sm backdrop-blur-sm border border-slate-700/50">
+                        <div className="bg-white px-4 py-2 rounded-full text-slate-500 text-xs shadow-xs border border-slate-200">
                           No messages yet. Send a message to start!
                         </div>
                       </div>
@@ -671,30 +671,30 @@ const Chat = () => {
                         return (
                           <div key={msg._id || index} className={`flex gap-2 mb-2 ${isMine ? 'justify-end flex-row-reverse' : 'justify-start flex-row'}`}>
                             {/* Avatar */}
-                            <div className="w-8 h-8 rounded-full flex-shrink-0 bg-slate-800 border border-slate-700/50 flex items-center justify-center overflow-hidden mt-auto">
+                            <div className="w-8 h-8 rounded-full flex-shrink-0 bg-slate-200 border border-slate-200 flex items-center justify-center overflow-hidden mt-auto">
                               {isMine ? (
                                 user?.profilePicture ? (
                                   <img src={`${API_BASE_URL}${user.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
                                 ) : (
-                                  <span className="text-xs font-bold text-indigo-400">{user?.name?.charAt(0)?.toUpperCase()}</span>
+                                  <span className="text-xs font-bold text-indigo-700">{user?.name?.charAt(0)?.toUpperCase()}</span>
                                 )
                               ) : (
                                 senderObj?.profilePicture ? (
                                   <img src={`${API_BASE_URL}${senderObj.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
                                 ) : (
-                                  <span className="text-xs font-bold text-slate-400">{senderName.charAt(0)?.toUpperCase()}</span>
+                                  <span className="text-xs font-bold text-slate-600">{senderName.charAt(0)?.toUpperCase()}</span>
                                 )
                               )}
                             </div>
                             
                             <div className={`max-w-[85%] md:max-w-[75%] flex flex-col gap-0.5 ${isMine ? 'items-end' : 'items-start'}`}>
                               {selectedChat.isGroup && !isMine && (
-                                <span className="text-[11px] font-medium text-slate-400 ml-3">{senderName}</span>
+                                <span className="text-[11px] font-medium text-slate-500 ml-2">{senderName}</span>
                               )}
                               <div
-                                className={`rounded-2xl p-2 shadow-sm relative ${isMine
-                                  ? 'bg-indigo-600 text-white rounded-br-none shadow-indigo-600/20'
-                                  : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/50'
+                                className={`rounded-2xl p-2.5 shadow-xs relative text-xs leading-relaxed ${isMine
+                                  ? 'bg-indigo-600 text-white rounded-br-none'
+                                  : 'bg-white text-slate-800 rounded-bl-none border border-slate-200'
                                   }`}
                               >
                                 {msg.mediaUrl && (
@@ -709,23 +709,21 @@ const Chat = () => {
                                       <audio src={`${API_BASE_URL}${msg.mediaUrl}`} controls className="w-full max-w-[180px] h-8 mt-1"></audio>
                                     )}
                                     {msg.mediaType === 'document' && (
-                                      <a href={`${API_BASE_URL}${msg.mediaUrl}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-slate-900/40 rounded-lg text-xs hover:underline">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                        </svg>
+                                      <a href={`${API_BASE_URL}${msg.mediaUrl}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs hover:underline text-indigo-700">
+                                        <HiOutlineDocumentText className="w-4 h-4" />
                                         Document
                                       </a>
                                     )}
                                   </div>
                                 )}
                                 {msg.text && (
-                                  <div className="text-sm whitespace-pre-wrap break-words leading-relaxed px-2 pt-1 pb-0">
+                                  <div className="text-xs whitespace-pre-wrap break-words leading-relaxed px-1">
                                     {msg.text.includes('Room ID:') ? (
                                       <>
                                         {msg.text.split('Room ID:')[0]}
                                         <br/>
                                         <span className="font-semibold">Room ID: </span>
-                                        <a href={`/team-meeting/${msg.text.split('Room ID:')[1].trim()}`} className="text-indigo-400 hover:text-indigo-300 underline font-mono select-all" onClick={(e) => { e.stopPropagation(); }}>
+                                        <a href={`/team-meeting/${msg.text.split('Room ID:')[1].trim()}`} className={`underline font-mono select-all ${isMine ? 'text-indigo-100 hover:text-white' : 'text-indigo-600 hover:text-indigo-800'}`} onClick={(e) => { e.stopPropagation(); }}>
                                           {msg.text.split('Room ID:')[1].trim()}
                                         </a>
                                       </>
@@ -734,20 +732,9 @@ const Chat = () => {
                                     )}
                                   </div>
                                 )}
-                                <div className={`text-[10px] px-2 pb-0.5 pt-0.5 flex items-center justify-end gap-1 ${isMine ? 'text-indigo-200' : 'text-slate-400'
+                                <div className={`text-[10px] px-1 pt-1 flex items-center justify-end gap-1 ${isMine ? 'text-indigo-200' : 'text-slate-400'
                                   }`}>
                                   {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                  {isMine && (
-                                    msg.read ? (
-                                      <svg className="w-3.5 h-3.5 text-red-400 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7 M5 18l4 4L19 12" />
-                                      </svg>
-                                    ) : (
-                                      <svg className="w-3 h-3 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7 M5 18l4 4L19 12" />
-                                      </svg>
-                                    )
-                                  )}
                                 </div>
                               </div>
                             </div>
@@ -759,25 +746,21 @@ const Chat = () => {
                   </div>
 
                   {/* Input Area */}
-                  <div className="p-2 md:p-3 bg-slate-800/60 border-t border-slate-700/50 backdrop-blur-md flex flex-col gap-2">
+                  <div className="p-2 md:p-3 bg-white border-t border-slate-200 flex flex-col gap-2">
                     {(selectedFile || audioBlob) && (
-                      <div className="flex items-center gap-2 bg-slate-900/80 p-1.5 px-3 rounded-lg border border-slate-700 w-fit">
-                        {selectedFile && <span className="text-xs text-indigo-300 truncate max-w-[120px]">{selectedFile.name}</span>}
-                        {audioBlob && <span className="text-xs text-indigo-300">Voice Note ({Math.round(audioBlob.size / 1024)} KB)</span>}
-                        <button type="button" onClick={clearMedia} className="text-slate-400 hover:text-red-400">
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
+                      <div className="flex items-center gap-2 bg-slate-50 p-1.5 px-3 rounded-lg border border-slate-200 w-fit">
+                        {selectedFile && <span className="text-xs text-indigo-700 truncate max-w-[120px] font-medium">{selectedFile.name}</span>}
+                        {audioBlob && <span className="text-xs text-indigo-700 font-medium">Voice Note ({Math.round(audioBlob.size / 1024)} KB)</span>}
+                        <button type="button" onClick={clearMedia} className="text-slate-400 hover:text-rose-600 cursor-pointer">
+                          <HiOutlineXMark className="w-4 h-4" />
                         </button>
                       </div>
                     )}
 
                     <form onSubmit={handleSend} className="flex gap-2 items-center w-full">
-                      <label className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-700 hover:text-white cursor-pointer transition-colors flex-shrink-0">
+                      <label className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-800 cursor-pointer transition-colors flex-shrink-0">
                         <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                        </svg>
+                        <HiOutlinePaperClip className="w-5 h-5" />
                       </label>
 
                       <input
@@ -786,47 +769,37 @@ const Chat = () => {
                         onChange={(e) => setMessageText(e.target.value)}
                         placeholder={isRecording ? "Recording audio..." : "Type a message..."}
                         disabled={isRecording}
-                        className="flex-1 bg-slate-900 border border-slate-600 rounded-full px-4 py-2 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none shadow-inner min-w-0 disabled:opacity-50"
+                        className="flex-1 bg-slate-50 border border-slate-300 rounded-full px-4 py-2 text-xs text-slate-900 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 disabled:opacity-50"
                       />
 
                       {!messageText.trim() && !selectedFile && !audioBlob ? (
                         <button
                           type="button"
                           onClick={isRecording ? stopRecording : startRecording}
-                          className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${isRecording ? 'bg-red-500/20 text-red-500 animate-pulse' : 'text-slate-400 hover:bg-slate-700 hover:text-white'
+                          className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors flex-shrink-0 cursor-pointer ${isRecording ? 'bg-rose-50 text-rose-600 animate-pulse' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
                             }`}
                         >
-                          {isRecording ? (
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z" /></svg>
-                          ) : (
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                          )}
+                          <HiOutlineMicrophone className="w-5 h-5" />
                         </button>
                       ) : null}
 
                       <button
                         type="submit"
                         disabled={(!messageText.trim() && !selectedFile && !audioBlob) || sendMessageMutation.isLoading}
-                        className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center text-white transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0 shadow-lg shadow-indigo-600/30"
+                        className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center text-white transition-transform active:scale-95 disabled:opacity-40 disabled:active:scale-100 flex-shrink-0 shadow-xs cursor-pointer"
                       >
-                        <svg className="w-4 h-4 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
+                        <HiOutlinePaperAirplane className="w-4 h-4 ml-0.5" />
                       </button>
                     </form>
                   </div>
                 </>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-80 p-4">
-                  <div className="w-20 h-20 mb-6 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center shadow-lg">
-                    <svg className="w-10 h-10 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
+                <div className="h-full flex flex-col items-center justify-center text-slate-400 p-4">
+                  <div className="w-16 h-16 mb-4 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
+                    <HiOutlineChatBubbleLeftRight className="w-8 h-8 text-indigo-600" />
                   </div>
-                  <p className="text-xl font-medium text-slate-300">Your Messages</p>
-                  <p className="text-sm mt-2 max-w-xs text-center leading-relaxed">Select a conversation from the sidebar or start a new group to begin messaging.</p>
+                  <p className="text-base font-bold text-slate-900">Your Messages</p>
+                  <p className="text-xs mt-1 max-w-xs text-center text-slate-500 leading-relaxed">Select a conversation from the sidebar or start a new group to begin messaging.</p>
                 </div>
               )}
             </div>
@@ -836,31 +809,26 @@ const Chat = () => {
 
       {/* Group Modal */}
       {showGroupModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 w-full max-w-md p-6 max-h-[90vh] flex flex-col border border-slate-700 shadow-2xl rounded-2xl">
-            <h2 className="text-xl font-bold text-white mb-5">{isEditingGroup ? 'Edit Group' : 'Create New Group'}</h2>
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-md p-6 max-h-[90vh] flex flex-col border border-slate-200 shadow-xl rounded-2xl">
+            <h2 className="text-lg font-bold text-slate-900 mb-5">{isEditingGroup ? 'Edit Group' : 'Create New Group'}</h2>
 
             <form onSubmit={handleCreateGroup} className="flex flex-col flex-1 overflow-hidden">
               <div className="flex items-center gap-4 mb-4">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-slate-700 overflow-hidden flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden flex items-center justify-center">
                     {groupIconPreview ? (
                       <img src={groupIconPreview} alt="Group Icon" className="w-full h-full object-cover" />
                     ) : (
-                      <svg className="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+                      <HiOutlineUserGroup className="w-8 h-8 text-slate-400" />
                     )}
                   </div>
                   <button
                     type="button"
                     onClick={() => groupIconInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white border-2 border-slate-900 hover:bg-indigo-500 transition-colors shadow-lg"
+                    className="absolute bottom-0 right-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white border border-white hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
                   >
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
+                    <HiOutlineCamera className="w-3.5 h-3.5" />
                   </button>
                   <input
                     type="file"
@@ -871,23 +839,23 @@ const Chat = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Group Name</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Group Name</label>
                   <input
                     type="text"
                     required
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                     placeholder="e.g. Engineering Team"
                   />
                 </div>
               </div>
 
               <div className="flex-1 flex flex-col min-h-0">
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">Select Members</label>
-                <div className="flex-1 overflow-y-auto bg-slate-800/50 border border-slate-700 rounded-lg p-2 space-y-1 custom-scrollbar">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Select Members</label>
+                <div className="flex-1 overflow-y-auto bg-slate-50 border border-slate-200 rounded-xl p-2 space-y-1 custom-scrollbar">
                   {users?.map(u => (
-                    <label key={u._id} className="flex items-center gap-3 p-2 hover:bg-slate-700/80 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-600">
+                    <label key={u._id} className="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-200">
                       <input
                         type="checkbox"
                         checked={selectedMembers.includes(u._id)}
@@ -898,9 +866,9 @@ const Chat = () => {
                             setSelectedMembers(selectedMembers.filter(id => id !== u._id));
                           }
                         }}
-                        className="w-4 h-4 rounded border-slate-500 text-indigo-600 focus:ring-indigo-500 bg-slate-900"
+                        className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-xs text-white overflow-hidden shadow-sm">
+                      <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs text-slate-700 font-bold overflow-hidden">
                         {u.profilePicture ? (
                           <img src={`${API_BASE_URL}${u.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
@@ -908,29 +876,29 @@ const Chat = () => {
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-white">{u.name}</span>
-                        <span className="text-[10px] text-slate-400">{u.designation || u.role}</span>
+                        <span className="text-xs font-semibold text-slate-900">{u.name}</span>
+                        <span className="text-[10px] text-slate-500">{u.designation || u.role}</span>
                       </div>
                     </label>
                   ))}
                   {users?.length === 0 && (
-                    <p className="text-slate-500 text-center py-4 text-sm">No other users available</p>
+                    <p className="text-slate-400 text-center py-4 text-xs">No other users available</p>
                   )}
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-700/80">
+              <div className="mt-5 flex justify-end gap-2.5 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowGroupModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createGroupMutation.isLoading || updateGroupMutation.isLoading}
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 shadow-md shadow-indigo-500/20"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
                 >
                   {(createGroupMutation.isLoading || updateGroupMutation.isLoading) ? 'Saving...' : (isEditingGroup ? 'Save Changes' : 'Create Group')}
                 </button>
