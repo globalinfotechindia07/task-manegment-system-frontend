@@ -23,6 +23,10 @@ import SuperAdminCMS from './pages/super-admin/cms';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
+import HRDashboard from './pages/hr/dashboard';
+import TeamLeadDashboard from './pages/team-lead/dashboard';
+import UserDashboard from './pages/user/dashboard';
+import DashboardDispatcher from './pages/common/DashboardDispatcher';
 import AdminUsers from './pages/admin/users';
 import AdminReports from './pages/admin/reports';
 import AdminSettings from './pages/admin/settings';
@@ -32,18 +36,8 @@ import AttendanceSettings from './pages/admin/attendance-settings';
 import SalaryManagement from './pages/admin/salary-management';
 import PayrollDashboard from './pages/admin/payroll-dashboard';
 import AdminBilling from './pages/admin/billing';
-
-// Other Role Dashboards
-import TeamLeadDashboard from './pages/team-lead/dashboard';
-import TeamLeadUsers from './pages/team-lead/users';
-import TeamLeadReports from './pages/team-lead/reports';
-import UserDashboard from './pages/user/dashboard';
-import UserTasks from './pages/user/tasks';
-import UserReports from './pages/user/reports';
-import HRDashboard from './pages/hr/dashboard';
-import HRTasks from './pages/hr/tasks';
-import HRAnnouncements from './pages/hr/announcements';
-import HRReports from './pages/hr/reports';
+import RolesPage from './pages/admin/roles';
+import AdminTasks from './pages/admin/tasks';
 
 import './App.css';
 
@@ -98,56 +92,45 @@ const App = () => {
           </Route>
         </Route>
 
-        {/* Protected Admin & CTO Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['Admin', 'CTO']} />}>
+        {/* Protected Modular Central Company Routes */}
+        <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/projects" element={<AdminProjects />} />
-            <Route path="/admin/reports" element={<AdminReports />} />
-            <Route path="/admin/performance" element={<PerformanceReport />} />
-            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="/admin/attendance-settings" element={<AttendanceSettings />} />
-            <Route path="/admin/salary-management" element={<SalaryManagement />} />
-            <Route path="/admin/payroll-dashboard" element={<PayrollDashboard />} />
-            <Route path="/admin/billing" element={<AdminBilling />} />
+            <Route path="/dashboard" element={<DashboardDispatcher />} />
+            <Route path="/admin/dashboard" element={<DashboardDispatcher />} />
+            <Route path="/admin/billing" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminBilling /></ProtectedRoute>} />
+            <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/roles" element={<ProtectedRoute requiredPermission={['settings', 'view']}><RolesPage /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
+            <Route path="/admin/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
+            <Route path="/admin/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
+            <Route path="/admin/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
+            <Route path="/admin/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
+            <Route path="/admin/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />
+            <Route path="/admin/attendance-settings" element={<ProtectedRoute requiredPermission={['attendance', 'view']}><AttendanceSettings /></ProtectedRoute>} />
+            <Route path="/admin/salary-management" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryManagement /></ProtectedRoute>} />
+            <Route path="/admin/payroll-dashboard" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollDashboard /></ProtectedRoute>} />
             <Route path="/admin/profile" element={<Profile />} />
             <Route path="/admin/chat" element={<Chat />} />
-          </Route>
-        </Route>
 
-        {/* Protected Team Lead Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['Team Head']} />}>
-          <Route element={<DashboardLayout />}>
+            {/* Legacy Role Route Aliases (Pointing to central unified modules) */}
             <Route path="/team-lead/dashboard" element={<TeamLeadDashboard />} />
-            <Route path="/team-lead/users" element={<TeamLeadUsers />} />
-            <Route path="/team-lead/reports" element={<TeamLeadReports />} />
-            <Route path="/team-lead/performance" element={<PerformanceReport />} />
+            <Route path="/team-lead/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
+            <Route path="/team-lead/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
+            <Route path="/team-lead/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/team-lead/profile" element={<Profile />} />
             <Route path="/team-lead/chat" element={<Chat />} />
-          </Route>
-        </Route>
 
-        {/* Protected User Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['User']} />}>
-          <Route element={<DashboardLayout />}>
             <Route path="/user/dashboard" element={<UserDashboard />} />
-            <Route path="/user/tasks" element={<UserTasks />} />
-            <Route path="/user/reports" element={<UserReports />} />
+            <Route path="/user/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
+            <Route path="/user/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
             <Route path="/user/profile" element={<Profile />} />
             <Route path="/user/chat" element={<Chat />} />
-          </Route>
-        </Route>
 
-        {/* Protected HR Manager Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['HR Manager']} />}>
-          <Route element={<DashboardLayout />}>
             <Route path="/hr/dashboard" element={<HRDashboard />} />
-            <Route path="/hr/tasks" element={<HRTasks />} />
-            <Route path="/hr/announcements" element={<HRAnnouncements />} />
-            <Route path="/hr/performance" element={<PerformanceReport />} />
-            <Route path="/hr/reports" element={<HRReports />} />
+            <Route path="/hr/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
+            <Route path="/hr/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />
+            <Route path="/hr/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
+            <Route path="/hr/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
             <Route path="/hr/profile" element={<Profile />} />
             <Route path="/hr/chat" element={<Chat />} />
           </Route>

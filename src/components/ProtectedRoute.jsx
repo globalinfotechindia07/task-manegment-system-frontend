@@ -1,36 +1,53 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
   const { user } = useAuth();
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // Force password change check
-    if (user.requiresPasswordChange && window.location.pathname !== '/force-password-change') {
-      return <Navigate to="/force-password-change" replace />;
-    }
-    // Redirect to their respective dashboard if they don't have permission for this route
-    const roleRoutes = {
-      'Super Admin': '/super-admin/dashboard',
-      'Admin': '/admin/dashboard',
-      'CTO': '/admin/dashboard',
-      'Team Head': '/team-lead/dashboard',
-      'User': '/user/dashboard',
-      'HR Manager': '/hr/dashboard',
-    };
-    return <Navigate to={roleRoutes[user.role] || '/'} replace />;
-  }
-
-  // Force password change check (for generic protected routes)
+  // Force password change check
   if (user.requiresPasswordChange && window.location.pathname !== '/force-password-change') {
     return <Navigate to="/force-password-change" replace />;
   }
 
-  return <Outlet />;
+  // 1. Super Admin and Office Admin have full access to their respective portal routes
+  const isOfficeAdmin = user.role === 'Admin' || user.role === 'CTO';
+  const isSuperAdmin = user.role === 'Super Admin';
+
+  if (isSuperAdmin) {
+    if (allowedRoles && !allowedRoles.includes('Super Admin')) {
+      return <Navigate to="/super-admin/dashboard" replace />;
+    }
+    return children ? children : <Outlet />;
+  }
+
+  // If this is a Super Admin only route and user is not Super Admin
+  if (allowedRoles && allowedRoles.includes('Super Admin') && !isSuperAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  // 2. Check dynamic permission for staff
+  let hasAccess = false;
+
+  if (isOfficeAdmin) {
+    hasAccess = true;
+  } else if (requiredPermission) {
+    const [moduleName, action = 'view'] = requiredPermission;
+    hasAccess = Boolean(user.permissions?.[moduleName]?.[action]);
+  } else if (allowedRoles) {
+    hasAccess = allowedRoles.includes(user.role);
+  } else {
+    hasAccess = true;
+  }
+
+  if (!hasAccess) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return children ? children : <Outlet />;
 };
 
 export default ProtectedRoute;

@@ -16,15 +16,18 @@ const Login = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      const roleRoutes = {
-        'Super Admin': '/super-admin/dashboard',
-        'Admin': '/admin/dashboard',
-        'CTO': '/admin/dashboard',
-        'Team Head': '/team-lead/dashboard',
-        'User': '/user/dashboard',
-        'HR Manager': '/hr/dashboard',
-      };
-      navigate(roleRoutes[result.user.role] || '/');
+      const r = (result.user.role || '').toLowerCase();
+      if (r === 'super admin') {
+        navigate('/super-admin/dashboard');
+      } else if (r === 'hr manager' || r === 'hr' || r.includes('human resource')) {
+        navigate('/hr/dashboard');
+      } else if (r === 'team head' || r === 'team lead' || r.includes('project lead') || r.includes('team lead')) {
+        navigate('/team-lead/dashboard');
+      } else if (r === 'user' || r === 'employee' || r.includes('staff')) {
+        navigate('/user/dashboard');
+      } else {
+        navigate('/admin/dashboard');
+      }
     }
     
     setIsSubmitting(false);

@@ -1,198 +1,323 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { API_BASE_URL } from '../config';
+import {
+  HiOutlineSquares2X2,
+  HiOutlineBuildingOffice2,
+  HiOutlineCreditCard,
+  HiOutlineGlobeAlt,
+  HiOutlineUser,
+  HiOutlineUsers,
+  HiOutlineFolder,
+  HiOutlineClipboardDocumentList,
+  HiOutlineClock,
+  HiOutlineBanknotes,
+  HiOutlineDocumentChartBar,
+  HiOutlineDocumentText,
+  HiOutlineChartBar,
+  HiOutlineMegaphone,
+  HiOutlineChatBubbleLeftRight,
+  HiOutlineVideoCamera,
+  HiOutlineFingerPrint,
+  HiOutlineCalendarDays,
+  HiOutlineDocumentCheck,
+  HiOutlineShieldCheck,
+  HiOutlineCog6Tooth,
+  HiOutlineXMark,
+  HiOutlineArrowRightOnRectangle
+} from 'react-icons/hi2';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const { unreadChatsCount, newTasksCount, meetingInvitesCount } = useSocket();
 
-  const getNavLinks = () => {
-    switch (user?.role) {
-      case 'Super Admin':
-        return [
-          { name: 'Platform Dashboard', path: '/super-admin/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-          { name: 'Offices & Branches', path: '/super-admin/offices', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-          { name: 'Subscription Plans', path: '/super-admin/plans', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-          { name: 'Website CMS & Gateway', path: '/super-admin/cms', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
-          { name: 'My Profile', path: '/super-admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' }
-        ];
-      case 'Admin':
-        return [
-          { name: 'Dashboard', path: '/admin/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-          { name: 'Billing & Invoices', path: '/admin/billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-          { name: 'Users', path: '/admin/users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-          { name: 'Projects', path: '/admin/projects', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-          { name: 'Attendance Policy', path: '/admin/attendance-settings', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'Salary Management', path: '/admin/salary-management', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'Payroll Dashboard', path: '/admin/payroll-dashboard', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { name: 'Task Reports', path: '/admin/reports', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { name: 'Performance Analysis', path: '/admin/performance', icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z' },
-          { name: 'Announcements', path: '/admin/announcements', icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' },
-          { name: 'Chat', path: '/admin/chat', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
-          { name: 'Team Meeting', path: '/team-meeting', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-          { name: 'Settings', path: '/admin/settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
-          { name: 'My Profile', path: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-          { name: 'Punch In/Out', path: '/punch-in', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'My Attendance', path: '/my-attendance', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2' },
-          { name: 'My Salary Slips', path: '/my-salary-slips', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-        ];
-      case 'CTO':
-        return [
-          { name: 'Dashboard', path: '/admin/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-          { name: 'Billing & Invoices', path: '/admin/billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-          { name: 'Users', path: '/admin/users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-          { name: 'Projects', path: '/admin/projects', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-          { name: 'Task Reports', path: '/admin/reports', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { name: 'Performance Analysis', path: '/admin/performance', icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z' },
-          { name: 'Announcements', path: '/admin/announcements', icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' },
-          { name: 'Chat', path: '/admin/chat', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
-          { name: 'Team Meeting', path: '/team-meeting', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-          { name: 'My Profile', path: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-          { name: 'Punch In/Out', path: '/punch-in', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'My Attendance', path: '/my-attendance', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2' },
-          { name: 'My Salary Slips', path: '/my-salary-slips', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-        ];
-      case 'Team Head':
-        return [
-          { name: 'Dashboard', path: '/team-lead/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-          { name: 'Users', path: '/team-lead/users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-          { name: 'Task Reports', path: '/team-lead/reports', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { name: 'Performance Analysis', path: '/team-lead/performance', icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z' },
-          { name: 'Chat', path: '/team-lead/chat', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
-          { name: 'Team Meeting', path: '/team-meeting', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-          { name: 'My Profile', path: '/team-lead/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-          { name: 'Punch In/Out', path: '/punch-in', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'My Attendance', path: '/my-attendance', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2' },
-          { name: 'My Salary Slips', path: '/my-salary-slips', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-        ];
-      case 'User':
-        return [
-          { name: 'Dashboard', path: '/user/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-          { name: 'Daily Tasks', path: '/user/tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-          { name: 'Reports', path: '/user/reports', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { name: 'Chat', path: '/user/chat', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
-          { name: 'Team Meeting', path: '/team-meeting', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-          { name: 'My Profile', path: '/user/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-          { name: 'Punch In/Out', path: '/punch-in', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'My Attendance', path: '/my-attendance', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2' },
-          { name: 'My Salary Slips', path: '/my-salary-slips', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-        ];
-      case 'HR Manager':
-        return [
-          { name: 'Dashboard', path: '/hr/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-          { name: 'Daily Task Monitoring', path: '/hr/tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-          { name: 'Announcements', path: '/hr/announcements', icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' },
-          { name: 'Performance Reports', path: '/hr/performance', icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z' },
-          { name: 'User Reports', path: '/hr/reports', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-          { name: 'Chat', path: '/hr/chat', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
-          { name: 'Team Meeting', path: '/team-meeting', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-          { name: 'My Profile', path: '/hr/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-          { name: 'Punch In/Out', path: '/punch-in', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-          { name: 'My Attendance', path: '/my-attendance', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2' },
-          { name: 'My Salary Slips', path: '/my-salary-slips', icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z' },
-        ];
-      default:
-        return [];
+  const getNavSections = () => {
+    if (!user) return [];
+
+    // 1. Super Admin Navigation Grouping
+    if (user.role === 'Super Admin') {
+      return [
+        {
+          title: 'Platform Overview',
+          items: [
+            { name: 'Platform Dashboard', path: '/super-admin/dashboard', icon: HiOutlineSquares2X2 }
+          ]
+        },
+        {
+          title: 'Platform Control',
+          items: [
+            { name: 'Offices & Branches', path: '/super-admin/offices', icon: HiOutlineBuildingOffice2 },
+            { name: 'Subscription Plans', path: '/super-admin/plans', icon: HiOutlineCreditCard },
+            { name: 'Website CMS & Gateway', path: '/super-admin/cms', icon: HiOutlineGlobeAlt }
+          ]
+        },
+        {
+          title: 'Account',
+          items: [
+            { name: 'My Profile', path: '/super-admin/profile', icon: HiOutlineUser }
+          ]
+        }
+      ];
     }
+
+    // 2. Company Office Navigation (Admin, CTO, HR, Team Lead, Accountant, Employee)
+    const isAdmin = user.role === 'Admin' || user.role === 'CTO';
+    const perms = user.permissions || {};
+    const r = (user.role || '').toLowerCase();
+
+    // Determine role-based dynamic dashboard route
+    let dashboardPath = '/admin/dashboard';
+    if (!isAdmin) {
+      if (r === 'hr manager' || r === 'hr' || r.includes('human resource')) {
+        dashboardPath = '/hr/dashboard';
+      } else if (r === 'team head' || r === 'team lead' || r.includes('lead')) {
+        dashboardPath = '/team-lead/dashboard';
+      } else if (r === 'user' || r === 'employee' || r.includes('staff')) {
+        dashboardPath = '/user/dashboard';
+      } else {
+        dashboardPath = '/dashboard';
+      }
+    }
+
+    const sections = [];
+
+    // Section 1: Overview
+    sections.push({
+      title: 'Overview',
+      items: [
+        { name: 'Dashboard', path: dashboardPath, icon: HiOutlineSquares2X2 }
+      ]
+    });
+
+    // Section 2: Work & Projects
+    const workItems = [];
+    if (isAdmin || perms.projects?.view) {
+      workItems.push({ name: 'Projects', path: '/admin/projects', icon: HiOutlineFolder });
+    }
+    if (isAdmin || perms.tasks?.view) {
+      workItems.push({ name: 'Daily Tasks', path: '/admin/tasks', icon: HiOutlineClipboardDocumentList });
+    }
+    if (isAdmin || perms.reports?.view) {
+      workItems.push({ name: 'Task Reports', path: '/admin/reports', icon: HiOutlineDocumentText });
+    }
+    if (isAdmin || perms.performance?.view) {
+      workItems.push({ name: 'Performance Analysis', path: '/admin/performance', icon: HiOutlineChartBar });
+    }
+    if (workItems.length > 0) {
+      sections.push({ title: 'Work & Projects', items: workItems });
+    }
+
+    // Section 3: Team & HR
+    const teamItems = [];
+    if (isAdmin || perms.users?.view) {
+      teamItems.push({ name: 'Users & Staff', path: '/admin/users', icon: HiOutlineUsers });
+    }
+    if (isAdmin || perms.attendance?.view || perms.attendance?.edit) {
+      teamItems.push({ name: 'Attendance Policy', path: '/admin/attendance-settings', icon: HiOutlineClock });
+    }
+    if (isAdmin || perms.payroll?.view) {
+      teamItems.push({ name: 'Salary Management', path: '/admin/salary-management', icon: HiOutlineBanknotes });
+      teamItems.push({ name: 'Payroll Dashboard', path: '/admin/payroll-dashboard', icon: HiOutlineDocumentChartBar });
+    }
+    if (isAdmin || perms.announcements?.view) {
+      teamItems.push({ name: 'Announcements', path: '/admin/announcements', icon: HiOutlineMegaphone });
+    }
+    if (teamItems.length > 0) {
+      sections.push({ title: 'Team & HR', items: teamItems });
+    }
+
+    // Section 4: Communication
+    const commItems = [];
+    if (isAdmin || perms.chat?.view) {
+      commItems.push({ name: 'Team Chat', path: '/admin/chat', icon: HiOutlineChatBubbleLeftRight });
+      commItems.push({ name: 'Team Meeting', path: '/team-meeting', icon: HiOutlineVideoCamera });
+    }
+    if (commItems.length > 0) {
+      sections.push({ title: 'Communication', items: commItems });
+    }
+
+    // Section 5: My Daily Tools (Universal employee & admin self-service tools)
+    sections.push({
+      title: 'My Daily Tools',
+      items: [
+        { name: 'Punch In / Out', path: '/punch-in', icon: HiOutlineFingerPrint },
+        { name: 'My Attendance', path: '/my-attendance', icon: HiOutlineCalendarDays },
+        { name: 'My Salary Slips', path: '/my-salary-slips', icon: HiOutlineDocumentCheck },
+        { name: 'My Profile', path: '/admin/profile', icon: HiOutlineUser }
+      ]
+    });
+
+    // Section 6: Administration (Admin, CTO, or privileged managers)
+    const adminItems = [];
+    if (isAdmin || perms.settings?.view) {
+      adminItems.push({ name: 'Roles & Permissions', path: '/admin/roles', icon: HiOutlineShieldCheck });
+    }
+    if (isAdmin) {
+      adminItems.push({ name: 'Billing & Invoices', path: '/admin/billing', icon: HiOutlineCreditCard });
+    }
+    if (isAdmin || perms.settings?.view) {
+      adminItems.push({ name: 'Office Settings', path: '/admin/settings', icon: HiOutlineCog6Tooth });
+    }
+    if (adminItems.length > 0) {
+      sections.push({ title: 'Administration', items: adminItems });
+    }
+
+    return sections;
   };
 
-  const navLinks = getNavLinks();
+  const navSections = getNavSections();
 
   return (
     <>
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-[#0f172a]/80 backdrop-blur-sm z-20 lg:hidden"
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 lg:hidden transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar Container */}
       <aside 
-        className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800/90 transform transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none ${
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
       >
-        <div className="h-16 flex items-center px-6 border-b border-slate-800">
-          <Link to="/" className="flex items-center gap-2 group w-full">
-            <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform flex-shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+        {/* Workspace Brand Header */}
+        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800 bg-slate-900/60">
+          <Link to="/" className="flex items-center gap-3 group min-w-0 flex-1">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center transform group-hover:scale-105 transition-all shadow-md shadow-indigo-500/20 flex-shrink-0">
+              <HiOutlineBuildingOffice2 className="w-5 h-5 text-white" />
             </div>
-            <div className="overflow-hidden">
-              <span className="font-bold text-base tracking-tight text-white truncate block">
-                {user?.role === 'Super Admin' ? 'Platform HQ' : (user?.company?.name || 'Global Infotech')}
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-white text-sm tracking-wide leading-tight group-hover:text-indigo-400 transition-colors truncate">
+                {user?.company?.name || 'Enterprise'}
               </span>
-              <span className="text-[10px] text-indigo-400 font-mono tracking-wider block -mt-0.5">
-                {user?.role === 'Super Admin' ? 'SUPER ADMIN' : (user?.company?.companyCode || 'TENANT')}
+              <span className="text-[10px] text-slate-400 font-mono tracking-wider truncate">
+                {user?.company?.companyCode || 'CORP-ID'}
               </span>
             </div>
           </Link>
-          <button onClick={() => setIsOpen(false)} className="lg:hidden text-slate-400 hover:text-white ml-auto">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+
+          {/* Mobile close button */}
+          <button 
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors ml-1"
+            title="Close sidebar"
+          >
+            <HiOutlineXMark className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          <div className="px-3 mb-2">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              {user?.role} Modules
-            </p>
-          </div>
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => setIsOpen(false)}
-              className={`flex items-center px-3 py-2.5 rounded-lg transition-colors group ${
-                location.pathname === link.path 
-                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' 
-                  : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
-              }`}
-            >
-              <svg className={`w-5 h-5 mr-3 flex-shrink-0 ${location.pathname === link.path ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={link.icon} />
-                {link.name === 'Settings' && <circle cx="12" cy="12" r="3" />}
-              </svg>
-              <span className="text-sm font-medium flex-1">{link.name}</span>
-              
-              {/* Badges */}
-              {link.name === 'Chat' && unreadChatsCount > 0 && (
-                <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
-                  {unreadChatsCount > 99 ? '99+' : unreadChatsCount}
-                </span>
+        {/* Categorized Navigation List */}
+        <div className="flex-1 overflow-y-auto px-3.5 py-3 space-y-5 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent hover:scrollbar-thumb-slate-700">
+          {navSections.map((section, sIdx) => (
+            <div key={section.title || sIdx} className="space-y-1">
+              {/* Section Header */}
+              {section.title && (
+                <div className="px-2.5 pb-1 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  {section.title}
+                </div>
               )}
-              {(link.name === 'Task Reports' || link.name === 'Daily Tasks' || link.name === 'Daily Task Monitoring') && newTasksCount > 0 && (
-                <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
-                  {newTasksCount > 99 ? '99+' : newTasksCount}
-                </span>
-              )}
-              {link.name === 'Team Meeting' && meetingInvitesCount > 0 && (
-                <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
-                  {meetingInvitesCount > 99 ? '99+' : meetingInvitesCount}
-                </span>
-              )}
-            </Link>
+
+              {/* Section Items */}
+              <div className="space-y-0.5">
+                {section.items.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = location.pathname === link.path || 
+                    (link.path !== '/' && 
+                     link.path !== '/dashboard' && 
+                     link.path !== '/admin/dashboard' && 
+                     link.path !== '/hr/dashboard' && 
+                     link.path !== '/team-lead/dashboard' && 
+                     link.path !== '/user/dashboard' && 
+                     link.path !== '/super-admin/dashboard' && 
+                     location.pathname.startsWith(link.path + '/'));
+
+                  // Dynamic badge calculation
+                  let badge = null;
+                  if (link.path.includes('/chat') && unreadChatsCount > 0) {
+                    badge = unreadChatsCount;
+                  } else if (link.path.includes('/tasks') && newTasksCount > 0) {
+                    badge = newTasksCount;
+                  } else if (link.path.includes('/team-meeting') && meetingInvitesCount > 0) {
+                    badge = meetingInvitesCount;
+                  }
+
+                  return (
+                    <Link
+                      key={link.path + link.name}
+                      to={link.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold'
+                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-indigo-400'}`} />
+                        <span className="truncate">{link.name}</span>
+                      </div>
+
+                      {badge !== null && (
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 leading-none ${
+                          isActive 
+                            ? 'bg-white text-indigo-700 shadow-sm' 
+                            : 'bg-rose-500 text-white animate-pulse'
+                        }`}>
+                          {badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
-        
-        <div className="p-4 border-t border-slate-800">
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 flex items-center">
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
-              {user?.profilePicture ? (
-                <img src={`${API_BASE_URL}${user.profilePicture}`} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                user?.name?.charAt(0).toUpperCase()
-              )}
-            </div>
-            <div className="ml-3 overflow-hidden">
-              <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-              <p className="text-xs text-slate-400 truncate">{user?.designation}</p>
-            </div>
+
+        {/* User Profile Card & Quick Actions Footer */}
+        <div className="p-3 border-t border-slate-800 bg-slate-900/70">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-800/40 border border-slate-800/80 hover:border-slate-700 transition-colors">
+            <Link 
+              to="/admin/profile" 
+              onClick={() => setIsOpen(false)} 
+              className="flex items-center gap-2.5 min-w-0 group flex-1"
+            >
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden shadow-inner ring-1 ring-white/10">
+                {user?.profilePicture ? (
+                  <img 
+                    src={`${API_BASE_URL.replace('/api', '')}${user.profilePicture}`} 
+                    alt={user.name} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  user?.name?.charAt(0).toUpperCase() || 'U'
+                )}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-semibold text-slate-200 group-hover:text-white truncate">
+                  {user?.name || 'User'}
+                </span>
+                <span className="text-[10px] text-indigo-400 font-medium truncate">
+                  {user?.role || 'Staff'}
+                </span>
+              </div>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => logout()}
+              title="Sign Out"
+              className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors ml-1"
+            >
+              <HiOutlineArrowRightOnRectangle className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </aside>

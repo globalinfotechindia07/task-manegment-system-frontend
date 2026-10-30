@@ -22,11 +22,16 @@ const fallbackRoleTypes = {
 };
 
 const UsersPage = () => {
+  const { user: currentUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
+
+  const canCreateUser = currentUser?.role === 'Admin' || currentUser?.role === 'Super Admin' || !!currentUser?.permissions?.users?.create;
+  const canEditUser = currentUser?.role === 'Admin' || currentUser?.role === 'Super Admin' || !!currentUser?.permissions?.users?.edit;
+  const canDeleteUser = currentUser?.role === 'Admin' || currentUser?.role === 'Super Admin' || !!currentUser?.permissions?.users?.delete;
 
   const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {
@@ -50,6 +55,22 @@ const UsersPage = () => {
       return data;
     }
   });
+
+  const { data: rolesData } = useQuery({
+    queryKey: ['roles'],
+    queryFn: async () => {
+      const { data } = await api.get('/roles');
+      return data;
+    }
+  });
+
+  const availableRoles = (rolesData && Array.isArray(rolesData) && rolesData.length > 0)
+    ? rolesData.filter(r => r.name !== 'Super Admin' && r.name !== 'Admin')
+    : [
+        { name: 'User', displayName: 'User' },
+        { name: 'Team Head', displayName: 'Team Head' },
+        { name: 'HR Manager', displayName: 'HR Manager' }
+      ];
 
   const { data: settings } = useQuery({
     queryKey: ['settings'],
@@ -158,12 +179,14 @@ const UsersPage = () => {
           <h1 className="text-2xl font-bold text-white">User Management</h1>
           <p className="text-slate-400">Manage system roles and access.</p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]"
-        >
-          + Add User
-        </button>
+        {canCreateUser && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+          >
+            + Add User
+          </button>
+        )}
       </div>
 
       <div className="glass-panel overflow-hidden">
@@ -184,7 +207,9 @@ const UsersPage = () => {
                   <th className="px-6 py-4 font-semibold">Designation</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
                   <th className="px-6 py-4 font-semibold">Joined</th>
-                  <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                  {(canEditUser || canDeleteUser) && (
+                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
@@ -193,15 +218,17 @@ const UsersPage = () => {
                     <td className="px-6 py-4 font-medium text-white">{user.name}</td>
                     <td className="px-6 py-4">{user.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${user.role === 'Admin' ? 'bg-red-500/10 text-red-400' :
-                        user.role === 'Team Head' ? 'bg-purple-500/10 text-purple-400' :
-                          user.role === 'HR Manager' ? 'bg-pink-500/10 text-pink-400' :
-                            'bg-blue-500/10 text-blue-400'
-                        }`}>
-                        {user.role}
+                      <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
+                        user.role === 'Admin' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                        user.role === 'Team Head' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                        user.role === 'HR Manager' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' :
+                        user.role === 'User' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                        'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                      }`}>
+                        {user.roleRef?.displayName || user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{user.department || 'Administraton Staff'}</td>
+                    <td className="px-6 py-4">{user.department || 'Administration Staff'}</td>
                     <td className="px-6 py-4">{user.teamHead?.name || 'Head'}</td>
                     <td className="px-6 py-4">{user.designation}</td>
                     <td className="px-6 py-4">
@@ -211,60 +238,68 @@ const UsersPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-right space-x-2 flex">
-                      <button
-                        onClick={() => handleEdit(user)}
-                        title="Edit User"
-                        className="text-indigo-400 hover:text-indigo-300 p-1.5 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors inline-flex items-center justify-center"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleToggleStatus(user)}
-                        title={user.status === 'Inactive' ? 'Activate User' : 'Deactivate User'}
-                        className={`${user.status === 'Inactive' ? 'text-green-400 hover:text-green-300 border-green-500/30 hover:bg-green-500/10' : 'text-red-400 hover:text-red-300 border-red-500/30 hover:bg-red-500/10'} p-1.5 border rounded transition-colors inline-flex items-center justify-center`}
-                      >
-                        {user.status === 'Inactive' ? (
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                          </svg>
+                    {(canEditUser || canDeleteUser) && (
+                      <td className="px-6 py-4 text-right space-x-2 flex justify-end">
+                        {canEditUser && (
+                          <button
+                            onClick={() => handleEdit(user)}
+                            title="Edit User"
+                            className="text-indigo-400 hover:text-indigo-300 p-1.5 border border-indigo-500/30 rounded hover:bg-indigo-500/10 transition-colors inline-flex items-center justify-center"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
                         )}
-                      </button>
-                      <button
-                        onClick={() => {
-                          Swal.fire({
-                            title: 'Are you sure?',
-                            text: `You are about to permanently delete user ${user.name}. This action cannot be undone.`,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#ef4444',
-                            cancelButtonColor: '#334155',
-                            confirmButtonText: 'Yes, delete it!',
-                            background: '#1e293b',
-                            color: '#f8fafc',
-                            customClass: {
-                              popup: 'border border-slate-700 rounded-xl shadow-2xl',
-                            }
-                          }).then((result) => {
-                            if (result.isConfirmed) {
-                              deleteMutation.mutate(user._id);
-                            }
-                          });
-                        }}
-                        title="Delete User"
-                        className="text-red-400 hover:text-red-300 p-1.5 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors inline-flex items-center justify-center"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </td>
+                        {canEditUser && (
+                          <button
+                            onClick={() => handleToggleStatus(user)}
+                            title={user.status === 'Inactive' ? 'Activate User' : 'Deactivate User'}
+                            className={`${user.status === 'Inactive' ? 'text-green-400 hover:text-green-300 border-green-500/30 hover:bg-green-500/10' : 'text-red-400 hover:text-red-300 border-red-500/30 hover:bg-red-500/10'} p-1.5 border rounded transition-colors inline-flex items-center justify-center`}
+                          >
+                            {user.status === 'Inactive' ? (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                              </svg>
+                            )}
+                          </button>
+                        )}
+                        {canDeleteUser && (
+                          <button
+                            onClick={() => {
+                              Swal.fire({
+                                title: 'Are you sure?',
+                                text: `You are about to permanently delete user ${user.name}. This action cannot be undone.`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#ef4444',
+                                cancelButtonColor: '#334155',
+                                confirmButtonText: 'Yes, delete it!',
+                                background: '#1e293b',
+                                color: '#f8fafc',
+                                customClass: {
+                                  popup: 'border border-slate-700 rounded-xl shadow-2xl',
+                                }
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                  deleteMutation.mutate(user._id);
+                                }
+                              });
+                            }}
+                            title="Delete User"
+                            className="text-red-400 hover:text-red-300 p-1.5 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors inline-flex items-center justify-center"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -365,8 +400,8 @@ const UsersPage = () => {
                     className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
                     {...register('role')}
                   >
-                    {['User', 'Team Head', 'HR Manager'].map(role => (
-                      <option key={role} value={role}>{role}</option>
+                    {availableRoles.map(role => (
+                      <option key={role._id || role.name} value={role.name}>{role.displayName || role.name}</option>
                     ))}
                   </select>
                 </div>
@@ -381,12 +416,19 @@ const UsersPage = () => {
                       <option key={type} value={type}>{type}</option>
                     )) : fallbackRoleTypes[selectedRole]?.map(type => (
                       <option key={type} value={type}>{type}</option>
-                    ))}
+                    )) || (
+                      <>
+                        <option value="Staff">Staff</option>
+                        <option value="Lead">Lead</option>
+                        <option value="Executive">Executive</option>
+                        <option value="Manager">Manager</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>
 
-              {selectedRole === 'User' && (
+              {selectedRole !== 'Admin' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">Department</label>
@@ -400,6 +442,8 @@ const UsersPage = () => {
                         <>
                           <option value="IT">IT</option>
                           <option value="Marketing">Marketing</option>
+                          <option value="Operations">Operations</option>
+                          <option value="Support">Support</option>
                         </>
                       )}
                     </select>
@@ -408,9 +452,9 @@ const UsersPage = () => {
                     <label className="block text-sm font-medium text-slate-300 mb-1">Team Head</label>
                     <select
                       className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none"
-                      {...register('teamHead', { required: 'Team Head is required' })}
+                      {...register('teamHead', { required: selectedRole === 'User' ? 'Team Head is required' : false })}
                     >
-                      <option value="">Select Team Head</option>
+                      <option value="">Select Team Head (Optional)</option>
                       {teamHeads.map(th => (
                         <option key={th._id} value={th._id}>{th.name}</option>
                       ))}
