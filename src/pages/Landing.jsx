@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, getRoleDashboard } from '../context/AuthContext';
 import CompanyOnboardingModal from '../components/subscription/CompanyOnboardingModal';
 import { 
   HiOutlineCheck, 
@@ -123,6 +123,13 @@ const Landing = () => {
     }
   }, []);
 
+  // If user is already logged in, immediately redirect to their dashboard
+  useEffect(() => {
+    if (user && user.token) {
+      navigate(getRoleDashboard(user), { replace: true });
+    }
+  }, [user, navigate]);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -153,20 +160,11 @@ const Landing = () => {
   };
 
   const getDashboardPath = () => {
-    if (!user) return '/login';
-    const roleRoutes = {
-      'Super Admin': '/super-admin/dashboard',
-      Admin: '/admin/dashboard',
-      CTO: '/admin/dashboard',
-      'Team Head': '/team-lead/dashboard',
-      User: '/user/dashboard',
-      'HR Manager': '/hr/dashboard',
-    };
-    return roleRoutes[user.role] || '/';
+    return getRoleDashboard(user);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-500/20 selection:text-indigo-900 pt-[10px] pb-[20px] sm:pt-0 sm:pb-0">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-500/20 selection:text-indigo-900 pt-[15px] pb-[30px] sm:pt-0 sm:pb-0">
       {/* ===================== 1. HEADER ===================== */}
       <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
@@ -292,7 +290,7 @@ const Landing = () => {
 
         {/* Mobile Navigation Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-md shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-md shadow-xl animate-in fade-in slide-in-from-top-2 duration-200 max-h-[calc(100dvh-5rem-30px)] overflow-y-auto">
             <div className="px-4 py-4 space-y-4">
               {/* Navigation Links */}
               <nav className="flex flex-col space-y-1">

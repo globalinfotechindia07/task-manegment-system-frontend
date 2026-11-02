@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
 
@@ -7,19 +6,74 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+// Centralized role-to-dashboard path resolver
+export const getRoleDashboard = (user) => {
+  if (!user) return '/login';
+  if (user.requiresPasswordChange) return '/force-password-change';
+
+  const role = (user.role || '').toLowerCase();
+  if (role === 'super admin') {
+    return '/super-admin/dashboard';
+  } else if (role === 'hr manager' || role === 'hr' || role.includes('human resource')) {
+    return '/hr/dashboard';
+  } else if (
+    role === 'team head' ||
+    role === 'team lead' ||
+    role.includes('project lead') ||
+    role.includes('lead')
+  ) {
+    return '/team-lead/dashboard';
+  } else if (role === 'user' || role === 'employee' || role.includes('staff')) {
+    return '/user/dashboard';
+  } else {
+    // Admin, CTO, or default office management
+    return '/admin/dashboard';
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Synchronous initialization from localStorage for instantaneous authentication without flicker
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        const token = parsed?.token || localStorage.getItem('token');
+        if (parsed && token) {
+          return { ...parsed, token };
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse stored user from localStorage:', e);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
+    return null;
+  });
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      setupPushNotifications(parsedUser._id);
+    if (user && user._id) {
+      setupPushNotifications(user._id);
+
+      // Background silent revalidation to keep user profile and permissions up to date
+      api.get('/auth/profile')
+        .then(({ data }) => {
+          if (data && data._id) {
+            setUser((prev) => {
+              if (!prev) return null;
+              const merged = { ...prev, ...data };
+              localStorage.setItem('user', JSON.stringify(merged));
+              return merged;
+            });
+          }
+        })
+        .catch((err) => {
+          // If network is offline or transient error, keep cached session
+          console.debug('Background profile sync note:', err.message);
+        });
     }
-    setLoading(false);
   }, []);
 
   const urlBase64ToUint8Array = (base64String) => {
@@ -73,7 +127,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       setUser(data);
+      // Persist session robustly
       localStorage.setItem('user', JSON.stringify(data));
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       toast.success('Logged in successfully');
       setupPushNotifications(data._id);
       return { success: true, user: data };
@@ -86,6 +144,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     toast.success('Logged out');
   };
 
@@ -93,6 +152,9 @@ export const AuthProvider = ({ children }) => {
     setUser((prevUser) => {
       const updated = { ...prevUser, ...userData };
       localStorage.setItem('user', JSON.stringify(updated));
+      if (updated.token) {
+        localStorage.setItem('token', updated.token);
+      }
       return updated;
     });
   };
@@ -100,6 +162,9 @@ export const AuthProvider = ({ children }) => {
   const setAuthSession = (userData) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    if (userData?.token) {
+      localStorage.setItem('token', userData.token);
+    }
     if (userData?._id) {
       setupPushNotifications(userData._id);
     }

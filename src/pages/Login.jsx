@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, getRoleDashboard } from '../context/AuthContext';
 import {
   HiOutlineBuildingOffice2,
   HiOutlineEnvelope,
@@ -33,8 +33,15 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  // If already authenticated, automatically redirect to user's dashboard
+  useEffect(() => {
+    if (user && user.token) {
+      navigate(getRoleDashboard(user), { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,24 +49,8 @@ const Login = () => {
 
     const result = await login(email, password);
 
-    if (result.success) {
-      const r = (result.user.role || '').toLowerCase();
-      if (r === 'super admin') {
-        navigate('/super-admin/dashboard');
-      } else if (r === 'hr manager' || r === 'hr' || r.includes('human resource')) {
-        navigate('/hr/dashboard');
-      } else if (
-        r === 'team head' ||
-        r === 'team lead' ||
-        r.includes('project lead') ||
-        r.includes('team lead')
-      ) {
-        navigate('/team-lead/dashboard');
-      } else if (r === 'user' || r === 'employee' || r.includes('staff')) {
-        navigate('/user/dashboard');
-      } else {
-        navigate('/admin/dashboard');
-      }
+    if (result.success && result.user) {
+      navigate(getRoleDashboard(result.user), { replace: true });
     }
 
     setIsSubmitting(false);

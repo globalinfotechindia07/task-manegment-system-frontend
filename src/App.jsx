@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useAuth, getRoleDashboard } from './context/AuthContext';
 import { useSocket } from './context/SocketContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -41,6 +42,24 @@ import AdminTasks from './pages/admin/tasks';
 
 import './App.css';
 
+// Entry dispatcher for '/': if already authenticated, auto-redirect directly to their dashboard!
+const RootRouteDispatcher = () => {
+  const { user } = useAuth();
+  if (user && user.token) {
+    return <Navigate to={getRoleDashboard(user)} replace />;
+  }
+  return <Landing />;
+};
+
+// Entry dispatcher for '/login': if already authenticated, auto-redirect directly to their dashboard!
+const LoginRouteDispatcher = () => {
+  const { user } = useAuth();
+  if (user && user.token) {
+    return <Navigate to={getRoleDashboard(user)} replace />;
+  }
+  return <Login />;
+};
+
 const App = () => {
   const location = useLocation();
   const { clearUnreadChats, clearNewTasks, clearMeetingInvites } = useSocket();
@@ -61,9 +80,9 @@ const App = () => {
   return (
     <div className="app-shell min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500/20 font-sans antialiased">
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
+        {/* Public & Entry Routes */}
+        <Route path="/" element={<RootRouteDispatcher />} />
+        <Route path="/login" element={<LoginRouteDispatcher />} />
 
         {/* Force Password Change Route - Needs protection but without dashboard layout */}
         <Route element={<ProtectedRoute />}>
