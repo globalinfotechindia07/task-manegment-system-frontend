@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { 
@@ -14,14 +15,207 @@ import {
   HiOutlinePencilSquare, 
   HiOutlineTrash, 
   HiOutlineXMark, 
-  HiOutlineCheck 
+  HiOutlineCheck,
+  HiOutlineQuestionMarkCircle,
+  HiOutlineChatBubbleBottomCenterText,
+  HiOutlineEye,
+  HiOutlineEyeSlash,
+  HiOutlineMagnifyingGlass,
+  HiOutlinePaperAirplane,
+  HiOutlinePhone,
+  HiOutlineCalendarDays
 } from 'react-icons/hi2';
 import api from '../../../api/axios';
 
 const SuperAdminCMS = () => {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('gateway'); // gateway, about, testimonials, contact, legal
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'gateway';
+  const setActiveTab = (tab) => setSearchParams({ tab });
   const [showSecret, setShowSecret] = useState(false);
+
+  // FAQ state
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+  const [editingFaq, setEditingFaq] = useState(null);
+  const [faqForm, setFaqForm] = useState({
+    question: '',
+    answer: '',
+    category: 'General',
+    isPublished: true,
+    order: 0,
+  });
+  const [faqSearch, setFaqSearch] = useState('');
+  const [faqCategoryFilter, setFaqCategoryFilter] = useState('All');
+
+  // Direct Inquiries state
+  const [inquirySearch, setInquirySearch] = useState('');
+  const [inquiryStatus, setInquiryStatus] = useState('all');
+  const [inquiryPage, setInquiryPage] = useState(1);
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [statusModalInquiry, setStatusModalInquiry] = useState(null);
+  const [newInquiryStatus, setNewInquiryStatus] = useState('');
+  const [inquiryNotes, setInquiryNotes] = useState('');
+
+  // Fetch Direct Inquiries
+  const { data: inquiriesData, isLoading: isInquiriesLoading } = useQuery({
+    queryKey: ['superAdminInquiries', inquiryStatus, inquirySearch, inquiryPage],
+    queryFn: async () => {
+      const params = { page: inquiryPage, limit: 25 };
+      if (inquiryStatus !== 'all') params.status = inquiryStatus;
+      if (inquirySearch) params.search = inquirySearch;
+      const { data } = await api.get('/site-content/inquiries', { params });
+      return data;
+    },
+  });
+
+  // Save FAQ Mutation (Add or Update)
+  const saveFaqMutation = useMutation({
+    mutationFn: async (payload) => {
+      if (editingFaq) {
+        const { data } = await api.put(`/site-content/faqs/${editingFaq._id}`, payload);
+        return data;
+      } else {
+        const { data } = await api.post('/site-content/faqs', payload);
+        return data;
+      }
+    },
+    onSuccess: () => {
+      toast.success(editingFaq ? 'FAQ updated successfully!' : 'FAQ added successfully!');
+      setIsFaqModalOpen(false);
+      setEditingFaq(null);
+      queryClient.invalidateQueries(['adminSiteContent']);
+      queryClient.invalidateQueries(['landingContent']);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to save FAQ');
+    },
+  });
+
+  // Delete FAQ Mutation
+  const deleteFaqMutation = useMutation({
+    mutationFn: async (faqId) => {
+      const { data } = await api.delete(`/site-content/faqs/${faqId}`);
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('FAQ deleted successfully');
+      queryClient.invalidateQueries(['adminSiteContent']);
+      queryClient.invalidateQueries(['landingContent']);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to delete FAQ');
+    },
+  });
+
+  // Update Inquiry Status Mutation
+  const updateInquiryMutation = useMutation({
+    mutationFn: async ({ id, status, notes }) => {
+      const { data } = await api.patch(`/site-content/inquiries/${id}`, { status, notes });
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Inquiry updated successfully');
+      setStatusModalInquiry(null);
+      queryClient.invalidateQueries(['superAdminInquiries']);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to update inquiry');
+    },
+  });
+
+  // Delete Inquiry Mutation
+  const deleteInquiryMutation = useMutation({
+    mutationFn: async (id) => {
+      const { data } = await api.delete(`/site-content/inquiries/${id}`);
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Inquiry deleted successfully');
+      queryClient.invalidateQueries(['superAdminInquiries']);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to delete inquiry');
+    },
+  });
+
+  // FAQ Handlers
+  const handleOpenAddFaq = () => {
+    setEditingFaq(null);
+    setFaqForm({
+      question: '',
+      answer: '',
+      category: 'General',
+      isPublished: true,
+      order: (content?.faqs?.length || 0) + 1,
+    });
+    setIsFaqModalOpen(true);
+  };
+
+  const handleOpenEditFaq = (faq) => {
+    setEditingFaq(faq);
+    setFaqForm({
+      question: faq.question || '',
+      answer: faq.answer || '',
+      category: faq.category || 'General',
+      isPublished: faq.isPublished !== false,
+      order: faq.order || 0,
+    });
+    setIsFaqModalOpen(true);
+  };
+
+  const handleSaveFaqSubmit = (e) => {
+    e.preventDefault();
+    if (!faqForm.question.trim() || !faqForm.answer.trim()) {
+      toast.error('Question and answer are required');
+      return;
+    }
+    saveFaqMutation.mutate(faqForm);
+  };
+
+  const handleDeleteFaq = (faq) => {
+    if (window.confirm(`Are you sure you want to delete this FAQ: "${faq.question}"?`)) {
+      deleteFaqMutation.mutate(faq._id);
+    }
+  };
+
+  const handleToggleFaqPublish = (faq) => {
+    saveFaqMutation.mutate({
+      ...faq,
+      isPublished: faq.isPublished === false ? true : false,
+    });
+  };
+
+  // Inquiry Handlers
+  const handleOpenStatusModal = (inquiry) => {
+    setStatusModalInquiry(inquiry);
+    setNewInquiryStatus(inquiry.status || 'read');
+    setInquiryNotes(inquiry.notes || '');
+  };
+
+  const handleSaveStatusModal = (e) => {
+    e.preventDefault();
+    if (!statusModalInquiry) return;
+    updateInquiryMutation.mutate({
+      id: statusModalInquiry._id,
+      status: newInquiryStatus,
+      notes: inquiryNotes,
+    });
+  };
+
+  const handleDeleteInquiry = (inquiry) => {
+    if (window.confirm(`Delete inquiry from ${inquiry.name}?`)) {
+      deleteInquiryMutation.mutate(inquiry._id);
+    }
+  };
+
+  const handleMarkAsRead = (inquiry) => {
+    if (inquiry.status === 'unread') {
+      updateInquiryMutation.mutate({
+        id: inquiry._id,
+        status: 'read',
+      });
+    }
+  };
 
   // Modal for Add/Edit Testimonial
   const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
@@ -212,6 +406,13 @@ const SuperAdminCMS = () => {
 
   const tabs = [
     { id: 'gateway', name: 'Razorpay Gateway', icon: HiOutlineCreditCard },
+    { id: 'faqs', name: 'Website FAQs', icon: HiOutlineQuestionMarkCircle },
+    {
+      id: 'inquiries',
+      name: 'Direct Messages',
+      icon: HiOutlineChatBubbleBottomCenterText,
+      badge: inquiriesData?.unreadCount > 0 ? inquiriesData.unreadCount : null,
+    },
     { id: 'privacy', name: 'Privacy Policy', icon: HiOutlineShieldCheck },
     { id: 'payment-policy', name: 'Payment Policy & Billing', icon: HiOutlineCurrencyRupee },
     { id: 'refund-policy', name: 'Refund & Cancellation', icon: HiOutlineArrowPath },
@@ -246,7 +447,12 @@ const SuperAdminCMS = () => {
               }`}
             >
               <Icon className="w-4 h-4" />
-              {tab.name}
+              <span>{tab.name}</span>
+              {tab.badge && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white leading-none">
+                  {tab.badge}
+                </span>
+              )}
             </button>
           );
         })}
@@ -348,6 +554,431 @@ const SuperAdminCMS = () => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* TAB: WEBSITE FAQS */}
+      {activeTab === 'faqs' && (
+        <div className="space-y-5 animate-in fade-in">
+          {/* Top Bar with summary & action */}
+          <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-slate-900">Website Frequently Asked Questions (FAQs)</h2>
+                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  {content?.faqs?.length || 0} Total
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Manage dynamic FAQ questions and answers displayed in the interactive accordion on the public landing page.
+              </p>
+            </div>
+            <button
+              onClick={handleOpenAddFaq}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer shrink-0"
+            >
+              <HiOutlinePlus className="w-4 h-4" />
+              Add New FAQ
+            </button>
+          </div>
+
+          {/* Search & Category Filter */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <div className="relative flex-1">
+              <HiOutlineMagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                value={faqSearch}
+                onChange={(e) => setFaqSearch(e.target.value)}
+                placeholder="Search FAQs by question, answer, or category..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+              {['All', ...new Set((content?.faqs || []).map((f) => f.category).filter(Boolean))].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setFaqCategoryFilter(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                    faqCategoryFilter === cat
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* FAQ List */}
+          {(() => {
+            const list = (content?.faqs || [])
+              .filter((faq) => {
+                const qMatch =
+                  !faqSearch ||
+                  faq.question?.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                  faq.answer?.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                  faq.category?.toLowerCase().includes(faqSearch.toLowerCase());
+                const catMatch = faqCategoryFilter === 'All' || faq.category === faqCategoryFilter;
+                return qMatch && catMatch;
+              })
+              .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            if (list.length === 0) {
+              return (
+                <div className="bg-white p-12 text-center rounded-xl border border-dashed border-slate-300">
+                  <HiOutlineQuestionMarkCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <h3 className="text-sm font-semibold text-slate-800">No FAQs found</h3>
+                  <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                    {faqSearch || faqCategoryFilter !== 'All'
+                      ? 'No FAQ matches your search or filter criteria. Try clearing filters.'
+                      : 'You have not added any FAQs yet. Click "Add New FAQ" to create your first question.'}
+                  </p>
+                  {(faqSearch || faqCategoryFilter !== 'All') && (
+                    <button
+                      onClick={() => {
+                        setFaqSearch('');
+                        setFaqCategoryFilter('All');
+                      }}
+                      className="mt-3 text-xs font-semibold text-indigo-600 hover:underline"
+                    >
+                      Clear search filters
+                    </button>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <div className="space-y-3">
+                {list.map((faq) => (
+                  <div
+                    key={faq._id}
+                    className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">
+                            #{faq.order || 0}
+                          </span>
+                          <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            {faq.category || 'General'}
+                          </span>
+                          <span
+                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                              faq.isPublished !== false
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-amber-50 text-amber-700 border-amber-200'
+                            }`}
+                          >
+                            {faq.isPublished !== false ? 'Published (Live)' : 'Draft (Hidden)'}
+                          </span>
+                        </div>
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                          {faq.question}
+                        </h3>
+                        <p className="text-xs text-slate-600 mt-2 leading-relaxed whitespace-pre-line bg-slate-50/70 p-3 rounded-lg border border-slate-100">
+                          {faq.answer}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0 pt-1">
+                        <button
+                          onClick={() => handleToggleFaqPublish(faq)}
+                          className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                            faq.isPublished !== false
+                              ? 'text-emerald-700 border-emerald-200 hover:bg-emerald-50'
+                              : 'text-amber-700 border-amber-200 hover:bg-amber-50'
+                          }`}
+                          title={faq.isPublished !== false ? 'Hide from Landing Page' : 'Publish to Landing Page'}
+                        >
+                          {faq.isPublished !== false ? (
+                            <HiOutlineEye className="w-4 h-4" />
+                          ) : (
+                            <HiOutlineEyeSlash className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleOpenEditFaq(faq)}
+                          className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                          title="Edit FAQ"
+                        >
+                          <HiOutlinePencilSquare className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteFaq(faq)}
+                          className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          title="Delete FAQ"
+                        >
+                          <HiOutlineTrash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* TAB: DIRECT INQUIRIES & CONTACT MESSAGES */}
+      {activeTab === 'inquiries' && (
+        <div className="space-y-5 animate-in fade-in">
+          {/* Header Card */}
+          <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-slate-900">Direct Contact Messages</h2>
+                {inquiriesData?.unreadCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white">
+                    {inquiriesData.unreadCount} Unread
+                  </span>
+                )}
+                <span className="text-xs text-slate-500 font-medium">
+                  ({inquiriesData?.total || 0} Total Received)
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Real-time submissions from the "Send Us a Direct Message" form on the public home page. Review messages, update status, and respond to potential clients.
+              </p>
+            </div>
+            <button
+              onClick={() => queryClient.invalidateQueries(['superAdminInquiries'])}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-xs cursor-pointer shrink-0"
+            >
+              <HiOutlineArrowPath className="w-3.5 h-3.5" />
+              Refresh
+            </button>
+          </div>
+
+          {/* Filters & Search */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+            <div className="relative flex-1">
+              <HiOutlineMagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                value={inquirySearch}
+                onChange={(e) => {
+                  setInquirySearch(e.target.value);
+                  setInquiryPage(1);
+                }}
+                placeholder="Search by name, email, phone, subject, or message content..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
+              {[
+                { id: 'all', label: 'All Status' },
+                { id: 'unread', label: 'Unread' },
+                { id: 'read', label: 'Read' },
+                { id: 'contacted', label: 'Contacted' },
+                { id: 'resolved', label: 'Resolved' },
+                { id: 'archived', label: 'Archived' },
+              ].map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => {
+                    setInquiryStatus(s.id);
+                    setInquiryPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                    inquiryStatus === s.id
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Inquiries Table / Empty state */}
+          {isInquiriesLoading ? (
+            <div className="bg-white p-12 text-center rounded-xl border border-slate-200">
+              <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+              <p className="text-xs text-slate-500">Loading messages...</p>
+            </div>
+          ) : !inquiriesData?.inquiries || inquiriesData.inquiries.length === 0 ? (
+            <div className="bg-white p-12 text-center rounded-xl border border-dashed border-slate-300">
+              <HiOutlineEnvelope className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <h3 className="text-sm font-semibold text-slate-800">No messages found</h3>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                {inquirySearch || inquiryStatus !== 'all'
+                  ? 'No direct messages match your search or status filter. Try clearing filters.'
+                  : 'No contact inquiries have been submitted from the home page yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+                      <th className="py-3 px-4">Sender Details</th>
+                      <th className="py-3 px-4">Subject & Message</th>
+                      <th className="py-3 px-4">Received At</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {inquiriesData.inquiries.map((inq) => {
+                      const isUnread = inq.status === 'unread';
+                      return (
+                        <tr
+                          key={inq._id}
+                          className={`hover:bg-slate-50/80 transition-colors ${
+                            isUnread ? 'bg-indigo-50/20 font-medium' : ''
+                          }`}
+                        >
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2">
+                              {isUnread && (
+                                <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" title="Unread" />
+                              )}
+                              <div>
+                                <p className="font-bold text-slate-900 text-xs sm:text-sm">{inq.name}</p>
+                                <div className="flex items-center gap-2 text-slate-500 text-[11px] mt-0.5">
+                                  <a
+                                    href={`mailto:${inq.email}`}
+                                    className="hover:text-indigo-600 inline-flex items-center gap-1 underline underline-offset-2"
+                                  >
+                                    <HiOutlineEnvelope className="w-3 h-3" />
+                                    {inq.email}
+                                  </a>
+                                  {inq.phone && (
+                                    <>
+                                      <span>•</span>
+                                      <a
+                                        href={`tel:${inq.phone}`}
+                                        className="hover:text-indigo-600 inline-flex items-center gap-1"
+                                      >
+                                        <HiOutlinePhone className="w-3 h-3" />
+                                        {inq.phone}
+                                      </a>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4 max-w-xs sm:max-w-md">
+                            <p className="font-semibold text-slate-800 text-xs truncate">
+                              {inq.subject || 'No Subject'}
+                            </p>
+                            <p className="text-slate-500 text-[11px] truncate mt-0.5">
+                              {inq.message}
+                            </p>
+                          </td>
+
+                          <td className="py-3.5 px-4 whitespace-nowrap text-slate-500 text-[11px]">
+                            <div>{new Date(inq.createdAt).toLocaleDateString()}</div>
+                            <div className="text-[10px] text-slate-400">
+                              {new Date(inq.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border capitalize ${
+                                inq.status === 'unread'
+                                  ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                  : inq.status === 'read'
+                                  ? 'bg-sky-50 text-sky-700 border-sky-200'
+                                  : inq.status === 'contacted'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                  : inq.status === 'resolved'
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  : 'bg-slate-100 text-slate-600 border-slate-200'
+                              }`}
+                            >
+                              {inq.status}
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                            <div className="inline-flex items-center gap-1">
+                              <button
+                                onClick={() => {
+                                  setSelectedInquiry(inq);
+                                  handleMarkAsRead(inq);
+                                }}
+                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                                title="View Message"
+                              >
+                                <HiOutlineEye className="w-4 h-4" />
+                              </button>
+                              <a
+                                href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(
+                                  inq.subject || 'Your Enterprise Inquiry'
+                                )}&body=Hi ${encodeURIComponent(inq.name)},\n\nThank you for contacting Global Infotech.\n\nRegarding your inquiry:\n"${encodeURIComponent(
+                                  inq.message
+                                )}"\n\n`}
+                                onClick={() => {
+                                  if (inq.status === 'unread' || inq.status === 'read') {
+                                    updateInquiryMutation.mutate({ id: inq._id, status: 'contacted' });
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                                title="Reply via Email"
+                              >
+                                <HiOutlinePaperAirplane className="w-4 h-4" />
+                              </a>
+                              <button
+                                onClick={() => handleOpenStatusModal(inq)}
+                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
+                                title="Update Status & Notes"
+                              >
+                                <HiOutlinePencilSquare className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteInquiry(inq)}
+                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                title="Delete Inquiry"
+                              >
+                                <HiOutlineTrash className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {inquiriesData.pages > 1 && (
+                <div className="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+                  <span>
+                    Page {inquiriesData.page} of {inquiriesData.pages} ({inquiriesData.total} items)
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      disabled={inquiryPage <= 1}
+                      onClick={() => setInquiryPage((p) => Math.max(1, p - 1))}
+                      className="px-2.5 py-1 rounded border border-slate-300 bg-white disabled:opacity-40 cursor-pointer hover:bg-slate-50"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      disabled={inquiryPage >= inquiriesData.pages}
+                      onClick={() => setInquiryPage((p) => Math.min(inquiriesData.pages, p + 1))}
+                      className="px-2.5 py-1 rounded border border-slate-300 bg-white disabled:opacity-40 cursor-pointer hover:bg-slate-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -741,6 +1372,299 @@ const SuperAdminCMS = () => {
                   className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer shadow-xs"
                 >
                   Save Review
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ADD / EDIT FAQ */}
+      {isFaqModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setIsFaqModalOpen(false)}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="text-base font-bold text-slate-900">
+                {editingFaq ? 'Edit FAQ Item' : 'Add New FAQ Item'}
+              </h3>
+              <button
+                onClick={() => setIsFaqModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <HiOutlineXMark className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveFaqSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Question *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={faqForm.question}
+                  onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })}
+                  placeholder="e.g. Can we set different geofence boundaries for multiple branches?"
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Answer *
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={faqForm.answer}
+                  onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })}
+                  placeholder="Provide a comprehensive and clear explanation..."
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none leading-relaxed"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Category Tag
+                  </label>
+                  <input
+                    type="text"
+                    value={faqForm.category}
+                    onChange={(e) => setFaqForm({ ...faqForm, category: e.target.value })}
+                    placeholder="General, Billing, Geofence, etc."
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Display Order Index
+                  </label>
+                  <input
+                    type="number"
+                    value={faqForm.order}
+                    onChange={(e) => setFaqForm({ ...faqForm, order: parseInt(e.target.value) || 0 })}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <input
+                  type="checkbox"
+                  id="faqIsPublished"
+                  checked={faqForm.isPublished}
+                  onChange={(e) => setFaqForm({ ...faqForm, isPublished: e.target.checked })}
+                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+                <label htmlFor="faqIsPublished" className="text-xs font-medium text-slate-800 cursor-pointer">
+                  Publish immediately on Public Landing Page
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsFaqModalOpen(false)}
+                  className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saveFaqMutation.isPending}
+                  className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  {saveFaqMutation.isPending ? 'Saving...' : editingFaq ? 'Update FAQ' : 'Create FAQ'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: VIEW DIRECT INQUIRY */}
+      {selectedInquiry && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setSelectedInquiry(null)}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900">Direct Message Details</h3>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize ${
+                    selectedInquiry.status === 'unread'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : selectedInquiry.status === 'read'
+                      ? 'bg-sky-50 text-sky-700 border-sky-200'
+                      : selectedInquiry.status === 'contacted'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : selectedInquiry.status === 'resolved'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-slate-100 text-slate-600 border-slate-200'
+                  }`}
+                >
+                  {selectedInquiry.status}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedInquiry(null)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <HiOutlineXMark className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Sender Name</span>
+                  <span className="font-semibold text-slate-900">{selectedInquiry.name}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Received At</span>
+                  <span className="text-slate-700">
+                    {new Date(selectedInquiry.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Email Address</span>
+                  <a
+                    href={`mailto:${selectedInquiry.email}`}
+                    className="text-indigo-600 font-medium hover:underline"
+                  >
+                    {selectedInquiry.email}
+                  </a>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Phone Number</span>
+                  <span className="text-slate-700">{selectedInquiry.phone || 'Not provided'}</span>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Subject</span>
+                <p className="font-bold text-slate-900 bg-slate-100/70 px-3 py-2 rounded-lg border border-slate-200">
+                  {selectedInquiry.subject || 'No Subject Specified'}
+                </p>
+              </div>
+
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Message Content</span>
+                <div className="bg-white border border-slate-200 p-3.5 rounded-xl text-slate-800 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-line text-xs sm:text-sm">
+                  {selectedInquiry.message}
+                </div>
+              </div>
+
+              {selectedInquiry.notes && (
+                <div className="bg-amber-50/50 p-3 rounded-lg border border-amber-200/60">
+                  <span className="text-[10px] uppercase font-bold text-amber-800 block mb-0.5">Internal Notes</span>
+                  <p className="text-xs text-amber-950">{selectedInquiry.notes}</p>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const inq = selectedInquiry;
+                    setSelectedInquiry(null);
+                    handleOpenStatusModal(inq);
+                  }}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold cursor-pointer"
+                >
+                  Update Status / Notes
+                </button>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`mailto:${selectedInquiry.email}?subject=Re: ${encodeURIComponent(
+                      selectedInquiry.subject || 'Your Enterprise Inquiry'
+                    )}&body=Hi ${encodeURIComponent(selectedInquiry.name)},\n\nThank you for reaching out to Global Infotech.\n\nRegarding your inquiry:\n"${encodeURIComponent(
+                      selectedInquiry.message
+                    )}"\n\n`}
+                    onClick={() => {
+                      if (selectedInquiry.status === 'unread' || selectedInquiry.status === 'read') {
+                        updateInquiryMutation.mutate({ id: selectedInquiry._id, status: 'contacted' });
+                      }
+                      setSelectedInquiry(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer shadow-xs"
+                  >
+                    <HiOutlinePaperAirplane className="w-3.5 h-3.5" />
+                    Reply via Email
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: UPDATE INQUIRY STATUS & NOTES */}
+      {statusModalInquiry && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setStatusModalInquiry(null)}></div>
+          <div className="relative bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="text-base font-bold text-slate-900">
+                Update Status: {statusModalInquiry.name}
+              </h3>
+              <button
+                onClick={() => setStatusModalInquiry(null)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <HiOutlineXMark className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveStatusModal} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Inquiry Status *
+                </label>
+                <select
+                  value={newInquiryStatus}
+                  onChange={(e) => setNewInquiryStatus(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-medium"
+                >
+                  <option value="unread">Unread</option>
+                  <option value="read">Read</option>
+                  <option value="contacted">Contacted (Customer responded to)</option>
+                  <option value="resolved">Resolved (Closed inquiry)</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Internal Team Notes
+                </label>
+                <textarea
+                  rows={4}
+                  value={inquiryNotes}
+                  onChange={(e) => setInquiryNotes(e.target.value)}
+                  placeholder="Record call summary, sales qualification, or assigned team member..."
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none leading-relaxed"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setStatusModalInquiry(null)}
+                  className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updateInquiryMutation.isPending}
+                  className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  {updateInquiryMutation.isPending ? 'Updating...' : 'Save Status'}
                 </button>
               </div>
             </form>

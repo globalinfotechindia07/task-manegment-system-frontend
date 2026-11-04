@@ -12,8 +12,53 @@ import {
   HiOutlineXMark, 
   HiOutlineArrowRightOnRectangle,
   HiOutlineSquares2X2,
-  HiOutlineArrowRight 
+  HiOutlineArrowRight,
+  HiOutlineChevronDown,
+  HiOutlineQuestionMarkCircle
 } from 'react-icons/hi2';
+
+const DEFAULT_FAQS = [
+  {
+    _id: 'default-1',
+    question: 'How does geofenced mobile attendance work?',
+    answer: 'Employees punch in and out using their mobile browser or app. The system securely verifies their GPS coordinates against the pre-configured geofence perimeter and radius of your office branches, preventing off-site punch-ins.',
+    category: 'Attendance',
+    order: 1,
+    isPublished: true,
+  },
+  {
+    _id: 'default-2',
+    question: 'Can we manage multiple branches and company entities under one account?',
+    answer: 'Yes! Our multi-tenant architecture enables you to configure multiple branches, departments, and shifts under one organization. Admins can view aggregated analytics or branch-specific reports with granular role-based permissions.',
+    category: 'Branches & Roles',
+    order: 2,
+    isPublished: true,
+  },
+  {
+    _id: 'default-3',
+    question: 'How is payroll calculated and are Indian statutory compliances supported?',
+    answer: 'Payroll dynamically calculates gross salary, working days, overtime, paid leaves, and statutory deductions including Provident Fund (EPF), ESI, and Professional Tax. Computerized salary slips are generated automatically for employees to download.',
+    category: 'Payroll',
+    order: 3,
+    isPublished: true,
+  },
+  {
+    _id: 'default-4',
+    question: 'Can we upgrade our subscription plan or add more employee quotas later?',
+    answer: 'Absolutely. You can easily upgrade your tier or expand employee user limits directly from your billing settings at any time. Unutilized days on your current billing period are credited on a pro-rata basis.',
+    category: 'Billing',
+    order: 4,
+    isPublished: true,
+  },
+  {
+    _id: 'default-5',
+    question: 'Is organizational data encrypted and isolated securely?',
+    answer: 'Yes. Enterprise data is cryptographically isolated per organization with AES-256 encryption at rest and strict SSL/TLS in transit. Role-based access control (RBAC) ensures only authorized officers access sensitive workforce and salary records.',
+    category: 'Security',
+    order: 5,
+    isPublished: true,
+  },
+];
 
 /* ============================================================
    DESIGN TOKENS (consistent with all pages)
@@ -43,6 +88,8 @@ const Landing = () => {
   const [selectedPlanForOnboarding, setSelectedPlanForOnboarding] = useState(null);
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [expandedFaqId, setExpandedFaqId] = useState(null);
+  const [activeFaqCategory, setActiveFaqCategory] = useState('All');
 
   const [inquiryForm, setInquiryForm] = useState({
     name: '',
@@ -113,6 +160,16 @@ const Landing = () => {
     isEnabled: false,
     razorpayKeyId: '',
   };
+
+  // FAQ Data processing
+  const rawFaqs = siteData?.faqs && siteData.faqs.length > 0 ? siteData.faqs : DEFAULT_FAQS;
+  const publishedFaqs = rawFaqs
+    .filter((f) => f.isPublished !== false)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const faqCategories = ['All', ...new Set(publishedFaqs.map((f) => f.category).filter(Boolean))];
+  const displayedFaqs = publishedFaqs.filter(
+    (f) => activeFaqCategory === 'All' || f.category === activeFaqCategory
+  );
 
   useEffect(() => {
     if (!window.Razorpay) {
@@ -208,6 +265,9 @@ const Landing = () => {
             </a>
             <a href="#reviews" className="hover:text-indigo-600 transition-colors">
               Reviews
+            </a>
+            <a href="#faq" className="hover:text-indigo-600 transition-colors">
+              FAQs
             </a>
             <a href="#contact" className="hover:text-indigo-600 transition-colors">
               Contact
@@ -324,6 +384,14 @@ const Landing = () => {
                   className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
                 >
                   <span>User Reviews</span>
+                  <HiOutlineArrowRight className="w-4 h-4 text-slate-400" />
+                </a>
+                <a
+                  href="#faq"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
+                >
+                  <span>Frequently Asked Questions</span>
                   <HiOutlineArrowRight className="w-4 h-4 text-slate-400" />
                 </a>
                 <a
@@ -901,6 +969,132 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* ===================== FAQ ACCORDION ===================== */}
+      <section
+        id="faq"
+        className="py-16 sm:py-20 lg:py-28 bg-white border-t border-slate-200/80"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+              Got Questions?
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 mt-3">
+              Everything you need to know about attendance tracking, multi-tenant workspace isolation, pricing, and system security.
+            </p>
+
+            {/* Category Filter Pills (if multiple categories exist) */}
+            {faqCategories.length > 1 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+                {faqCategories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setActiveFaqCategory(category)}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      activeFaqCategory === category
+                        ? 'bg-indigo-600 text-white shadow-xs'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Accordion Items List */}
+          <div className="space-y-3 sm:space-y-4">
+            {displayedFaqs.length === 0 ? (
+              <div className="text-center py-10 text-slate-500 text-xs sm:text-sm bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                No FAQs available under this category.
+              </div>
+            ) : (
+              displayedFaqs.map((faq) => {
+                const isOpen = expandedFaqId === faq._id;
+                return (
+                  <div
+                    key={faq._id}
+                    className={`rounded-2xl transition-all duration-200 border ${
+                      isOpen
+                        ? 'bg-slate-50/70 border-indigo-200 shadow-sm'
+                        : 'bg-white border-slate-200/90 hover:border-slate-300 shadow-xs'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setExpandedFaqId(isOpen ? null : faq._id)}
+                      className="w-full px-5 sm:px-6 py-4 sm:py-5 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
+                      aria-expanded={isOpen}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                            isOpen
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-slate-100 text-slate-500'
+                          }`}
+                        >
+                          <HiOutlineQuestionMarkCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          {faq.category && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block mb-0.5">
+                              {faq.category}
+                            </span>
+                          )}
+                          <span className="text-sm sm:text-base font-bold text-slate-900 leading-snug block">
+                            {faq.question}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-transform duration-200 ${
+                          isOpen ? 'rotate-180 bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400'
+                        }`}
+                      >
+                        <HiOutlineChevronDown className="w-4 h-4" />
+                      </div>
+                    </button>
+
+                    {isOpen && (
+                      <div className="px-5 sm:px-6 pb-5 pt-1 border-t border-slate-100 animate-in fade-in duration-150">
+                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pl-10 sm:pl-11 whitespace-pre-line">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Need more help banner */}
+          <div className="mt-10 sm:mt-12 bg-slate-50 rounded-2xl border border-slate-200 p-6 sm:p-8 text-center shadow-xs">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">
+              Have a question that is not answered here?
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
+              Our enterprise consultants are available to walk you through any custom requirement or schedule an interactive demo.
+            </p>
+            <div className="mt-4">
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer shadow-xs"
+              >
+                <span>Send Us a Direct Message Below</span>
+                <HiOutlineArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ===================== 7. CONTACT ===================== */}
       <section
         id="contact"
@@ -1186,6 +1380,11 @@ const Landing = () => {
                 <li>
                   <a href="#reviews" className="hover:text-white transition-colors">
                     Customer Reviews
+                  </a>
+                </li>
+                <li>
+                  <a href="#faq" className="hover:text-white transition-colors">
+                    Frequently Asked Questions
                   </a>
                 </li>
                 <li>
