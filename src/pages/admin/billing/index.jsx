@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import {
@@ -711,8 +712,8 @@ const AdminBilling = () => {
       </div>
 
       {/* ===================== ADD-ON EXTRA USERS MODAL ===================== */}
-      {isAddonModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+      {isAddonModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
           <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
@@ -844,12 +845,13 @@ const AdminBilling = () => {
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ===================== UPGRADE SUBSCRIPTION PLAN MODAL ===================== */}
-      {isUpgradeModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+      {isUpgradeModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
           <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
               <div className="flex items-center gap-2">
@@ -971,12 +973,13 @@ const AdminBilling = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ===================== PAYMENT GATEWAY CHECKOUT MODAL ===================== */}
-      {checkoutModalOpen && checkoutSession && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+      {checkoutModalOpen && checkoutSession && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
           <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden my-4 animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
@@ -1467,7 +1470,8 @@ const AdminBilling = () => {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ===================== INVOICE MODAL ===================== */}

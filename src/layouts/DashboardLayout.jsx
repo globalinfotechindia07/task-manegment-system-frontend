@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import MorningPunchInModal from '../components/attendance/MorningPunchInModal';
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -37,6 +38,9 @@ const DashboardLayout = () => {
           </div>
         </main>
       </div>
+
+      {/* Auto Morning Greeting & Punch In Modal (7:00 AM - 11:00 AM) */}
+      <MorningPunchInModal />
     </div>
   );
 };

@@ -35,6 +35,7 @@ import {
   HiOutlineXMark,
   HiOutlineArrowRightOnRectangle,
   HiChevronDown,
+  HiOutlineEnvelope,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -263,6 +264,25 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         name: 'System Admin',
         icon: HiOutlineCog6Tooth,
         children: adminChildren,
+      });
+    }
+
+    // Configurations & External Third-Party APIs
+    const configChildren = [];
+    if (isAdmin || perms.settings?.view || perms.integrations?.view) {
+      configChildren.push({ name: 'Website Feeds & Overview', path: '/admin/integrations', icon: HiOutlineGlobeAlt });
+      configChildren.push({ name: 'Contact Enquiries', path: '/admin/integrations?tab=contacts', icon: HiOutlineEnvelope });
+      configChildren.push({ name: 'Appointments', path: '/admin/integrations?tab=appointments', icon: HiOutlineCalendarDays });
+      configChildren.push({ name: 'Career Applications', path: '/admin/integrations?tab=careers', icon: HiOutlineBriefcase });
+      configChildren.push({ name: 'API Endpoints Setup', path: '/admin/integrations?tab=config', icon: HiOutlineCog6Tooth });
+      configChildren.push({ name: 'Integration Docs', path: '/admin/integrations?tab=docs', icon: HiOutlineCommandLine });
+    }
+    if (configChildren.length > 0) {
+      structure.push({
+        id: 'configurations',
+        name: 'Configurations',
+        icon: HiOutlineGlobeAlt,
+        children: configChildren,
       });
     }
 

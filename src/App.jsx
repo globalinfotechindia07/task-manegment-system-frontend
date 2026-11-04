@@ -48,6 +48,7 @@ import CRMOverview from './pages/admin/crm';
 import LeadsManager from './pages/admin/crm/leads';
 import DealsPipeline from './pages/admin/crm/deals';
 import CustomersManager from './pages/admin/crm/customers';
+import IntegrationsManager from './pages/admin/integrations';
 
 import './App.css';
 
@@ -131,6 +132,8 @@ const App = () => {
             <Route path="/admin/dashboard" element={<DashboardDispatcher />} />
             <Route path="/admin/billing" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminBilling /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/integrations" element={<ProtectedRoute requiredPermission={['settings', 'view']}><IntegrationsManager /></ProtectedRoute>} />
+            <Route path="/admin/configurations" element={<ProtectedRoute requiredPermission={['settings', 'view']}><IntegrationsManager /></ProtectedRoute>} />
             <Route path="/admin/roles" element={<ProtectedRoute requiredPermission={['settings', 'view']}><RolesPage /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />

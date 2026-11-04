@@ -9,6 +9,7 @@ import {
   HiOutlineBell,
   HiOutlineArrowRightOnRectangle,
   HiOutlineInbox,
+  HiOutlineFingerPrint,
 } from 'react-icons/hi2';
 
 const Header = ({ toggleSidebar }) => {
@@ -28,6 +29,26 @@ const Header = ({ toggleSidebar }) => {
     },
     enabled: !!user,
   });
+
+  // Today's attendance status for morning reminder
+  const { data: todayStatus } = useQuery({
+    queryKey: ['todayAttendanceStatus'],
+    queryFn: async () => {
+      const { data } = await api.get('/attendance/today-status');
+      return data;
+    },
+    enabled: !!user && user?.role !== 'Super Admin',
+    staleTime: 60 * 1000,
+  });
+
+  const currentHour = new Date().getHours();
+  const isMorningWindow = currentHour >= 7 && currentHour < 11;
+  const isTestingMorning =
+    typeof window !== 'undefined' &&
+    (new URLSearchParams(window.location.search).get('testMorning') === '1' ||
+      localStorage.getItem('testMorning') === '1');
+  const needsMorningPunchIn =
+    (isMorningWindow || isTestingMorning) && user?.role !== 'Super Admin' && !todayStatus?.hasPunchedIn;
 
   // Mark single notification as read
   const markAsReadMutation = useMutation({
@@ -119,6 +140,19 @@ const Header = ({ toggleSidebar }) => {
 
       {/* Right: notifications + logout */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Morning Punch-In Quick Action Pill */}
+        {needsMorningPunchIn && (
+          <button
+            type="button"
+            onClick={() => navigate('/punch-in')}
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            title="Morning shift attendance punch-in pending"
+          >
+            <HiOutlineFingerPrint className="w-4 h-4 text-emerald-600" />
+            <span className="hidden sm:inline">Punch In</span>
+          </button>
+        )}
+
         {/* Notification Bell */}
         <div className="relative" ref={dropdownRef}>
           <button
