@@ -31,6 +31,7 @@ import {
   HiOutlineUserGroup,
   HiOutlineChartBarSquare,
   HiOutlineBuildingStorefront,
+  HiOutlineRocketLaunch,
   HiOutlineXMark,
   HiOutlineArrowRightOnRectangle,
   HiChevronDown,
@@ -128,6 +129,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     const workChildren = [];
     if (isAdmin || perms.projects?.view) {
       workChildren.push({ name: 'Projects', path: '/admin/projects', icon: HiOutlineFolder });
+    }
+    if (isAdmin || perms.sprints?.view || perms.projects?.view || perms.tasks?.view) {
+      workChildren.push({ name: 'Sprints & Timeline', path: '/admin/sprints', icon: HiOutlineRocketLaunch });
     }
     if (isAdmin || perms.tasks?.view) {
       workChildren.push({

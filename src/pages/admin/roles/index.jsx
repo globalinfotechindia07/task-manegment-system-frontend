@@ -33,6 +33,7 @@ import {
   HiOutlineUsers,
   HiOutlineCheckBadge,
   HiOutlineMinus,
+  HiOutlineRocketLaunch,
 } from 'react-icons/hi2';
 
 /* ============================================================
@@ -48,6 +49,7 @@ const DEFAULT_MODULE_DEFINITIONS = [
   { key: 'announcements', label: 'Office Announcements', icon: HiOutlineMegaphone, desc: 'Broadcast notices, updates, and organizational alerts.' },
   { key: 'chat', label: 'Chat & Video Meetings', icon: HiOutlineChatBubbleLeftRight, desc: 'Direct messages, team channels, and online meetings.' },
   { key: 'reports', label: 'Work & Daily Reports', icon: HiOutlineDocumentText, desc: 'Daily timesheets, task submission logs, and reporting.' },
+  { key: 'sprints', label: 'Sprints & Project Timeline', icon: HiOutlineRocketLaunch, desc: 'Agile sprint planning, daily task assignment, and timeline tracking.' },
   { key: 'crm', label: 'CRM & Sales Pipeline', icon: HiOutlineBriefcase, desc: 'Lead tracking, sales pipeline deals, and customer accounts directory.' },
   { key: 'settings', label: 'Office Roles & Settings', icon: HiOutlineCog6Tooth, desc: 'Role permissions, office policies, and system defaults.' },
 ];

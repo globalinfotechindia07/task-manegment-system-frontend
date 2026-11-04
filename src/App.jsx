@@ -43,6 +43,7 @@ import PayrollDashboard from './pages/admin/payroll-dashboard';
 import AdminBilling from './pages/admin/billing';
 import RolesPage from './pages/admin/roles';
 import AdminTasks from './pages/admin/tasks';
+import SprintsManager from './pages/admin/sprints';
 import CRMOverview from './pages/admin/crm';
 import LeadsManager from './pages/admin/crm/leads';
 import DealsPipeline from './pages/admin/crm/deals';
@@ -133,6 +134,7 @@ const App = () => {
             <Route path="/admin/roles" element={<ProtectedRoute requiredPermission={['settings', 'view']}><RolesPage /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
+            <Route path="/admin/sprints" element={<ProtectedRoute requiredPermission={['projects', 'view']}><SprintsManager /></ProtectedRoute>} />
             <Route path="/admin/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
             <Route path="/admin/crm" element={<ProtectedRoute requiredPermission={['crm', 'view']}><CRMOverview /></ProtectedRoute>} />
             <Route path="/admin/crm/leads" element={<ProtectedRoute requiredPermission={['crm', 'view']}><LeadsManager /></ProtectedRoute>} />
