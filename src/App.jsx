@@ -21,6 +21,9 @@ import SuperAdminDashboard from './pages/super-admin/dashboard';
 import OfficesManager from './pages/super-admin/offices';
 import PlansManager from './pages/super-admin/plans';
 import SuperAdminCMS from './pages/super-admin/cms';
+import AuditLogs from './pages/super-admin/audit-logs';
+import SuperAdminTickets from './pages/super-admin/tickets';
+import SupportTickets from './pages/common/SupportTickets';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
@@ -97,6 +100,7 @@ const App = () => {
             <Route path="/punch-in" element={<PunchInOut />} />
             <Route path="/my-attendance" element={<MyAttendance />} />
             <Route path="/my-salary-slips" element={<MySalarySlips />} />
+            <Route path="/support-tickets" element={<SupportTickets />} />
           </Route>
         </Route>
 
@@ -107,6 +111,8 @@ const App = () => {
             <Route path="/super-admin/offices" element={<OfficesManager />} />
             <Route path="/super-admin/plans" element={<PlansManager />} />
             <Route path="/super-admin/cms" element={<SuperAdminCMS />} />
+            <Route path="/super-admin/audit-logs" element={<AuditLogs />} />
+            <Route path="/super-admin/tickets" element={<SuperAdminTickets />} />
             <Route path="/super-admin/profile" element={<Profile />} />
           </Route>
         </Route>

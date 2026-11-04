@@ -25,6 +25,8 @@ import {
   HiOutlineDocumentCheck,
   HiOutlineShieldCheck,
   HiOutlineCog6Tooth,
+  HiOutlineCommandLine,
+  HiOutlineLifebuoy,
   HiOutlineXMark,
   HiOutlineArrowRightOnRectangle,
   HiChevronDown,
@@ -76,6 +78,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             { name: 'Offices & Branches', path: '/super-admin/offices', icon: HiOutlineBuildingOffice2 },
             { name: 'Subscription Plans', path: '/super-admin/plans', icon: HiOutlineCreditCard },
             { name: 'Website CMS & Gateway', path: '/super-admin/cms', icon: HiOutlineGlobeAlt },
+            { name: 'Audit Logs', path: '/super-admin/audit-logs', icon: HiOutlineCommandLine },
+            { name: 'Support Tickets', path: '/super-admin/tickets', icon: HiOutlineLifebuoy },
           ],
         },
         {
@@ -235,6 +239,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         children: adminChildren,
       });
     }
+
+    // Help & Support (Accessible to all company users/admins)
+    structure.push({
+      id: 'support-help',
+      name: 'Help & Support',
+      path: '/support-tickets',
+      icon: HiOutlineLifebuoy,
+      isDirect: true,
+    });
 
     return structure;
   };
