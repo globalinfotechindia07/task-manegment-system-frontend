@@ -14,6 +14,7 @@ import {
   HiOutlineUsers,
   HiOutlineChevronLeft,
   HiOutlineChevronRight,
+  HiOutlineInformationCircle,
 } from 'react-icons/hi2';
 import api from '../../../api/axios';
 
@@ -50,6 +51,7 @@ const UsersPage = () => {
   const { user: currentUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [seatLimitWarning, setSeatLimitWarning] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
@@ -133,7 +135,11 @@ const UsersPage = () => {
       closeModal();
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Failed to add user');
+      const msg = error.response?.data?.message || 'Failed to add user';
+      toast.error(msg, { duration: 6000 });
+      if (error.response?.data?.limitReached) {
+        setSeatLimitWarning(error.response.data);
+      }
     },
   });
 
@@ -195,6 +201,7 @@ const UsersPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingUser(null);
+    setSeatLimitWarning(null);
     reset({
       name: '',
       email: '',
@@ -589,6 +596,36 @@ const UsersPage = () => {
 
             {/* Modal Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1">
+
+              {/* Seat Limit Exceeded Helper Banner */}
+              {seatLimitWarning && (
+                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-2">
+                  <div className="flex items-start gap-2">
+                    <HiOutlineInformationCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-amber-950">{seatLimitWarning.message}</p>
+                      <p className="text-[11px] text-amber-800 mt-0.5">
+                        Base Plan: {seatLimitWarning.baseLimit} seats • Add-ons: +{seatLimitWarning.extraSeats} / 5 active
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-1 flex items-center gap-2">
+                    <a
+                      href="/admin/billing"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-md text-xs font-semibold shadow-xs"
+                    >
+                      Go to Billing &amp; Manage Seats
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setSeatLimitWarning(null)}
+                      className="px-2 py-1 text-amber-800 hover:text-amber-950 text-xs"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className={labelBase}>Full Name *</label>

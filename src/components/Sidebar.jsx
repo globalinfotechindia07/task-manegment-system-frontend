@@ -27,6 +27,10 @@ import {
   HiOutlineCog6Tooth,
   HiOutlineCommandLine,
   HiOutlineLifebuoy,
+  HiOutlineBriefcase,
+  HiOutlineUserGroup,
+  HiOutlineChartBarSquare,
+  HiOutlineBuildingStorefront,
   HiOutlineXMark,
   HiOutlineArrowRightOnRectangle,
   HiChevronDown,
@@ -77,6 +81,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           children: [
             { name: 'Offices & Branches', path: '/super-admin/offices', icon: HiOutlineBuildingOffice2 },
             { name: 'Subscription Plans', path: '/super-admin/plans', icon: HiOutlineCreditCard },
+            { name: 'Billing & Invoices', path: '/super-admin/billing', icon: HiOutlineBanknotes },
             { name: 'Website CMS & Gateway', path: '/super-admin/cms', icon: HiOutlineGlobeAlt },
             { name: 'Audit Logs', path: '/super-admin/audit-logs', icon: HiOutlineCommandLine },
             { name: 'Support Tickets', path: '/super-admin/tickets', icon: HiOutlineLifebuoy },
@@ -144,6 +149,23 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         name: 'Work & Projects',
         icon: HiOutlineFolder,
         children: workChildren,
+      });
+    }
+
+    // CRM & Sales
+    const crmChildren = [];
+    if (isAdmin || perms.crm?.view) {
+      crmChildren.push({ name: 'CRM Overview', path: '/admin/crm', icon: HiOutlineChartBarSquare });
+      crmChildren.push({ name: 'Leads & Inquiries', path: '/admin/crm/leads', icon: HiOutlineUserGroup });
+      crmChildren.push({ name: 'Deals & Pipeline', path: '/admin/crm/deals', icon: HiOutlineBriefcase });
+      crmChildren.push({ name: 'Customer Accounts', path: '/admin/crm/customers', icon: HiOutlineBuildingStorefront });
+    }
+    if (crmChildren.length > 0) {
+      structure.push({
+        id: 'crm-sales',
+        name: 'CRM & Sales',
+        icon: HiOutlineBriefcase,
+        children: crmChildren,
       });
     }
 

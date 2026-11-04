@@ -23,6 +23,7 @@ import PlansManager from './pages/super-admin/plans';
 import SuperAdminCMS from './pages/super-admin/cms';
 import AuditLogs from './pages/super-admin/audit-logs';
 import SuperAdminTickets from './pages/super-admin/tickets';
+import SuperAdminBilling from './pages/super-admin/billing';
 import SupportTickets from './pages/common/SupportTickets';
 
 // Admin Pages
@@ -42,6 +43,10 @@ import PayrollDashboard from './pages/admin/payroll-dashboard';
 import AdminBilling from './pages/admin/billing';
 import RolesPage from './pages/admin/roles';
 import AdminTasks from './pages/admin/tasks';
+import CRMOverview from './pages/admin/crm';
+import LeadsManager from './pages/admin/crm/leads';
+import DealsPipeline from './pages/admin/crm/deals';
+import CustomersManager from './pages/admin/crm/customers';
 
 import './App.css';
 
@@ -110,6 +115,7 @@ const App = () => {
             <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
             <Route path="/super-admin/offices" element={<OfficesManager />} />
             <Route path="/super-admin/plans" element={<PlansManager />} />
+            <Route path="/super-admin/billing" element={<SuperAdminBilling />} />
             <Route path="/super-admin/cms" element={<SuperAdminCMS />} />
             <Route path="/super-admin/audit-logs" element={<AuditLogs />} />
             <Route path="/super-admin/tickets" element={<SuperAdminTickets />} />
@@ -128,6 +134,10 @@ const App = () => {
             <Route path="/admin/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
             <Route path="/admin/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
+            <Route path="/admin/crm" element={<ProtectedRoute requiredPermission={['crm', 'view']}><CRMOverview /></ProtectedRoute>} />
+            <Route path="/admin/crm/leads" element={<ProtectedRoute requiredPermission={['crm', 'view']}><LeadsManager /></ProtectedRoute>} />
+            <Route path="/admin/crm/deals" element={<ProtectedRoute requiredPermission={['crm', 'view']}><DealsPipeline /></ProtectedRoute>} />
+            <Route path="/admin/crm/customers" element={<ProtectedRoute requiredPermission={['crm', 'view']}><CustomersManager /></ProtectedRoute>} />
             <Route path="/admin/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
             <Route path="/admin/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/admin/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />

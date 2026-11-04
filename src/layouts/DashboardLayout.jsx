@@ -31,7 +31,7 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col w-full min-w-0 h-full relative overflow-hidden bg-slate-50">
         <Header toggleSidebar={() => setIsSidebarOpen((v) => !v)} />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 relative z-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 relative">
           <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-5 lg:py-6">
             <Outlet />
           </div>

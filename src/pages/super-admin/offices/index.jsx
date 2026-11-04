@@ -277,7 +277,9 @@ const OfficesManager = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredCompanies?.map((comp) => {
-                  const maxLimit = comp.subscription?.maxEmployees || 20;
+                  const baseLimit = comp.subscription?.maxEmployees || 15;
+                  const extraUsers = comp.subscription?.extraUsersCount || 0;
+                  const maxLimit = baseLimit + extraUsers;
                   const currentCount = comp.currentEmployeeCount || 0;
                   const usagePercent = Math.min(100, Math.round((currentCount / maxLimit) * 100));
                   const startDate = comp.subscription?.startDate ? new Date(comp.subscription.startDate) : (comp.createdAt ? new Date(comp.createdAt) : null);
@@ -319,9 +321,14 @@ const OfficesManager = () => {
                           <span className="text-xs font-mono text-slate-700 font-medium">
                             {currentCount} / {maxLimit}
                           </span>
+                          {extraUsers > 0 && (
+                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">
+                              +{extraUsers} add-on
+                            </span>
+                          )}
                         </div>
                         <div className="text-[11px] text-slate-400 mt-0.5">
-                          {maxLimit - currentCount > 0 ? `${maxLimit - currentCount} seats free` : 'Max limit reached'}
+                          Base: {baseLimit} | {maxLimit - currentCount > 0 ? `${maxLimit - currentCount} seats free` : 'Max limit reached'}
                         </div>
                       </td>
                       <td className="py-3.5 px-4">
