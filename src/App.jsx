@@ -25,6 +25,8 @@ import AuditLogs from './pages/super-admin/audit-logs';
 import SuperAdminTickets from './pages/super-admin/tickets';
 import SuperAdminBilling from './pages/super-admin/billing';
 import SupportTickets from './pages/common/SupportTickets';
+import CompanySupport from './pages/common/CompanySupport';
+import SoftwareSupport from './pages/common/SoftwareSupport';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/dashboard';
@@ -108,6 +110,8 @@ const App = () => {
             <Route path="/my-attendance" element={<MyAttendance />} />
             <Route path="/my-salary-slips" element={<MySalarySlips />} />
             <Route path="/support-tickets" element={<SupportTickets />} />
+            <Route path="/company-support" element={<CompanySupport />} />
+            <Route path="/software-support" element={<SoftwareSupport />} />
           </Route>
         </Route>
 

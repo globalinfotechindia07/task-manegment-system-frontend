@@ -36,6 +36,7 @@ import {
   HiOutlineArrowRightOnRectangle,
   HiChevronDown,
   HiOutlineEnvelope,
+  HiOutlineComputerDesktop,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -286,13 +287,28 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       });
     }
 
-    // Help & Support (Accessible to all company users/admins)
+    // Help & Support (Company Support + Softwares Support + System Support)
     structure.push({
       id: 'support-help',
       name: 'Help & Support',
-      path: '/support-tickets',
       icon: HiOutlineLifebuoy,
-      isDirect: true,
+      children: [
+        {
+          name: 'Company Support',
+          path: '/company-support',
+          icon: HiOutlineBuildingOffice2,
+        },
+        {
+          name: 'Softwares Support',
+          path: '/software-support',
+          icon: HiOutlineComputerDesktop,
+        },
+        {
+          name: 'System Support',
+          path: '/support-tickets',
+          icon: HiOutlineLifebuoy,
+        },
+      ],
     });
 
     return structure;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   HiOutlineLifebuoy,
@@ -20,6 +21,9 @@ import {
   HiOutlineVideoCamera,
   HiOutlineEye,
   HiOutlineArrowDownTray,
+  HiOutlineBuildingOffice2,
+  HiOutlineGlobeAlt,
+  HiOutlineComputerDesktop,
 } from 'react-icons/hi2';
 import api from '../../api/axios';
 import { API_BASE_URL } from '../../config';
@@ -455,11 +459,51 @@ const SupportTickets = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* 3-Way Mode Switcher Bar */}
+      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="flex items-center p-1 bg-slate-100/80 rounded-xl w-full md:w-auto overflow-x-auto">
+          <Link
+            to="/company-support"
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <HiOutlineBuildingOffice2 className="w-4 h-4 text-slate-400" />
+            <span>Company Support</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600">
+              Internal
+            </span>
+          </Link>
+
+          <Link
+            to="/software-support"
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <HiOutlineComputerDesktop className="w-4 h-4 text-slate-400" />
+            <span>Softwares Support</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600">
+              Client API
+            </span>
+          </Link>
+
+          <button
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs whitespace-nowrap cursor-default"
+          >
+            <HiOutlineGlobeAlt className="w-4 h-4" />
+            <span>System Support</span>
+          </button>
+        </div>
+
+        <div className="text-right hidden xl:block pr-3">
+          <span className="text-[11px] font-medium text-slate-500">
+            Escalates to: <strong className="text-slate-900">Global SaaS Super Admin</strong>
+          </span>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Help & Support Helpdesk</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">System Support &amp; Platform Helpdesk</h1>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Direct Super Admin Assistance
