@@ -31,6 +31,18 @@ const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
     return <Navigate to="/" replace />;
   }
 
+  // 4.1 Strict Client Isolation: Clients can only access client portal routes and personal profile
+  if (user.role === 'Client' || (user.role || '').toLowerCase() === 'client') {
+    const isAllowedForClient =
+      location.pathname.startsWith('/client') ||
+      location.pathname === '/admin/profile' ||
+      location.pathname === '/force-password-change';
+    if (!isAllowedForClient) {
+      return <Navigate to="/client/portal" replace />;
+    }
+    return children ? children : <Outlet />;
+  }
+
   // 5. Compute access
   let hasAccess = false;
 

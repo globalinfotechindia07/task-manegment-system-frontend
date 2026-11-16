@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AdminDashboard from '../admin/dashboard';
 import HRDashboard from '../hr/dashboard';
@@ -8,6 +9,16 @@ const DashboardDispatcher = () => {
   const { user } = useAuth();
   const role = (user?.role || '').trim();
   const roleLower = role.toLowerCase();
+
+  // 0. Client Portal
+  if (role === 'Client' || roleLower === 'client') {
+    return <Navigate to="/client/portal" replace />;
+  }
+
+  // 0.1 Accountant / Finance
+  if (role === 'Accountant' || roleLower.includes('accountant') || roleLower.includes('finance')) {
+    return <Navigate to="/accountant/billing" replace />;
+  }
 
   // 1. HR Manager / HR
   if (

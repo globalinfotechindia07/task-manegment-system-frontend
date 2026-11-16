@@ -57,6 +57,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       '/team-lead/dashboard',
       '/user/dashboard',
       '/super-admin/dashboard',
+      '/client/portal',
+      '/accountant/billing',
     ];
     if (!nonPrefixRoots.includes(path) && location.pathname.startsWith(path + '/')) {
       return true;
@@ -99,10 +101,113 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       ];
     }
 
-    // 2. Company Office Navigation
+    // 2. Client Portal Navigation (Dedicated strictly for Clients)
+    if (user.role === 'Client' || (user.role || '').toLowerCase() === 'client') {
+      return [
+        {
+          id: 'client-dashboard',
+          name: 'Portal Overview',
+          path: '/client/portal',
+          icon: HiOutlineSquares2X2,
+          isDirect: true,
+        },
+        {
+          id: 'client-projects',
+          name: 'Projects & Progress',
+          path: '/client/projects',
+          icon: HiOutlineFolder,
+          isDirect: true,
+        },
+        {
+          id: 'client-invoices',
+          name: 'Billings & Invoices',
+          path: '/client/invoices',
+          icon: HiOutlineBanknotes,
+          isDirect: true,
+        },
+        {
+          id: 'client-support',
+          name: 'Project Queries',
+          path: '/client/support',
+          icon: HiOutlineChatBubbleLeftRight,
+          isDirect: true,
+        },
+        {
+          id: 'client-profile',
+          name: 'My Profile',
+          path: '/admin/profile',
+          icon: HiOutlineUser,
+          isDirect: true,
+        },
+      ];
+    }
+
+    // 3. Accountant / Finance Navigation (Dedicated for Accountant role)
+    const r = (user.role || '').toLowerCase();
+    if (user.role === 'Accountant' || r.includes('accountant') || r.includes('finance')) {
+      return [
+        {
+          id: 'accountant-billing-dashboard',
+          name: 'Client Billing Overview',
+          path: '/accountant/billing?tab=dashboard',
+          icon: HiOutlineSquares2X2,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-invoices',
+          name: 'Client Invoices',
+          path: '/accountant/billing?tab=invoices',
+          icon: HiOutlineDocumentText,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-payments',
+          name: 'Receipts & Vouchers',
+          path: '/accountant/billing?tab=payments',
+          icon: HiOutlineBanknotes,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-ledger',
+          name: 'Customer Ledgers',
+          path: '/accountant/billing?tab=ledger',
+          icon: HiOutlineClipboardDocumentList,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-gst',
+          name: 'GST & Tax Reports',
+          path: '/accountant/billing?tab=gst',
+          icon: HiOutlineDocumentChartBar,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-payroll',
+          name: 'Staff Payroll Dashboard',
+          path: '/admin/payroll-dashboard',
+          icon: HiOutlineCreditCard,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-salary-management',
+          name: 'Salary Management',
+          path: '/admin/salary-management',
+          icon: HiOutlineBanknotes,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-profile',
+          name: 'My Profile',
+          path: '/admin/profile',
+          icon: HiOutlineUser,
+          isDirect: true,
+        },
+      ];
+    }
+
+    // 4. Company Office Navigation
     const isAdmin = user.role === 'Admin' || user.role === 'CTO';
     const perms = user.permissions || {};
-    const r = (user.role || '').toLowerCase();
 
     let dashboardPath = '/admin/dashboard';
     if (!isAdmin) {
@@ -131,6 +236,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     const workChildren = [];
     if (isAdmin || perms.projects?.view) {
       workChildren.push({ name: 'Projects', path: '/admin/projects', icon: HiOutlineFolder });
+      workChildren.push({ name: 'Client Portal & Billings', path: '/admin/client-portal', icon: HiOutlineBanknotes });
     }
     if (isAdmin || perms.sprints?.view || perms.projects?.view || perms.tasks?.view) {
       workChildren.push({ name: 'Sprints & Timeline', path: '/admin/sprints', icon: HiOutlineRocketLaunch });
@@ -183,6 +289,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     if (isAdmin || perms.attendance?.view || perms.attendance?.edit) {
       teamChildren.push({ name: 'Attendance Policy', path: '/admin/attendance-settings', icon: HiOutlineClock });
     }
+    if (isAdmin || perms.attendance?.view || perms.users?.view || perms.leaves?.view) {
+      teamChildren.push({ name: 'Leaves & Holidays', path: '/admin/leaves', icon: HiOutlineCalendarDays });
+    }
     if (isAdmin || perms.announcements?.view) {
       teamChildren.push({ name: 'Announcements', path: '/admin/announcements', icon: HiOutlineMegaphone });
     }
@@ -195,9 +304,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       });
     }
 
-    // Payroll
+    // Payroll & Finance
     const payrollChildren = [];
     if (isAdmin || perms.payroll?.view) {
+      payrollChildren.push({ name: 'Client Invoicing & Billing', path: '/accountant/billing', icon: HiOutlineBanknotes });
       payrollChildren.push({ name: 'Salary Management', path: '/admin/salary-management', icon: HiOutlineBanknotes });
       payrollChildren.push({ name: 'Payroll Dashboard', path: '/admin/payroll-dashboard', icon: HiOutlineDocumentChartBar });
     }
@@ -243,6 +353,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       children: [
         { name: 'Punch In / Out', path: '/punch-in', icon: HiOutlineFingerPrint },
         { name: 'My Attendance', path: '/my-attendance', icon: HiOutlineCalendarDays },
+        { name: 'My Leaves & Apply', path: '/my-leaves', icon: HiOutlineCalendarDays },
         { name: 'My Salary Slips', path: '/my-salary-slips', icon: HiOutlineDocumentCheck },
         { name: 'My Profile', path: '/admin/profile', icon: HiOutlineUser },
       ],

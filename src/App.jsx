@@ -15,6 +15,7 @@ import PerformanceReport from './pages/common/PerformanceReport';
 import PunchInOut from './pages/common/PunchInOut';
 import MyAttendance from './pages/common/MyAttendance';
 import MySalarySlips from './pages/common/MySalarySlips';
+import MyLeaves from './pages/common/MyLeaves';
 
 // Super Admin Pages
 import SuperAdminDashboard from './pages/super-admin/dashboard';
@@ -51,6 +52,10 @@ import LeadsManager from './pages/admin/crm/leads';
 import DealsPipeline from './pages/admin/crm/deals';
 import CustomersManager from './pages/admin/crm/customers';
 import IntegrationsManager from './pages/admin/integrations';
+import ClientPortal from './pages/client/ClientPortal';
+import AdminClientPortal from './pages/admin/client-portal';
+import AccountantBilling from './pages/accountant/billing';
+import AdminLeaves from './pages/admin/leaves';
 
 import './App.css';
 
@@ -108,10 +113,15 @@ const App = () => {
             <Route path="/team-meeting/:roomId" element={<Meeting />} />
             <Route path="/punch-in" element={<PunchInOut />} />
             <Route path="/my-attendance" element={<MyAttendance />} />
+            <Route path="/my-leaves" element={<MyLeaves />} />
             <Route path="/my-salary-slips" element={<MySalarySlips />} />
             <Route path="/support-tickets" element={<SupportTickets />} />
             <Route path="/company-support" element={<CompanySupport />} />
             <Route path="/software-support" element={<SoftwareSupport />} />
+            <Route path="/client/portal" element={<ClientPortal />} />
+            <Route path="/client/projects" element={<ClientPortal />} />
+            <Route path="/client/invoices" element={<ClientPortal />} />
+            <Route path="/client/support" element={<ClientPortal />} />
           </Route>
         </Route>
 
@@ -141,6 +151,7 @@ const App = () => {
             <Route path="/admin/roles" element={<ProtectedRoute requiredPermission={['settings', 'view']}><RolesPage /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
+            <Route path="/admin/client-portal" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminClientPortal /></ProtectedRoute>} />
             <Route path="/admin/sprints" element={<ProtectedRoute requiredPermission={['projects', 'view']}><SprintsManager /></ProtectedRoute>} />
             <Route path="/admin/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
             <Route path="/admin/crm" element={<ProtectedRoute requiredPermission={['crm', 'view']}><CRMOverview /></ProtectedRoute>} />
@@ -151,8 +162,13 @@ const App = () => {
             <Route path="/admin/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/admin/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />
             <Route path="/admin/attendance-settings" element={<ProtectedRoute requiredPermission={['attendance', 'view']}><AttendanceSettings /></ProtectedRoute>} />
+            <Route path="/admin/leaves" element={<AdminLeaves />} />
+            <Route path="/hr/leaves" element={<AdminLeaves />} />
+            <Route path="/team-lead/leaves" element={<AdminLeaves />} />
             <Route path="/admin/salary-management" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryManagement /></ProtectedRoute>} />
             <Route path="/admin/payroll-dashboard" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollDashboard /></ProtectedRoute>} />
+            <Route path="/accountant/billing" element={<AccountantBilling />} />
+            <Route path="/accountant/dashboard" element={<AccountantBilling />} />
             <Route path="/admin/profile" element={<Profile />} />
             <Route path="/admin/chat" element={<Chat />} />
 

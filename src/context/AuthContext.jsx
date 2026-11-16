@@ -14,6 +14,10 @@ export const getRoleDashboard = (user) => {
   const role = (user.role || '').toLowerCase();
   if (role === 'super admin') {
     return '/super-admin/dashboard';
+  } else if (role === 'client') {
+    return '/client/portal';
+  } else if (role.includes('accountant') || role.includes('finance')) {
+    return '/accountant/billing';
   } else if (role === 'hr manager' || role === 'hr' || role.includes('human resource')) {
     return '/hr/dashboard';
   } else if (
