@@ -61,6 +61,19 @@ const AdminDashboard = () => {
     },
   });
 
+  const { data: documentStats } = useQuery({
+    queryKey: ['dashboardDocStats'],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get('/documents/admin/all');
+        return data?.stats || null;
+      } catch (e) {
+        return null;
+      }
+    },
+    enabled: isOfficeAdmin || Boolean(perms.users?.view || perms.documents?.view),
+  });
+
   const { data: projects = [] } = useQuery({
     queryKey: ['dashboardProjects'],
     queryFn: async () => {
@@ -227,6 +240,30 @@ const AdminDashboard = () => {
               {activeStaff} active
             </p>
           </div>
+        )}
+
+        {(isOfficeAdmin || perms.documents?.view || perms.users?.view) && (
+          <Link
+            to="/admin/documents"
+            className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-t-4 border-t-purple-600 flex flex-col justify-between hover:shadow-md transition-all group"
+          >
+            <div>
+              <p className="text-slate-500 text-[11px] sm:text-xs font-medium mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineDocumentCheck className="w-3.5 h-3.5 text-purple-600" />
+                  Staff KYC Documents
+                </span>
+                <HiOutlineArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+              </p>
+              <h3 className="text-lg sm:text-2xl font-bold text-slate-900">
+                {documentStats?.totalDocuments ?? 0}
+              </h3>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-amber-600 font-semibold mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+              <span>{documentStats?.pending ?? 0} pending review</span>
+              <span className="text-indigo-600 font-medium group-hover:underline">Review &rarr;</span>
+            </p>
+          </Link>
         )}
 
         {hasTasksPerm && (

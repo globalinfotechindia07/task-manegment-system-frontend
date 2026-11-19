@@ -37,6 +37,8 @@ import {
   HiChevronDown,
   HiOutlineEnvelope,
   HiOutlineComputerDesktop,
+  HiOutlineBookmark,
+  HiOutlineFolderArrowDown,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -90,6 +92,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             { name: 'Website CMS & Gateway', path: '/super-admin/cms', icon: HiOutlineGlobeAlt },
             { name: 'Audit Logs', path: '/super-admin/audit-logs', icon: HiOutlineCommandLine },
             { name: 'Support Tickets', path: '/super-admin/tickets', icon: HiOutlineLifebuoy },
+            { name: 'Employee Documents Hub', path: '/admin/documents', icon: HiOutlineFolderArrowDown },
           ],
         },
         {
@@ -183,8 +186,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         },
         {
           id: 'accountant-payroll',
-          name: 'Staff Payroll Dashboard',
-          path: '/admin/payroll-dashboard',
+          name: 'Payroll Settings',
+          path: '/admin/payroll-settings',
           icon: HiOutlineCreditCard,
           isDirect: true,
         },
@@ -193,6 +196,27 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           name: 'Salary Management',
           path: '/admin/salary-management',
           icon: HiOutlineBanknotes,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-documents',
+          name: 'Document Management',
+          path: '/admin/documents',
+          icon: HiOutlineFolderArrowDown,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-my-documents',
+          name: 'My Documents & KYC',
+          path: '/my-documents',
+          icon: HiOutlineDocumentCheck,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-sticky-notes',
+          name: 'Sticky Notes & Reminders',
+          path: '/sticky-notes',
+          icon: HiOutlineBookmark,
           isDirect: true,
         },
         {
@@ -286,7 +310,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     if (isAdmin || perms.users?.view) {
       teamChildren.push({ name: 'Users & Staff', path: '/admin/users', icon: HiOutlineUsers });
     }
+    if (isAdmin || perms.users?.view || perms.payroll?.view) {
+      teamChildren.push({ name: 'Offer Letters', path: '/admin/offer-letters', icon: HiOutlineDocumentText });
+    }
+    if (isAdmin || perms.documents?.view || perms.users?.view) {
+      teamChildren.push({ name: 'Document Management', path: '/admin/documents', icon: HiOutlineFolderArrowDown });
+    }
     if (isAdmin || perms.attendance?.view || perms.attendance?.edit) {
+      teamChildren.push({ name: 'Daily Attendance & Edit', path: '/admin/attendance', icon: HiOutlineCalendarDays });
       teamChildren.push({ name: 'Attendance Policy', path: '/admin/attendance-settings', icon: HiOutlineClock });
     }
     if (isAdmin || perms.attendance?.view || perms.users?.view || perms.leaves?.view) {
@@ -309,7 +340,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     if (isAdmin || perms.payroll?.view) {
       payrollChildren.push({ name: 'Client Invoicing & Billing', path: '/accountant/billing', icon: HiOutlineBanknotes });
       payrollChildren.push({ name: 'Salary Management', path: '/admin/salary-management', icon: HiOutlineBanknotes });
-      payrollChildren.push({ name: 'Payroll Dashboard', path: '/admin/payroll-dashboard', icon: HiOutlineDocumentChartBar });
+      payrollChildren.push({ name: 'Payroll Settings', path: '/admin/payroll-settings', icon: HiOutlineCog6Tooth });
     }
     if (payrollChildren.length > 0) {
       structure.push({
@@ -355,6 +386,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { name: 'My Attendance', path: '/my-attendance', icon: HiOutlineCalendarDays },
         { name: 'My Leaves & Apply', path: '/my-leaves', icon: HiOutlineCalendarDays },
         { name: 'My Salary Slips', path: '/my-salary-slips', icon: HiOutlineDocumentCheck },
+        { name: 'My Documents & KYC', path: '/my-documents', icon: HiOutlineFolderArrowDown },
+        { name: 'Sticky Notes & Reminders', path: '/sticky-notes', icon: HiOutlineBookmark },
         { name: 'My Profile', path: '/admin/profile', icon: HiOutlineUser },
       ],
     });
@@ -368,7 +401,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       adminChildren.push({ name: 'Billing & Invoices', path: '/admin/billing', icon: HiOutlineCreditCard });
     }
     if (isAdmin || perms.settings?.view) {
-      adminChildren.push({ name: 'Office Settings', path: '/admin/settings', icon: HiOutlineCog6Tooth });
+      adminChildren.push({ name: 'Office Settings', path: '/admin/settings?tab=org', icon: HiOutlineCog6Tooth });
+      adminChildren.push({ name: 'Company SMTP & Mail', path: '/admin/settings?tab=email', icon: HiOutlineEnvelope });
     }
     if (adminChildren.length > 0) {
       structure.push({

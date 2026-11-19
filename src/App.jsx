@@ -16,6 +16,7 @@ import PunchInOut from './pages/common/PunchInOut';
 import MyAttendance from './pages/common/MyAttendance';
 import MySalarySlips from './pages/common/MySalarySlips';
 import MyLeaves from './pages/common/MyLeaves';
+import StickyNotesPage from './pages/common/StickyNotes';
 
 // Super Admin Pages
 import SuperAdminDashboard from './pages/super-admin/dashboard';
@@ -41,8 +42,9 @@ import AdminSettings from './pages/admin/settings';
 import AdminAnnouncements from './pages/admin/announcements';
 import AdminProjects from './pages/admin/projects';
 import AttendanceSettings from './pages/admin/attendance-settings';
+import AdminAttendance from './pages/admin/attendance';
 import SalaryManagement from './pages/admin/salary-management';
-import PayrollDashboard from './pages/admin/payroll-dashboard';
+import PayrollSettings from './pages/admin/payroll-settings';
 import AdminBilling from './pages/admin/billing';
 import RolesPage from './pages/admin/roles';
 import AdminTasks from './pages/admin/tasks';
@@ -56,6 +58,9 @@ import ClientPortal from './pages/client/ClientPortal';
 import AdminClientPortal from './pages/admin/client-portal';
 import AccountantBilling from './pages/accountant/billing';
 import AdminLeaves from './pages/admin/leaves';
+import OfferLettersPage from './pages/admin/offer-letters';
+import MyDocuments from './pages/common/MyDocuments';
+import AdminDocumentsManagement from './pages/admin/documents';
 
 import './App.css';
 
@@ -115,6 +120,8 @@ const App = () => {
             <Route path="/my-attendance" element={<MyAttendance />} />
             <Route path="/my-leaves" element={<MyLeaves />} />
             <Route path="/my-salary-slips" element={<MySalarySlips />} />
+            <Route path="/my-documents" element={<MyDocuments />} />
+            <Route path="/sticky-notes" element={<StickyNotesPage />} />
             <Route path="/support-tickets" element={<SupportTickets />} />
             <Route path="/company-support" element={<CompanySupport />} />
             <Route path="/software-support" element={<SoftwareSupport />} />
@@ -146,6 +153,7 @@ const App = () => {
             <Route path="/admin/dashboard" element={<DashboardDispatcher />} />
             <Route path="/admin/billing" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminBilling /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/email-settings" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/integrations" element={<ProtectedRoute requiredPermission={['settings', 'view']}><IntegrationsManager /></ProtectedRoute>} />
             <Route path="/admin/configurations" element={<ProtectedRoute requiredPermission={['settings', 'view']}><IntegrationsManager /></ProtectedRoute>} />
             <Route path="/admin/roles" element={<ProtectedRoute requiredPermission={['settings', 'view']}><RolesPage /></ProtectedRoute>} />
@@ -161,12 +169,17 @@ const App = () => {
             <Route path="/admin/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
             <Route path="/admin/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/admin/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />
+            <Route path="/admin/attendance" element={<ProtectedRoute requiredPermission={['attendance', 'view']}><AdminAttendance /></ProtectedRoute>} />
             <Route path="/admin/attendance-settings" element={<ProtectedRoute requiredPermission={['attendance', 'view']}><AttendanceSettings /></ProtectedRoute>} />
             <Route path="/admin/leaves" element={<AdminLeaves />} />
             <Route path="/hr/leaves" element={<AdminLeaves />} />
             <Route path="/team-lead/leaves" element={<AdminLeaves />} />
+            <Route path="/admin/offer-letters" element={<OfferLettersPage />} />
+            <Route path="/admin/documents" element={<ProtectedRoute requiredPermission={['documents', 'view']}><AdminDocumentsManagement /></ProtectedRoute>} />
+            <Route path="/hr/documents" element={<ProtectedRoute requiredPermission={['documents', 'view']}><AdminDocumentsManagement /></ProtectedRoute>} />
             <Route path="/admin/salary-management" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryManagement /></ProtectedRoute>} />
-            <Route path="/admin/payroll-dashboard" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollDashboard /></ProtectedRoute>} />
+            <Route path="/admin/payroll-settings" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollSettings /></ProtectedRoute>} />
+            <Route path="/admin/payroll-dashboard" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollSettings /></ProtectedRoute>} />
             <Route path="/accountant/billing" element={<AccountantBilling />} />
             <Route path="/accountant/dashboard" element={<AccountantBilling />} />
             <Route path="/admin/profile" element={<Profile />} />

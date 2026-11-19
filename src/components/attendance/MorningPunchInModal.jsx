@@ -33,6 +33,18 @@ const MorningPunchInModal = () => {
   // Today's date string YYYY-MM-DD
   const todayStr = new Date().toISOString().split('T')[0];
 
+  // Excluded roles & routes:
+  // - Client / Client Portal: Clients should never see employee punch in
+  // - Super Admin & Admin (including CTO): Administrators do not punch in
+  const role = (user?.role || '').toLowerCase();
+  const isExcludedRole =
+    role === 'super admin' ||
+    role === 'admin' ||
+    role === 'cto' ||
+    role === 'client';
+  const isClientPortal = location.pathname.startsWith('/client');
+  const shouldSkipPunchIn = !user || isExcludedRole || isClientPortal;
+
   // Fetch today's attendance status
   const { data: todayStatus, isLoading } = useQuery({
     queryKey: ['todayAttendanceStatus'],
@@ -40,14 +52,14 @@ const MorningPunchInModal = () => {
       const { data } = await api.get('/attendance/today-status');
       return data;
     },
-    enabled: !!user && user?.role !== 'Super Admin',
+    enabled: !shouldSkipPunchIn,
     staleTime: 60 * 1000, // 1 minute
     refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
-    // 1. If not logged in or is Super Admin, don't show
-    if (!user || user.role === 'Super Admin') {
+    // 1. If not logged in, excluded role (Super Admin, Admin, CTO, Client), or inside client portal, don't show
+    if (shouldSkipPunchIn) {
       setIsOpen(false);
       return;
     }
@@ -90,7 +102,7 @@ const MorningPunchInModal = () => {
 
     // Trigger modal automatically!
     setIsOpen(true);
-  }, [user, location.pathname, todayStatus, isLoading, todayStr]);
+  }, [shouldSkipPunchIn, location.pathname, todayStatus, isLoading, todayStr, currentTime]);
 
   const handleClose = () => {
     sessionStorage.setItem(`morning_punchin_dismissed_${todayStr}`, 'true');
@@ -102,7 +114,7 @@ const MorningPunchInModal = () => {
     navigate('/punch-in');
   };
 
-  if (!isOpen || typeof document === 'undefined') return null;
+  if (shouldSkipPunchIn || !isOpen || typeof document === 'undefined') return null;
 
   // Format time and date
   const timeFormatted = currentTime.toLocaleTimeString([], {

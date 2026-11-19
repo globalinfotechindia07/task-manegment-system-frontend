@@ -34,6 +34,7 @@ import {
   HiOutlineCheckBadge,
   HiOutlineMinus,
   HiOutlineRocketLaunch,
+  HiOutlineDocumentCheck,
 } from 'react-icons/hi2';
 
 /* ============================================================
@@ -51,6 +52,7 @@ const DEFAULT_MODULE_DEFINITIONS = [
   { key: 'reports', label: 'Work & Daily Reports', icon: HiOutlineDocumentText, desc: 'Daily timesheets, task submission logs, and reporting.' },
   { key: 'sprints', label: 'Sprints & Project Timeline', icon: HiOutlineRocketLaunch, desc: 'Agile sprint planning, daily task assignment, and timeline tracking.' },
   { key: 'crm', label: 'CRM & Sales Pipeline', icon: HiOutlineBriefcase, desc: 'Lead tracking, sales pipeline deals, and customer accounts directory.' },
+  { key: 'documents', label: 'Employee Documents & KYC', icon: HiOutlineDocumentCheck, desc: 'Employee verification KYC documents, approval, rejection, and batch ZIP export.' },
   { key: 'settings', label: 'Office Roles & Settings', icon: HiOutlineCog6Tooth, desc: 'Role permissions, office policies, and system defaults.' },
 ];
 
@@ -74,6 +76,7 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: true, edit: true, delete: true },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: false, edit: false, delete: false },
+      documents: { view: true, create: true, edit: true, delete: false },
       settings: { view: false, create: false, edit: false, delete: false },
     },
   },
@@ -96,6 +99,7 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: false, edit: false, delete: false },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: true, edit: true, delete: false },
+      documents: { view: true, create: false, edit: false, delete: false },
       settings: { view: false, create: false, edit: false, delete: false },
     },
   },
@@ -118,6 +122,7 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: false, edit: false, delete: false },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: true, edit: false, delete: false },
+      documents: { view: true, create: true, edit: false, delete: false },
       settings: { view: false, create: false, edit: false, delete: false },
     },
   },
@@ -140,6 +145,7 @@ export const ROLE_TEMPLATES = [
       announcements: { view: true, create: false, edit: false, delete: false },
       chat: { view: true, create: true, edit: false, delete: false },
       reports: { view: true, create: false, edit: false, delete: false },
+      documents: { view: true, create: false, edit: false, delete: false },
       settings: { view: false, create: false, edit: false, delete: false },
     },
   },

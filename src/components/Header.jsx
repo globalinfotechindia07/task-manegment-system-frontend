@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   HiOutlineBars3,
   HiOutlineBell,
@@ -17,8 +17,19 @@ const Header = ({ toggleSidebar }) => {
   const { socket } = useSocket();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Excluded from punch-in: Super Admin, Admin, CTO, Client, or inside Client Portal
+  const role = (user?.role || '').toLowerCase();
+  const isExcludedRole =
+    role === 'super admin' ||
+    role === 'admin' ||
+    role === 'cto' ||
+    role === 'client';
+  const isClientPortal = location.pathname.startsWith('/client');
+  const canPunchIn = !!user && !isExcludedRole && !isClientPortal;
 
   // Fetch notifications
   const { data: notifications = [] } = useQuery({
@@ -37,7 +48,7 @@ const Header = ({ toggleSidebar }) => {
       const { data } = await api.get('/attendance/today-status');
       return data;
     },
-    enabled: !!user && user?.role !== 'Super Admin',
+    enabled: canPunchIn,
     staleTime: 60 * 1000,
   });
 
@@ -48,7 +59,9 @@ const Header = ({ toggleSidebar }) => {
     (new URLSearchParams(window.location.search).get('testMorning') === '1' ||
       localStorage.getItem('testMorning') === '1');
   const needsMorningPunchIn =
-    (isMorningWindow || isTestingMorning) && user?.role !== 'Super Admin' && !todayStatus?.hasPunchedIn;
+    canPunchIn &&
+    (isMorningWindow || isTestingMorning) &&
+    !todayStatus?.hasPunchedIn;
 
   // Mark single notification as read
   const markAsReadMutation = useMutation({

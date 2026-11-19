@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -15,6 +16,7 @@ import {
   HiOutlineChevronLeft,
   HiOutlineChevronRight,
   HiOutlineInformationCircle,
+  HiOutlineFolderArrowDown,
 } from 'react-icons/hi2';
 import api from '../../../api/axios';
 
@@ -352,6 +354,14 @@ const UsersPage = () => {
                           {user.status === 'Inactive' ? 'Activate' : 'Deactivate'}
                         </button>
                       )}
+                      <Link
+                        to={`/admin/documents?userId=${user._id}`}
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
+                        title={`View ${user.name}'s Documents & KYC`}
+                      >
+                        <HiOutlineFolderArrowDown className="w-3.5 h-3.5" />
+                        KYC Docs
+                      </Link>
                       {canDeleteUser && (
                         <button
                           type="button"
@@ -484,7 +494,14 @@ const UsersPage = () => {
                                 )}
                               </button>
                             )}
-                            {canDeleteUser && (
+                            <Link
+                              to={`/admin/documents?userId=${user._id}`}
+                              className={`${iconBtnBase} text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border border-indigo-200`}
+                              title={`View ${user.name}'s Documents & KYC`}
+                            >
+                              <HiOutlineFolderArrowDown className="w-4 h-4" />
+                            </Link>
+                      {canDeleteUser && (
                               <button
                                 type="button"
                                 onClick={() => {
