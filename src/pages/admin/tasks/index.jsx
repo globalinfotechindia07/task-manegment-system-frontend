@@ -149,7 +149,11 @@ const TasksPage = () => {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
 
-  const isOfficeAdmin = user?.role === 'Admin' || user?.role === 'CTO';
+  const userRole = (user?.role || '').toLowerCase();
+  const isOfficeAdmin = userRole === 'admin' || userRole === 'super admin' || userRole === 'cto';
+  const isTeamLead = userRole === 'team head' || userRole === 'team lead' || userRole.includes('lead') || userRole.includes('head');
+  const isRegularStaff = !isOfficeAdmin && !isTeamLead;
+
   const perms = user?.permissions?.tasks || {};
   const canCreateTask = isOfficeAdmin || Boolean(perms.create);
   const canEditTask = isOfficeAdmin || Boolean(perms.edit);
@@ -212,7 +216,7 @@ const TasksPage = () => {
       title: '',
       description: '',
       project: '',
-      assignedTo: '',
+      assignedTo: user?._id || '',
       startDate: '',
       dueDate: '',
       priority: 'Medium',
@@ -274,7 +278,18 @@ const TasksPage = () => {
       toast.success('Task created successfully');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       setIsCreateModalOpen(false);
-      reset();
+      reset({
+        title: '',
+        description: '',
+        project: '',
+        assignedTo: user?._id || '',
+        startDate: '',
+        dueDate: '',
+        priority: 'Medium',
+        targetDurationMinutes: 0,
+        timeTrackingMode: 'stopwatch',
+        isTimerRequired: true,
+      });
       setTaskAttachments(null);
     },
     onError: (err) => {
@@ -340,7 +355,8 @@ const TasksPage = () => {
     formData.append('title', data.title);
     formData.append('description', data.description || '');
     formData.append('project', data.project);
-    formData.append('assignedTo', data.assignedTo || user._id);
+    const targetAssignee = isRegularStaff ? (user?._id || '') : (data.assignedTo || user?._id || '');
+    formData.append('assignedTo', targetAssignee);
     formData.append('startDate', data.startDate);
     formData.append('dueDate', data.dueDate);
     formData.append('priority', data.priority);
@@ -602,24 +618,26 @@ const TasksPage = () => {
             </select>
           </div>
 
-          <div>
-            <label className={tokens.label}>Assignee</label>
-            <select
-              value={filterAssignee}
-              onChange={(e) => {
-                setFilterAssignee(e.target.value);
-                setCurrentPage(1);
-              }}
-              className={tokens.input}
-            >
-              <option value="All">All Assignees</option>
-              {usersList.map((u) => (
-                <option key={u._id} value={u._id}>
-                  {u.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!isRegularStaff && (
+            <div>
+              <label className={tokens.label}>Assignee</label>
+              <select
+                value={filterAssignee}
+                onChange={(e) => {
+                  setFilterAssignee(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className={tokens.input}
+              >
+                <option value="All">{isTeamLead ? 'All Team Members' : 'All Assignees'}</option>
+                {usersList.map((u) => (
+                  <option key={u._id} value={u._id}>
+                    {u.name} {u._id === user?._id ? '(You)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {activeFiltersCount > 0 && (
             <div className="sm:hidden lg:col-span-5 flex justify-end">
@@ -748,7 +766,7 @@ const TasksPage = () => {
 
             {/* ---------- DESKTOP TABLE (md+) ---------- */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-700 min-w-[820px]">
+              <table className="w-full text-left text-sm text-slate-700 min-w-[960px]">
                 <thead className={tokens.tableHead}>
                   <tr>
                     <th className="px-4 lg:px-5 py-3">Task Title</th>
@@ -757,8 +775,8 @@ const TasksPage = () => {
                     <th className="px-4 lg:px-5 py-3 w-40">Assignee</th>
                     <th className="px-4 lg:px-5 py-3 w-32">Status</th>
                     <th className="px-4 lg:px-5 py-3 w-32">Due Date</th>
-                    <th className="px-4 lg:px-5 py-3 w-36">Timeline Target</th>
-                    <th className="px-4 lg:px-5 py-3 w-32 text-right">Actions</th>
+                    <th className="px-4 lg:px-5 py-3 min-w-[200px]">Timeline Target</th>
+                    <th className="px-4 lg:px-5 py-3 min-w-[130px] text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -989,14 +1007,39 @@ const TasksPage = () => {
 
                 <div>
                   <label className={tokens.label}>Assignee</label>
-                  <select {...register('assignedTo')} className={tokens.input}>
-                    <option value="">Assign to Myself</option>
-                    {usersList.map((u) => (
-                      <option key={u._id} value={u._id}>
-                        {u.name} ({u.designation || u.role})
-                      </option>
-                    ))}
-                  </select>
+                  {isRegularStaff ? (
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">
+                          {initials(user?.name)}
+                        </div>
+                        <span className="font-semibold text-xs text-slate-900">{user?.name} (You)</span>
+                      </div>
+                      <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-md">
+                        Self-Assign Only
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <select {...register('assignedTo')} className={tokens.input}>
+                        <option value={user?._id || ''}>
+                          {isTeamLead ? `Assign to Myself (${user?.name})` : 'Select Assignee (Default: Myself)'}
+                        </option>
+                        {usersList
+                          .filter((u) => u._id !== user?._id)
+                          .map((u) => (
+                            <option key={u._id} value={u._id}>
+                              {u.name} ({u.designation || u.role}) {isTeamLead ? '— Team Member' : ''}
+                            </option>
+                          ))}
+                      </select>
+                      {isTeamLead && (
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          Team Leads can only assign tasks to team members reporting to them or themselves.
+                        </p>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -1135,9 +1178,9 @@ const TasksPage = () => {
                   <HiOutlineShieldCheck className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                   <span>
                     <strong>Strict Access Control:</strong> Once created, <u>only the assigned user</u> ({(() => {
-                      const selId = watch('assignedTo');
-                      const foundUser = usersList.find((u) => u._id === selId);
-                      return foundUser ? foundUser.name : 'the assigned employee';
+                      const selId = isRegularStaff ? user?._id : (watch('assignedTo') || user?._id);
+                      const foundUser = usersList.find((u) => u._id === selId) || (selId === user?._id ? user : null);
+                      return foundUser ? foundUser.name : (user?.name || 'the assigned employee');
                     })()}) will have authorization to start, pause, and end the work timer for this task.
                   </span>
                 </div>

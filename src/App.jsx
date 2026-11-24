@@ -64,6 +64,7 @@ import OfferLettersPage from './pages/admin/offer-letters';
 import MyDocuments from './pages/common/MyDocuments';
 import AdminDocumentsManagement from './pages/admin/documents';
 import AdminBackup from './pages/admin/backup';
+import ReportsCenter from './pages/admin/reports-center';
 
 import './App.css';
 
@@ -176,6 +177,8 @@ const App = () => {
             <Route path="/admin/crm/deals" element={<ProtectedRoute requiredPermission={['crm', 'view']}><DealsPipeline /></ProtectedRoute>} />
             <Route path="/admin/crm/customers" element={<ProtectedRoute requiredPermission={['crm', 'view']}><CustomersManager /></ProtectedRoute>} />
             <Route path="/admin/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
+            <Route path="/admin/reports-center" element={<ProtectedRoute requiredPermission={['reports', 'view']}><ReportsCenter /></ProtectedRoute>} />
+            <Route path="/reports-center" element={<ProtectedRoute requiredPermission={['reports', 'view']}><ReportsCenter /></ProtectedRoute>} />
             <Route path="/admin/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/admin/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />
             <Route path="/admin/attendance" element={<ProtectedRoute requiredPermission={['attendance', 'view']}><AdminAttendance /></ProtectedRoute>} />
@@ -201,6 +204,7 @@ const App = () => {
             <Route path="/team-lead/dashboard" element={<TeamLeadDashboard />} />
             <Route path="/team-lead/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/team-lead/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
+            <Route path="/team-lead/reports-center" element={<ProtectedRoute requiredPermission={['reports', 'view']}><ReportsCenter /></ProtectedRoute>} />
             <Route path="/team-lead/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/team-lead/profile" element={<Profile />} />
             <Route path="/team-lead/chat" element={<Chat />} />
@@ -208,6 +212,7 @@ const App = () => {
             <Route path="/user/dashboard" element={<UserDashboard />} />
             <Route path="/user/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
             <Route path="/user/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
+            <Route path="/user/reports-center" element={<ProtectedRoute requiredPermission={['reports', 'view']}><ReportsCenter /></ProtectedRoute>} />
             <Route path="/user/profile" element={<Profile />} />
             <Route path="/user/chat" element={<Chat />} />
 
@@ -216,6 +221,7 @@ const App = () => {
             <Route path="/hr/announcements" element={<ProtectedRoute requiredPermission={['announcements', 'view']}><AdminAnnouncements /></ProtectedRoute>} />
             <Route path="/hr/performance" element={<ProtectedRoute requiredPermission={['performance', 'view']}><PerformanceReport /></ProtectedRoute>} />
             <Route path="/hr/reports" element={<ProtectedRoute requiredPermission={['reports', 'view']}><AdminReports /></ProtectedRoute>} />
+            <Route path="/hr/reports-center" element={<ProtectedRoute requiredPermission={['reports', 'view']}><ReportsCenter /></ProtectedRoute>} />
             <Route path="/hr/profile" element={<Profile />} />
             <Route path="/hr/chat" element={<Chat />} />
           </Route>

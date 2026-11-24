@@ -5,6 +5,10 @@ import toast from 'react-hot-toast';
 import api from '../api/axios';
 import { useAuth, getRoleDashboard } from '../context/AuthContext';
 import CompanyOnboardingModal from '../components/subscription/CompanyOnboardingModal';
+import ModuleShowcase from '../components/landing/ModuleShowcase';
+import RoleWorkflows from '../components/landing/RoleWorkflows';
+import HowItWorks from '../components/landing/HowItWorks';
+import ScrollingFeatureTicker from '../components/landing/ScrollingFeatureTicker';
 import { 
   HiOutlineCheck, 
   HiStar, 
@@ -14,7 +18,10 @@ import {
   HiOutlineSquares2X2,
   HiOutlineArrowRight,
   HiOutlineChevronDown,
-  HiOutlineQuestionMarkCircle
+  HiOutlineQuestionMarkCircle,
+  HiOutlineSparkles,
+  HiOutlineShieldCheck,
+  HiOutlineCheckCircle,
 } from 'react-icons/hi2';
 
 const DEFAULT_FAQS = [
@@ -87,6 +94,7 @@ const Landing = () => {
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState(null);
   const [selectedPlanForOnboarding, setSelectedPlanForOnboarding] = useState(null);
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
+  const [billingInterval, setBillingInterval] = useState('monthly');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedFaqId, setExpandedFaqId] = useState(null);
   const [activeFaqCategory, setActiveFaqCategory] = useState('All');
@@ -253,7 +261,13 @@ const Landing = () => {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-slate-600">
+          <nav className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-semibold text-slate-600">
+            <a href="#modules" className="hover:text-indigo-600 transition-colors">
+              Platform Tour
+            </a>
+            <a href="#roles" className="hover:text-indigo-600 transition-colors">
+              Role Workflows
+            </a>
             <a href="#features" className="hover:text-indigo-600 transition-colors">
               Features
             </a>
@@ -354,6 +368,22 @@ const Landing = () => {
             <div className="px-4 py-4 space-y-4">
               {/* Navigation Links */}
               <nav className="flex flex-col space-y-1">
+                <a
+                  href="#modules"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
+                >
+                  <span>Interactive Platform Tour</span>
+                  <HiOutlineArrowRight className="w-4 h-4 text-slate-400" />
+                </a>
+                <a
+                  href="#roles"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
+                >
+                  <span>Role Workflows</span>
+                  <HiOutlineArrowRight className="w-4 h-4 text-slate-400" />
+                </a>
                 <a
                   href="#features"
                   onClick={() => setMobileMenuOpen(false)}
@@ -485,30 +515,100 @@ const Landing = () => {
 
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center items-stretch sm:items-center gap-3 sm:gap-4 px-2">
             <a
-              href="#plans"
+              href="#modules"
               className={`${tokens.btnPrimary} px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base`}
             >
-              {hero.primaryCta}
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
+              <span>Explore Platform Tour</span>
+              <HiOutlineArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
-            <Link
-              to="/login"
+            <a
+              href="#plans"
               className={`${tokens.btnSecondary} px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base`}
             >
-              {hero.secondaryCta}
-            </Link>
+              View Pricing &amp; Plans
+            </a>
+          </div>
+
+          {/* Interactive Hero Software Preview Mockup */}
+          <div className="mt-10 sm:mt-14 max-w-5xl mx-auto rounded-3xl bg-slate-900/90 p-2 sm:p-3 shadow-2xl shadow-indigo-950/20 border border-slate-800 text-left">
+            <div className="rounded-2xl bg-slate-950 overflow-hidden border border-slate-850">
+              {/* Window Titlebar */}
+              <div className="px-4 py-3 bg-slate-900 flex items-center justify-between border-b border-slate-800">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
+                  <span className="ml-3 text-[11px] font-mono text-slate-400 hidden sm:inline-block">
+                    https://app.globalinfotech.com/admin/dashboard
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Multi-Branch Connected
+                  </span>
+                </div>
+              </div>
+
+              {/* Window Content */}
+              <div className="p-3 sm:p-5 bg-slate-900 text-slate-100">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3.5">
+                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] text-slate-400 font-semibold block">Geofenced Punch-Ins</span>
+                    <span className="text-base sm:text-lg font-extrabold text-emerald-400 block mt-0.5">118 / 124</span>
+                    <span className="text-[9px] text-slate-400">95.2% On-Site Present</span>
+                  </div>
+                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] text-slate-400 font-semibold block">Monthly Payroll</span>
+                    <span className="text-base sm:text-lg font-extrabold text-indigo-400 block mt-0.5">₹24,80,000</span>
+                    <span className="text-[9px] text-slate-400">Net Disbursed</span>
+                  </div>
+                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] text-slate-400 font-semibold block">Active Tasks</span>
+                    <span className="text-base sm:text-lg font-extrabold text-white block mt-0.5">38 Running</span>
+                    <span className="text-[9px] text-emerald-400 font-bold">Live Timers Active</span>
+                  </div>
+                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] text-slate-400 font-semibold block">Deliverables Completed</span>
+                    <span className="text-base sm:text-lg font-extrabold text-amber-400 block mt-0.5">142 Sprints</span>
+                    <span className="text-[9px] text-slate-400">98% Quality SLA</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="sm:col-span-2 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 flex flex-col justify-between">
+                    <div className="flex items-center justify-between text-xs mb-2">
+                      <span className="font-bold text-white">Live Time Tracking &amp; Task Deliverables</span>
+                      <span className="text-[10px] text-emerald-400 font-mono font-bold">● Dinesh Tawade (Running: 01:42:15)</span>
+                    </div>
+                    <div className="space-y-1.5 text-[10px]">
+                      <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                        <span className="font-medium text-slate-200 truncate">Payment Gateway Webhook Sync &amp; Testing</span>
+                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-300">In Progress</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                        <span className="font-medium text-slate-200 truncate">Reports Center: Export Attendance &amp; Payroll PDF</span>
+                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300">Completed</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-indigo-700 to-violet-800 p-3 rounded-xl flex flex-col justify-between text-white">
+                    <div>
+                      <span className="text-[9px] uppercase font-bold text-indigo-200">1-Click Action Hub</span>
+                      <p className="font-bold text-xs mt-0.5">Attendance, Salary &amp; Reports</p>
+                      <p className="text-[10px] text-indigo-100 mt-1">Export instant RFC 4180 Excel &amp; Printable PDF</p>
+                    </div>
+                    <div className="pt-2">
+                      <a href="#modules" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-indigo-900 font-bold text-[10px] hover:bg-indigo-50 transition-colors shadow-xs">
+                        <span>Explore All Modules Tour</span>
+                        <HiOutlineArrowRight className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto pt-8 sm:pt-10 border-t border-slate-200/80 px-2">
@@ -526,7 +626,185 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ===================== 3. FEATURES ===================== */}
+      {/* ===================== SCROLLING ICONS & FEATURES MARQUEE ===================== */}
+      <ScrollingFeatureTicker />
+
+      {/* ===================== 3. SUBSCRIPTION PLANS & PRICING (BROUGHT UP) ===================== */}
+      <section id="plans" className="py-16 sm:py-24 lg:py-28 bg-gradient-to-b from-slate-50 via-indigo-50/20 to-white relative overflow-hidden">
+        {/* Ambient subtle glow */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-indigo-500/10 blur-3xl pointer-events-none rounded-full" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100/80 px-3.5 py-1.5 rounded-full border border-indigo-200 inline-flex items-center gap-1.5 shadow-xs">
+              <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-600" />
+              Transparent Multi-Branch Pricing
+            </span>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mt-3">
+              Scalable Subscription Plans for Growing Teams
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+              Get complete multi-branch management, geofenced mobile attendance, dynamic salary slips, and dedicated cloud isolation.
+            </p>
+
+            {/* Monthly / Annual Billing Toggle */}
+            <div className="mt-6 sm:mt-8 flex items-center justify-center">
+              <div className="bg-slate-200/80 p-1 rounded-2xl flex items-center gap-1 border border-slate-300/80 shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => setBillingInterval('monthly')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    billingInterval === 'monthly'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Monthly Billing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingInterval('annual')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    billingInterval === 'annual'
+                      ? 'bg-white text-indigo-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <span>Annual Billing</span>
+                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                    Save 20%
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {plansLoading ? (
+            <div className="p-12 flex justify-center">
+              <div className="w-8 h-8 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
+              {plans?.map((plan) => {
+                const isPro = plan.name.toLowerCase().includes('pro') || plan.name.toLowerCase().includes('growth') || plan.name.toLowerCase().includes('premium');
+                const basePrice = plan.price || 0;
+                const displayPrice = billingInterval === 'annual' ? Math.round(basePrice * 0.8) : basePrice;
+
+                return (
+                  <div
+                    key={plan._id}
+                    className={`rounded-3xl p-6 sm:p-8 transition-all flex flex-col justify-between relative bg-white hover:-translate-y-1 duration-200 ${
+                      isPro
+                        ? 'border-2 border-indigo-600 ring-4 ring-indigo-500/10 shadow-2xl shadow-indigo-600/15 lg:scale-105 lg:z-10 bg-gradient-to-b from-indigo-50/40 via-white to-white'
+                        : 'border border-slate-200/90 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:border-slate-300'
+                    }`}
+                  >
+                    {isPro && (
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-600 text-white text-[10px] sm:text-[11px] font-extrabold px-4 py-1 rounded-full uppercase tracking-wider shadow-md shadow-indigo-600/30 whitespace-nowrap flex items-center gap-1.5 animate-pulse-subtle">
+                        <HiOutlineSparkles className="w-3.5 h-3.5" />
+                        <span>Most Popular Choice</span>
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="flex items-center justify-between mb-2 gap-2">
+                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 truncate">
+                          {plan.name}
+                        </h3>
+                        <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">
+                          {billingInterval === 'annual' ? 'Billed Annually' : (plan.billingCycle || 'Monthly')}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 min-h-[32px] leading-relaxed">
+                        {plan.description || 'Full enterprise office management suite with tenant isolation.'}
+                      </p>
+
+                      <div className="mt-5 mb-5 pb-5 border-b border-slate-100 flex items-baseline gap-1.5 flex-wrap">
+                        <span className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                          ₹{displayPrice.toLocaleString('en-IN')}
+                        </span>
+                        <span className="text-xs text-slate-500 font-medium">
+                          / seat / month
+                        </span>
+                        {billingInterval === 'annual' && (
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                            20% Discounted
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2 mb-6">
+                        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
+                          <span className="shrink-0 text-slate-500">Employee Capacity</span>
+                          <span className="font-bold text-indigo-700 text-right">
+                            Up to {plan.maxEmployees} Seats
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
+                          <span className="shrink-0 text-slate-500">Validity Cycle</span>
+                          <span className="font-bold text-indigo-700 text-right">
+                            {plan.durationDays || 30} Days Guaranteed
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
+                          <span className="shrink-0 text-slate-500">Cloud Isolation</span>
+                          <span className="font-bold text-emerald-700 text-right">
+                            100% Dedicated Tenant
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Included Modules &amp; Privileges
+                        </p>
+                        <ul className="space-y-2.5">
+                          {plan.features?.map((feat, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2.5 text-xs text-slate-700"
+                            >
+                              <HiOutlineCheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                              <span className="leading-tight">{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 sm:mt-8 pt-5 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => handleInitiatePayment(plan)}
+                        className={`w-full py-3 sm:py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md cursor-pointer ${
+                          isPro
+                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30 active:scale-98'
+                            : 'bg-slate-900 hover:bg-slate-800 text-white active:scale-98'
+                        }`}
+                      >
+                        {paymentGateway.isEnabled
+                          ? 'Subscribe with Razorpay'
+                          : 'Get Started with Plan'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ===================== 4. INTERACTIVE MODULES SHOWCASE ===================== */}
+      <ModuleShowcase />
+
+      {/* ===================== 4. HOW IT WORKS (WORKFLOW) ===================== */}
+      <HowItWorks />
+
+      {/* ===================== 5. ROLE-BASED WORKFLOWS ===================== */}
+      <RoleWorkflows />
+
+      {/* ===================== 6. FEATURES ===================== */}
       <section
         id="features"
         className="py-16 sm:py-20 lg:py-28 bg-white border-y border-slate-200/80"
@@ -707,138 +985,60 @@ const Landing = () => {
                 engines, push notifications, and detailed performance audit logs.
               </p>
             </div>
+            {/* Feature 7: Reports & Export Hub */}
+            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+                Reports &amp; Export Hub
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Download month-wise Attendance Registers, Payroll Deductions, and "Kisne Kitna Kaam Kiya" Project Contribution breakdowns in instant Excel CSV &amp; printable PDF.
+              </p>
+            </div>
+
+            {/* Feature 8: CRM & Client Portal */}
+            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+                CRM Pipeline &amp; Client Portal
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Manage incoming sales deals through interactive stages, and provide corporate clients with an isolated guest portal to track deliverables, review sprints, and download invoices.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===================== 4. PLANS ===================== */}
-      <section id="plans" className="py-16 sm:py-20 lg:py-28 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100/70 px-3 py-1 rounded-full border border-indigo-200">
-              Transparent Pricing
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
-              Subscription Plans Built for Every Scale
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 mt-3">
-              Choose the right capacity for your office. All plans include full
-              tenant segregation and standard encryption.
-            </p>
-          </div>
-
-          {plansLoading ? (
-            <div className="p-12 flex justify-center">
-              <div className="w-8 h-8 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-              {plans?.map((plan) => {
-                const isPro = plan.name.toLowerCase().includes('pro');
-                return (
-                  <div
-                    key={plan._id}
-                    className={`rounded-3xl p-5 sm:p-8 transition-all flex flex-col justify-between relative bg-white ${isPro
-                      ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-600/10 lg:scale-105 lg:z-10'
-                      : 'border border-slate-200 shadow-lg shadow-slate-200/50 hover:shadow-xl'
-                      }`}
-                  >
-                    {isPro && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[10px] sm:text-[11px] font-bold px-3 sm:px-4 py-1 rounded-full uppercase tracking-wider shadow-sm whitespace-nowrap">
-                        Most Popular Choice
-                      </div>
-                    )}
-
-                    <div>
-                      <div className="flex items-center justify-between mb-2 gap-2">
-                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 truncate">
-                          {plan.name}
-                        </h3>
-                        <span className="text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 shrink-0">
-                          {plan.billingCycle || 'Monthly'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 min-h-[28px] sm:min-h-[32px]">
-                        {plan.description || 'Full enterprise office management suite.'}
-                      </p>
-
-                      <div className="mt-5 sm:mt-6 mb-5 sm:mb-6 pb-5 sm:pb-6 border-b border-slate-100 flex items-baseline gap-1.5 flex-wrap">
-                        <span className="text-3xl sm:text-4xl font-extrabold text-slate-900">
-                          ₹{plan.price?.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-xs text-slate-500 font-medium">
-                          / {plan.billingCycle?.toLowerCase() || 'month'}
-                        </span>
-                      </div>
-
-                      <div className="space-y-2 mb-5 sm:mb-6">
-                        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
-                          <span className="shrink-0">Employee Quota</span>
-                          <span className="font-bold text-indigo-700 text-right">
-                            Up to {plan.maxEmployees} Seats
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
-                          <span className="shrink-0">Validity Period</span>
-                          <span className="font-bold text-indigo-700 text-right">
-                            {plan.durationDays || 30} Days
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
-                          Included Features
-                        </p>
-                        <ul className="space-y-2.5">
-                          {plan.features?.map((feat, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-2.5 text-xs text-slate-700"
-                            >
-                              <svg
-                                className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2.5}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                              <span>{feat}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={() => handleInitiatePayment(plan)}
-                        className={`w-full py-3 sm:py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md ${isPro
-                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30'
-                          : 'bg-slate-900 hover:bg-slate-800 text-white'
-                          }`}
-                      >
-                        {paymentGateway.isEnabled
-                          ? 'Subscribe with Razorpay'
-                          : 'Choose This Plan'}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ===================== 5. ABOUT ===================== */}
+      {/* ===================== ABOUT ===================== */}
       <section
         id="about"
         className="py-16 sm:py-20 lg:py-28 bg-white border-y border-slate-200/80"

@@ -39,6 +39,7 @@ import {
   HiOutlineComputerDesktop,
   HiOutlineBookmark,
   HiOutlineFolderArrowDown,
+  HiOutlineDocumentArrowDown,
   HiOutlineServer,
   HiOutlineMagnifyingGlass,
 } from 'react-icons/hi2';
@@ -113,6 +114,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             { name: 'Employee Documents Hub', path: '/admin/documents', icon: HiOutlineFolderArrowDown },
             { name: 'Company Time Logs', path: '/time-tracker', icon: HiOutlineClock },
             { name: 'Salary Process & Status', path: '/salary-process', icon: HiOutlineBanknotes },
+            { name: 'Reports & Export Hub', path: '/admin/reports-center', icon: HiOutlineDocumentArrowDown },
             { name: 'Company Backup & Restore', path: '/admin/backup', icon: HiOutlineServer },
           ],
         },
@@ -210,6 +212,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           name: 'Salary Process & Status',
           path: '/salary-process',
           icon: HiOutlineBanknotes,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-reports-center',
+          name: 'Reports & Export Hub',
+          path: '/admin/reports-center',
+          icon: HiOutlineDocumentArrowDown,
           isDirect: true,
         },
         {
@@ -312,6 +321,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     }
     if (isAdmin || perms.reports?.view) {
       workChildren.push({ name: 'Task Reports', path: '/admin/reports', icon: HiOutlineDocumentText });
+      workChildren.push({ name: 'Reports & Export Hub', path: '/admin/reports-center', icon: HiOutlineDocumentArrowDown });
     }
     workChildren.push({
       name: 'Time Tracker & Logs',

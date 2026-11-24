@@ -90,6 +90,7 @@ const TaskTimerSection = ({
     userRole === 'super admin' ||
     userRole === 'cto' ||
     userRole.includes('lead') ||
+    userRole.includes('head') ||
     userRole.includes('manager') ||
     Boolean(task?.assignedBy && (task.assignedBy._id || task.assignedBy).toString() === currentUserId);
 
