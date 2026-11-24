@@ -18,7 +18,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineChartBar,
   HiOutlineMegaphone,
-  HiOutlineChatBubbleLeftRight,
+  HiOutlineChatBubbleLeftRight,         
   HiOutlineVideoCamera,
   HiOutlineFingerPrint,
   HiOutlineCalendarDays,
@@ -39,6 +39,8 @@ import {
   HiOutlineComputerDesktop,
   HiOutlineBookmark,
   HiOutlineFolderArrowDown,
+  HiOutlineServer,
+  HiOutlineMagnifyingGlass,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -47,6 +49,22 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const { unreadChatsCount, newTasksCount, meetingInvitesCount } = useSocket();
 
   const [openMenus, setOpenMenus] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = React.useRef(null);
+
+  // Keyboard shortcut: Ctrl+K / Cmd+K to focus search, Esc to clear
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      } else if (e.key === 'Escape' && searchQuery) {
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchQuery]);
 
   const isRouteActive = (path) => {
     if (!path) return false;
@@ -93,6 +111,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             { name: 'Audit Logs', path: '/super-admin/audit-logs', icon: HiOutlineCommandLine },
             { name: 'Support Tickets', path: '/super-admin/tickets', icon: HiOutlineLifebuoy },
             { name: 'Employee Documents Hub', path: '/admin/documents', icon: HiOutlineFolderArrowDown },
+            { name: 'Company Time Logs', path: '/time-tracker', icon: HiOutlineClock },
+            { name: 'Salary Process & Status', path: '/salary-process', icon: HiOutlineBanknotes },
+            { name: 'Company Backup & Restore', path: '/admin/backup', icon: HiOutlineServer },
           ],
         },
         {
@@ -185,6 +206,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           isDirect: true,
         },
         {
+          id: 'accountant-salary-process',
+          name: 'Salary Process & Status',
+          path: '/salary-process',
+          icon: HiOutlineBanknotes,
+          isDirect: true,
+        },
+        {
           id: 'accountant-payroll',
           name: 'Payroll Settings',
           path: '/admin/payroll-settings',
@@ -217,6 +245,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           name: 'Sticky Notes & Reminders',
           path: '/sticky-notes',
           icon: HiOutlineBookmark,
+          isDirect: true,
+        },
+        {
+          id: 'accountant-time-tracker',
+          name: 'Work Timer & Tracker',
+          path: '/time-tracker',
+          icon: HiOutlineClock,
           isDirect: true,
         },
         {
@@ -258,8 +293,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Work & Projects
     const workChildren = [];
-    if (isAdmin || perms.projects?.view) {
+    if (isAdmin || perms.projects?.view || r === 'user' || r === 'employee' || r === 'team head' || r.includes('lead')) {
       workChildren.push({ name: 'Projects', path: '/admin/projects', icon: HiOutlineFolder });
+    }
+    if (isAdmin || perms.projects?.edit || perms.projects?.create) {
       workChildren.push({ name: 'Client Portal & Billings', path: '/admin/client-portal', icon: HiOutlineBanknotes });
     }
     if (isAdmin || perms.sprints?.view || perms.projects?.view || perms.tasks?.view) {
@@ -276,6 +313,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     if (isAdmin || perms.reports?.view) {
       workChildren.push({ name: 'Task Reports', path: '/admin/reports', icon: HiOutlineDocumentText });
     }
+    workChildren.push({
+      name: 'Time Tracker & Logs',
+      path: '/time-tracker',
+      icon: HiOutlineClock,
+    });
     if (isAdmin || perms.performance?.view) {
       workChildren.push({ name: 'Performance Analysis', path: '/admin/performance', icon: HiOutlineChartBar });
     }
@@ -338,6 +380,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     // Payroll & Finance
     const payrollChildren = [];
     if (isAdmin || perms.payroll?.view) {
+      payrollChildren.push({ name: 'Salary Process & Status', path: '/salary-process', icon: HiOutlineBanknotes });
       payrollChildren.push({ name: 'Client Invoicing & Billing', path: '/accountant/billing', icon: HiOutlineBanknotes });
       payrollChildren.push({ name: 'Salary Management', path: '/admin/salary-management', icon: HiOutlineBanknotes });
       payrollChildren.push({ name: 'Payroll Settings', path: '/admin/payroll-settings', icon: HiOutlineCog6Tooth });
@@ -388,6 +431,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { name: 'My Salary Slips', path: '/my-salary-slips', icon: HiOutlineDocumentCheck },
         { name: 'My Documents & KYC', path: '/my-documents', icon: HiOutlineFolderArrowDown },
         { name: 'Sticky Notes & Reminders', path: '/sticky-notes', icon: HiOutlineBookmark },
+        { name: 'Work Timer & Tracker', path: '/time-tracker', icon: HiOutlineClock },
         { name: 'My Profile', path: '/admin/profile', icon: HiOutlineUser },
       ],
     });
@@ -403,6 +447,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     if (isAdmin || perms.settings?.view) {
       adminChildren.push({ name: 'Office Settings', path: '/admin/settings?tab=org', icon: HiOutlineCog6Tooth });
       adminChildren.push({ name: 'Company SMTP & Mail', path: '/admin/settings?tab=email', icon: HiOutlineEnvelope });
+      adminChildren.push({ name: 'Data Backup & Restore', path: '/admin/backup', icon: HiOutlineServer });
     }
     if (adminChildren.length > 0) {
       structure.push({
@@ -460,6 +505,48 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   };
 
   const navItems = getNavStructure();
+
+  // Flatten all accessible menu items for fast search
+  const allSearchableItems = React.useMemo(() => {
+    const list = [];
+    navItems.forEach((menu) => {
+      if (menu.isDirect) {
+        list.push({
+          id: menu.id || menu.path,
+          name: menu.name,
+          path: menu.path,
+          icon: menu.icon,
+          category: 'Main Menu',
+          badge: menu.badge,
+        });
+      }
+      if (Array.isArray(menu.children)) {
+        menu.children.forEach((child) => {
+          list.push({
+            id: `${menu.id}-${child.path}-${child.name}`,
+            name: child.name,
+            path: child.path,
+            icon: child.icon || menu.icon,
+            category: menu.name,
+            badge: child.badge,
+          });
+        });
+      }
+    });
+    return list;
+  }, [navItems]);
+
+  // Filtered search results
+  const searchResults = React.useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return allSearchableItems.filter((item) => {
+      const matchName = item.name.toLowerCase().includes(q);
+      const matchCat = item.category.toLowerCase().includes(q);
+      const matchPath = item.path && item.path.toLowerCase().includes(q);
+      return matchName || matchCat || matchPath;
+    });
+  }, [searchQuery, allSearchableItems]);
 
   // Auto-expand menu if current path is a sub-item
   useEffect(() => {
@@ -528,9 +615,115 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </button>
         </div>
 
+        {/* Menu Search Box */}
+        <div className="px-3 pt-2.5 pb-2 shrink-0 border-b border-slate-100 bg-white">
+          <div className="relative flex items-center">
+            <HiOutlineMagnifyingGlass className="absolute left-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search menu (Ctrl+K)..."
+              className="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-slate-900 placeholder:text-slate-400 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+            />
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 p-0.5 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-200/60 transition-colors cursor-pointer"
+                title="Clear search (Esc)"
+              >
+                <HiOutlineXMark className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <kbd className="hidden sm:inline-block absolute right-2 pointer-events-none text-[9px] font-mono font-semibold text-slate-400 bg-slate-200/60 border border-slate-300/70 px-1 py-0.5 rounded leading-none">
+                ⌘K
+              </kbd>
+            )}
+          </div>
+        </div>
+
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-2.5 sm:px-3 py-3 space-y-1 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
-          {navItems.map((menu) => {
+          {searchQuery.trim() ? (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-slate-400">
+                <span>
+                  Found {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer"
+                >
+                  Clear
+                </button>
+              </div>
+
+              {searchResults.length > 0 ? (
+                searchResults.map((item) => {
+                  const ItemIcon = item.icon;
+                  const isActive = isRouteActive(item.path);
+                  return (
+                    <Link
+                      key={item.id}
+                      to={item.path}
+                      onClick={() => {
+                        setIsOpen(false);
+                        setSearchQuery('');
+                      }}
+                      className={`group relative flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg text-xs transition-colors ${
+                        isActive
+                          ? 'bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100'
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <ItemIcon
+                          className={`w-[18px] h-[18px] shrink-0 transition-colors ${
+                            isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'
+                          }`}
+                        />
+                        <div className="flex flex-col min-w-0">
+                          <span className="truncate font-medium text-slate-800 group-hover:text-slate-900">
+                            {item.name}
+                          </span>
+                          <span className="text-[10px] text-slate-400 truncate group-hover:text-slate-500">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      {item.badge ? (
+                        <span className="min-w-[16px] h-4 px-1 inline-flex items-center justify-center text-[10px] font-bold rounded-full bg-rose-500 text-white shrink-0">
+                          {item.badge > 9 ? '9+' : item.badge}
+                        </span>
+                      ) : isActive ? (
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+                      ) : null}
+                    </Link>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 px-3 bg-slate-50/70 rounded-xl border border-dashed border-slate-200 mt-2">
+                  <HiOutlineMagnifyingGlass className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                  <p className="text-xs font-semibold text-slate-700">No menu matches found</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Try searching for "salary", "timer", "backup", "task", "leave"...
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="mt-3 px-3 py-1 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+                  >
+                    Reset Search
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            navItems.map((menu) => {
             const Icon = menu.icon;
 
             // Case 1: Direct Link
@@ -645,7 +838,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 </div>
               </div>
             );
-          })}
+          }))}
         </nav>
 
         {/* User Footer */}

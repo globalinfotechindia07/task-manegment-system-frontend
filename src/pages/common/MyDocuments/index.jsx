@@ -21,26 +21,9 @@ import {
   HiOutlineMagnifyingGlass,
   HiOutlineFunnel,
   HiOutlineIdentification,
+  HiOutlineArrowPath,
+  HiOutlineSparkles,
 } from 'react-icons/hi2';
-
-const DOCUMENT_TYPES = [
-  'Aadhaar Card',
-  'PAN Card',
-  'Passport',
-  'Driving License',
-  'Voter ID',
-  'Degree / Diploma Certificate',
-  '10th / 12th Marksheet',
-  'Previous Company Offer Letter',
-  'Previous Experience Letter',
-  'Previous Relieving Letter',
-  'Previous Salary Slips',
-  'Bank Passbook / Cancelled Cheque',
-  'Resume / CV',
-  'Address Proof / Electricity Bill',
-  'Medical Certificate',
-  'Other Document',
-];
 
 const MyDocuments = () => {
   const queryClient = useQueryClient();
@@ -50,16 +33,15 @@ const MyDocuments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [downloadingDocId, setDownloadingDocId] = useState(null);
 
-  // Upload Form State
-  const [documentType, setDocumentType] = useState('Aadhaar Card');
+  // Dynamic Upload Form State
+  const [selectedFieldId, setSelectedFieldId] = useState('');
   const [customTitle, setCustomTitle] = useState('');
-  const [documentNumber, setDocumentNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
+  const [subFieldValues, setSubFieldValues] = useState({});
   const [notes, setNotes] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState(null);
 
-  // Fetch my documents
+  // 1. Fetch user's uploaded personal documents
   const { data, isLoading } = useQuery({
     queryKey: ['myDocuments'],
     queryFn: async () => {
@@ -68,8 +50,21 @@ const MyDocuments = () => {
     },
   });
 
+  // 2. Fetch company's dynamic document field configurations
+  const { data: fieldsData = [], isLoading: fieldsLoading } = useQuery({
+    queryKey: ['myDocumentFields'],
+    queryFn: async () => {
+      const res = await api.get('/documents/fields');
+      return res.data?.data || [];
+    },
+  });
+
   const documents = data?.data || [];
   const stats = data?.stats || { total: 0, approved: 0, pending: 0, rejected: 0 };
+
+  // Currently selected document field configuration
+  const currentField =
+    fieldsData.find((f) => f._id === selectedFieldId) || fieldsData[0] || null;
 
   // Upload Mutation
   const uploadMutation = useMutation({
@@ -104,6 +99,56 @@ const MyDocuments = () => {
     },
   });
 
+  const handleOpenUploadModal = (fieldToSelect = null) => {
+    const target = fieldToSelect || currentField || fieldsData[0] || null;
+    if (target) {
+      setSelectedFieldId(target._id);
+      const initialValues = {};
+      (target.subFields || []).forEach((sf) => {
+        initialValues[sf.key] = '';
+      });
+      setSubFieldValues(initialValues);
+    }
+    setCustomTitle('');
+    setNotes('');
+    setSelectedFile(null);
+    if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
+    setFilePreviewUrl(null);
+    setIsUploadModalOpen(true);
+  };
+
+  const handleSelectFieldChange = (newFieldId) => {
+    setSelectedFieldId(newFieldId);
+    const target = fieldsData.find((f) => f._id === newFieldId);
+    if (target) {
+      const newValues = {};
+      (target.subFields || []).forEach((sf) => {
+        newValues[sf.key] = '';
+      });
+      setSubFieldValues(newValues);
+    }
+  };
+
+  const handleSubFieldInput = (sf, rawVal) => {
+    let val = rawVal;
+    if (sf.validationType === 'numeric') {
+      val = val.replace(/\D/g, '');
+      if (sf.maxLength) val = val.slice(0, sf.maxLength);
+    } else if (sf.validationType === 'alphanumeric') {
+      val = val.replace(/[^a-zA-Z0-9]/g, '');
+      if (sf.maxLength) val = val.slice(0, sf.maxLength);
+    } else if (sf.validationType === 'pan') {
+      val = val.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+    } else if (sf.validationType === 'aadhaar') {
+      val = val.replace(/\D/g, '').slice(0, 12);
+    }
+
+    setSubFieldValues((prev) => ({
+      ...prev,
+      [sf.key]: val,
+    }));
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -123,11 +168,9 @@ const MyDocuments = () => {
 
   const handleCloseUploadModal = () => {
     setIsUploadModalOpen(false);
-    setDocumentType('Aadhaar Card');
     setCustomTitle('');
-    setDocumentNumber('');
-    setExpiryDate('');
     setNotes('');
+    setSubFieldValues({});
     setSelectedFile(null);
     if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
     setFilePreviewUrl(null);
@@ -135,17 +178,59 @@ const MyDocuments = () => {
 
   const handleUploadSubmit = (e) => {
     e.preventDefault();
-    if (!selectedFile) {
-      toast.error('Please choose a file to upload.');
+    if (!currentField) {
+      toast.error('Please select a document requirement');
+      return;
+    }
+
+    // Validate required subfields & rules
+    if (Array.isArray(currentField.subFields)) {
+      for (const sf of currentField.subFields) {
+        const val = (subFieldValues[sf.key] || '').trim();
+        if (sf.required && !val) {
+          toast.error(`Please enter "${sf.label}"`);
+          return;
+        }
+
+        if (val) {
+          if (sf.validationType === 'numeric' && !/^\d+$/.test(val)) {
+            toast.error(sf.errorMessage || `"${sf.label}" must contain numbers only`);
+            return;
+          }
+          if (sf.validationType === 'alphanumeric' && !/^[a-zA-Z0-9]+$/.test(val)) {
+            toast.error(sf.errorMessage || `"${sf.label}" must be letters and digits only`);
+            return;
+          }
+          if (sf.validationType === 'pan' && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(val)) {
+            toast.error('Invalid PAN Card format (e.g. ABCDE1234F)');
+            return;
+          }
+          if (sf.validationType === 'aadhaar' && val.length !== 12) {
+            toast.error('Aadhaar Number must be exactly 12 numeric digits');
+            return;
+          }
+          if (sf.minLength && val.length < sf.minLength) {
+            toast.error(`"${sf.label}" must be at least ${sf.minLength} characters`);
+            return;
+          }
+        }
+      }
+    }
+
+    // Validate file upload if enabled & required
+    if (currentField.fileUpload?.enabled && currentField.fileUpload?.required && !selectedFile) {
+      toast.error('Please choose a document/photo file to upload');
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('documentType', documentType);
+    if (selectedFile) {
+      formData.append('file', selectedFile);
+    }
+    formData.append('documentConfigId', currentField._id);
+    formData.append('documentType', currentField.name);
     if (customTitle.trim()) formData.append('customTitle', customTitle.trim());
-    if (documentNumber.trim()) formData.append('documentNumber', documentNumber.trim());
-    if (expiryDate) formData.append('expiryDate', expiryDate);
+    formData.append('subFieldValues', JSON.stringify(subFieldValues));
     if (notes.trim()) formData.append('notes', notes.trim());
 
     uploadMutation.mutate(formData);
@@ -174,7 +259,7 @@ const MyDocuments = () => {
 
   // Direct Device Download Handler
   const handleDownloadFile = async (doc) => {
-    if (!doc || !doc._id) return;
+    if (!doc || !doc._id || !doc.fileUrl) return;
     try {
       setDownloadingDocId(doc._id);
       toast.loading(`Downloading ${doc.customTitle || doc.documentType}...`, { id: 'file-download' });
@@ -183,7 +268,6 @@ const MyDocuments = () => {
         responseType: 'blob',
       });
 
-      // Check if backend returned error JSON in blob
       if (res.data.type === 'application/json') {
         const text = await res.data.text();
         const json = JSON.parse(text);
@@ -243,54 +327,52 @@ const MyDocuments = () => {
       const matchType = doc.documentType?.toLowerCase().includes(q);
       const matchTitle = doc.customTitle?.toLowerCase().includes(q);
       const matchNum = doc.documentNumber?.toLowerCase().includes(q);
-      return matchType || matchTitle || matchNum;
+      const matchSubfields = doc.subFieldValues && JSON.stringify(doc.subFieldValues).toLowerCase().includes(q);
+      return matchType || matchTitle || matchNum || matchSubfields;
     }
     return true;
   });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-      {/* Top Banner & Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-600 text-white p-6 sm:p-8 shadow-xl">
+      {/* Top Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-indigo-800/40">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold tracking-wide uppercase">
-              <HiOutlineShieldCheck className="w-4 h-4 text-emerald-300" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold tracking-wide uppercase">
+              <HiOutlineShieldCheck className="w-4 h-4 text-emerald-400" />
               Employee KYC & Document Vault
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              My Personal Documents
+              My Personal & KYC Documents
             </h1>
-            <p className="text-indigo-100 text-sm sm:text-base max-w-2xl">
-              Securely upload and manage your identity, educational, and past employment documents. Verified documents are reviewed and approved by company HR & Admin.
+            <p className="text-indigo-200 text-xs sm:text-sm max-w-2xl">
+              Submit your company-mandated verification records (Aadhaar, PAN, certificates, bank passbook). Fill the required document details and upload photos or PDF copies for HR verification.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setIsUploadModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-indigo-700 font-semibold shadow-lg hover:bg-indigo-50 active:scale-95 transition-all text-sm"
-            >
-              <HiOutlineCloudArrowUp className="w-5 h-5 text-indigo-600" />
-              Upload New Document
-            </button>
-          </div>
+          <button
+            onClick={() => handleOpenUploadModal()}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 active:scale-95 text-xs sm:text-sm font-bold shadow-lg transition-all self-start md:self-auto shrink-0 cursor-pointer"
+          >
+            <HiOutlineCloudArrowUp className="w-5 h-5 text-indigo-600" />
+            Upload Document
+          </button>
         </div>
 
-        {/* Ambient Decorative Shapes */}
-        <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-56 h-56 rounded-full bg-purple-500/20 blur-2xl pointer-events-none" />
+        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
       </div>
 
-      {/* KPI Stats Row */}
+      {/* KPI Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-            <HiOutlineFolder className="w-6 h-6" />
+            <HiOutlineDocumentText className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
-            <div className="text-xs text-slate-500 font-medium">Total Uploaded</div>
+            <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+            <div className="text-xs text-slate-500 font-medium">Uploaded Documents</div>
           </div>
         </div>
 
@@ -333,7 +415,7 @@ const MyDocuments = () => {
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 filterStatus === status
                   ? 'bg-white text-indigo-700 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -354,7 +436,7 @@ const MyDocuments = () => {
           <HiOutlineMagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search document type or title..."
+            placeholder="Search document type, number or title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
@@ -376,11 +458,11 @@ const MyDocuments = () => {
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             {searchQuery || filterStatus !== 'All'
               ? 'No documents matched your filters. Try clearing your search.'
-              : 'You have not uploaded any personal or KYC documents yet. Click the button below to upload your Aadhaar, PAN, degree, or experience certificates.'}
+              : 'You have not uploaded any personal or KYC documents yet. Click the button below to upload your required records.'}
           </p>
           <button
-            onClick={() => setIsUploadModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium text-xs hover:bg-indigo-700 transition-all mt-2"
+            onClick={() => handleOpenUploadModal()}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium text-xs hover:bg-indigo-700 transition-all mt-2 cursor-pointer"
           >
             <HiOutlineCloudArrowUp className="w-4 h-4" />
             Upload Document Now
@@ -391,7 +473,6 @@ const MyDocuments = () => {
           {filteredDocuments.map((doc) => {
             const isImage = doc.fileType?.startsWith('image/');
             const isPdf = doc.fileType?.includes('pdf');
-            const fileUrl = getFullFileUrl(doc.fileUrl);
 
             return (
               <div
@@ -444,6 +525,22 @@ const MyDocuments = () => {
                     </span>
                   </div>
 
+                  {/* Dynamic Subfield values badge display */}
+                  {doc.subFieldValues &&
+                    typeof doc.subFieldValues === 'object' &&
+                    Object.keys(doc.subFieldValues).length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {Object.entries(doc.subFieldValues).map(([k, v]) => (
+                          <span
+                            key={k}
+                            className="inline-block px-2 py-0.5 rounded-lg text-[10px] bg-slate-100 text-slate-700 font-mono border border-slate-200"
+                          >
+                            <span className="font-semibold text-slate-500">{k}:</span> {String(v)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                   {/* Rejection Alert Box */}
                   {doc.status === 'Rejected' && (
                     <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs space-y-1">
@@ -454,14 +551,22 @@ const MyDocuments = () => {
                       <p className="text-rose-700 pl-5">
                         {doc.rejectionReason || 'Document could not be verified. Please re-upload a clear copy.'}
                       </p>
+                      <button
+                        onClick={() => handleOpenUploadModal(doc.documentConfig)}
+                        className="mt-1 ml-5 px-3 py-1 rounded-lg bg-rose-600 text-white font-semibold text-[11px] hover:bg-rose-700 transition cursor-pointer"
+                      >
+                        Re-upload Document
+                      </button>
                     </div>
                   )}
 
                   {/* Notes / Meta details */}
                   <div className="space-y-1 text-xs text-slate-500 pt-2 border-t border-slate-100">
                     <div className="flex items-center justify-between">
-                      <span>File Size:</span>
-                      <span className="font-medium text-slate-700">{formatFileSize(doc.fileSize)}</span>
+                      <span>File Details:</span>
+                      <span className="font-medium text-slate-700">
+                        {doc.fileUrl ? formatFileSize(doc.fileSize) : 'Details Only (No file)'}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Uploaded on:</span>
@@ -489,26 +594,28 @@ const MyDocuments = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPreviewDoc(doc)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer"
                     >
                       <HiOutlineEye className="w-4 h-4" />
                       Preview
                     </button>
-                    <button
-                      onClick={() => handleDownloadFile(doc)}
-                      disabled={downloadingDocId === doc._id}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-indigo-600 transition-colors ml-3 disabled:opacity-50"
-                      title="Download file to device"
-                    >
-                      <HiOutlineArrowDownTray className="w-4 h-4" />
-                      {downloadingDocId === doc._id ? 'Downloading...' : 'Download'}
-                    </button>
+                    {doc.fileUrl && (
+                      <button
+                        onClick={() => handleDownloadFile(doc)}
+                        disabled={downloadingDocId === doc._id}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-indigo-600 transition-colors ml-3 disabled:opacity-50 cursor-pointer"
+                        title="Download file to device"
+                      >
+                        <HiOutlineArrowDownTray className="w-4 h-4" />
+                        {downloadingDocId === doc._id ? 'Downloading...' : 'Download'}
+                      </button>
+                    )}
                   </div>
 
                   {doc.status !== 'Approved' && (
                     <button
                       onClick={() => handleDelete(doc)}
-                      className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
+                      className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
                       title="Delete Document"
                     >
                       <HiOutlineTrash className="w-4 h-4" />
@@ -523,8 +630,9 @@ const MyDocuments = () => {
 
       {/* Upload Document Modal */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full my-auto overflow-hidden border border-slate-100">
+            {/* Header */}
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
@@ -532,129 +640,183 @@ const MyDocuments = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 text-sm sm:text-base">Upload KYC Document</h3>
-                  <p className="text-xs text-slate-500">Supported formats: PDF, JPG, PNG, WEBP (Max 15MB)</p>
+                  <p className="text-xs text-slate-500">
+                    {currentField?.name || 'Company Required Document'}
+                  </p>
                 </div>
               </div>
               <button
                 onClick={handleCloseUploadModal}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-200/60 transition-colors"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer"
               >
                 <HiOutlineXMark className="w-5 h-5" />
               </button>
             </div>
 
+            {/* Form */}
             <form onSubmit={handleUploadSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              {/* Document Category */}
+              {/* Document Category / Dynamic Field Picker */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Document Category <span className="text-rose-500">*</span>
+                  Document Type <span className="text-rose-500">*</span>
                 </label>
-                <select
-                  value={documentType}
-                  onChange={(e) => setDocumentType(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
-                  required
-                >
-                  {DOCUMENT_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
+                {fieldsData.length > 0 ? (
+                  <select
+                    value={selectedFieldId || currentField?._id || ''}
+                    onChange={(e) => handleSelectFieldChange(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-slate-800"
+                    required
+                  >
+                    {fieldsData.map((f) => (
+                      <option key={f._id} value={f._id}>
+                        {f.name} {f.isRequired ? '(Mandatory)' : '(Optional)'} • {f.category}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">No document fields configured yet.</p>
+                )}
+                {currentField?.description && (
+                  <p className="text-[11px] text-slate-500 mt-1">{currentField.description}</p>
+                )}
               </div>
 
-              {/* Custom Title / Description */}
+              {/* Dynamic Sub-fields Configured by Admin */}
+              {currentField?.subFields && currentField.subFields.length > 0 && (
+                <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200 space-y-3">
+                  <div className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                    <span>Document Number & Details</span>
+                    <span className="text-indigo-600 font-normal">Real-time validated</span>
+                  </div>
+
+                  {currentField.subFields.map((sf) => {
+                    const currentVal = subFieldValues[sf.key] || '';
+                    return (
+                      <div key={sf.key}>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-xs font-semibold text-slate-700">
+                            {sf.label} {sf.required && <span className="text-rose-500">*</span>}
+                          </label>
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            {sf.validationType === 'numeric'
+                              ? 'Digits only'
+                              : sf.validationType === 'pan'
+                              ? 'PAN (ABCDE1234F)'
+                              : sf.validationType === 'aadhaar'
+                              ? '12 Digits'
+                              : sf.validationType}
+                            {sf.maxLength && ` • Max ${sf.maxLength}`}
+                          </span>
+                        </div>
+
+                        {sf.type === 'date' ? (
+                          <input
+                            type="date"
+                            required={sf.required}
+                            value={currentVal}
+                            onChange={(e) => handleSubFieldInput(sf, e.target.value)}
+                            className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            required={sf.required}
+                            placeholder={sf.placeholder || `Enter ${sf.label}`}
+                            value={currentVal}
+                            onChange={(e) => handleSubFieldInput(sf, e.target.value)}
+                            className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono font-medium"
+                          />
+                        )}
+                        {sf.minLength && sf.maxLength && sf.minLength === sf.maxLength && (
+                          <div className="text-[10px] text-slate-400 mt-0.5 text-right font-mono">
+                            {currentVal.length} / {sf.maxLength} characters
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Optional Custom Title / Description */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Custom Title / Subtitle <span className="text-slate-400">(Optional)</span>
+                  Custom Title / Note <span className="text-slate-400">(Optional)</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. ICICI Bank Passbook / Degree Certificate"
+                  placeholder="e.g. Scanned copy / Front & Back"
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
                   className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
                 />
               </div>
 
-              {/* Document Number / Identification */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Document Identifier / Number <span className="text-slate-400">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. XXXX-XXXX-1234 or PAN number"
-                  value={documentNumber}
-                  onChange={(e) => setDocumentNumber(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono"
-                />
-              </div>
-
-              {/* Expiry Date */}
-              {['Passport', 'Driving License', 'Medical Certificate'].includes(documentType) && (
+              {/* File Dropzone (If File Upload is Enabled for this field) */}
+              {currentField?.fileUpload?.enabled !== false ? (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Document Expiry Date <span className="text-slate-400">(Optional)</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-semibold text-slate-700">
+                      {currentField?.fileUpload?.label || 'Attach Document File'}{' '}
+                      {currentField?.fileUpload?.required !== false && (
+                        <span className="text-rose-500">*</span>
+                      )}
+                    </label>
+                    <span className="text-[10px] text-slate-400">PDF, JPG, PNG up to 15MB</span>
+                  </div>
+
+                  <div className="relative border-2 border-dashed border-indigo-200 hover:border-indigo-400 rounded-2xl p-5 text-center bg-indigo-50/30 hover:bg-indigo-50/60 transition-all cursor-pointer">
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      required={currentField?.fileUpload?.required !== false}
+                    />
+                    {selectedFile ? (
+                      <div className="space-y-2">
+                        {filePreviewUrl ? (
+                          <img
+                            src={filePreviewUrl}
+                            alt="Preview"
+                            className="h-28 mx-auto rounded-lg object-contain shadow-sm border border-slate-200"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center mx-auto text-xs uppercase">
+                            {selectedFile.name.split('.').pop()}
+                          </div>
+                        )}
+                        <div className="text-xs font-semibold text-slate-800 truncate max-w-xs mx-auto">
+                          {selectedFile.name}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {formatFileSize(selectedFile.size)} • Click to replace file
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        <HiOutlineCloudArrowUp className="w-8 h-8 text-indigo-500 mx-auto" />
+                        <div className="text-xs font-semibold text-slate-800">
+                          Click or drag document file here
+                        </div>
+                        <div className="text-[11px] text-slate-400">PDF, JPG, PNG up to 15MB</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
+                  <HiOutlineInformationCircle className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <span>
+                    No document photo upload is required for this category. Only the above details will be submitted for verification.
+                  </span>
                 </div>
               )}
-
-              {/* File Dropzone */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Attach Document File <span className="text-rose-500">*</span>
-                </label>
-                <div className="relative border-2 border-dashed border-indigo-200 hover:border-indigo-400 rounded-2xl p-5 text-center bg-indigo-50/30 hover:bg-indigo-50/60 transition-all cursor-pointer">
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    required
-                  />
-                  {selectedFile ? (
-                    <div className="space-y-2">
-                      {filePreviewUrl ? (
-                        <img
-                          src={filePreviewUrl}
-                          alt="Preview"
-                          className="h-28 mx-auto rounded-lg object-contain shadow-sm border border-slate-200"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center mx-auto text-xs uppercase">
-                          {selectedFile.name.split('.').pop()}
-                        </div>
-                      )}
-                      <div className="text-xs font-semibold text-slate-800 truncate max-w-xs mx-auto">
-                        {selectedFile.name}
-                      </div>
-                      <div className="text-[11px] text-slate-500">
-                        {formatFileSize(selectedFile.size)} • Click to replace file
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <HiOutlineCloudArrowUp className="w-8 h-8 text-indigo-500 mx-auto" />
-                      <div className="text-xs font-semibold text-slate-800">
-                        Click or drag document file here
-                      </div>
-                      <div className="text-[11px] text-slate-400">PDF, JPG, PNG up to 15MB</div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
               {/* Notes */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Notes for Reviewer <span className="text-slate-400">(Optional)</span>
+                  Additional Notes for HR <span className="text-slate-400">(Optional)</span>
                 </label>
                 <textarea
                   rows={2}
@@ -670,14 +832,14 @@ const MyDocuments = () => {
                 <button
                   type="button"
                   onClick={handleCloseUploadModal}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={uploadMutation.isPending || !selectedFile}
-                  className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-xl shadow-md transition-all"
+                  disabled={uploadMutation.isPending}
+                  className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-xl shadow-md transition-all cursor-pointer"
                 >
                   {uploadMutation.isPending ? (
                     <>
@@ -730,52 +892,85 @@ const MyDocuments = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleDownloadFile(previewDoc)}
-                  disabled={downloadingDocId === previewDoc._id}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition-colors disabled:opacity-50"
-                  title="Download file to device"
-                >
-                  <HiOutlineArrowDownTray className="w-4 h-4" />
-                  {downloadingDocId === previewDoc._id ? 'Downloading...' : 'Download File'}
-                </button>
+                {previewDoc.fileUrl && (
+                  <button
+                    onClick={() => handleDownloadFile(previewDoc)}
+                    disabled={downloadingDocId === previewDoc._id}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                    title="Download file to device"
+                  >
+                    <HiOutlineArrowDownTray className="w-4 h-4" />
+                    {downloadingDocId === previewDoc._id ? 'Downloading...' : 'Download File'}
+                  </button>
+                )}
                 <button
                   onClick={() => setPreviewDoc(null)}
-                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200 transition-colors"
+                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
                 >
                   <HiOutlineXMark className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
+            {/* Dynamic Metadata / Subfields Banner */}
+            {previewDoc.subFieldValues &&
+              typeof previewDoc.subFieldValues === 'object' &&
+              Object.keys(previewDoc.subFieldValues).length > 0 && (
+                <div className="px-6 py-2.5 bg-indigo-50/70 border-b border-indigo-100 flex flex-wrap items-center gap-3 text-xs shrink-0">
+                  <span className="font-bold text-indigo-900 flex items-center gap-1">
+                    <HiOutlineIdentification className="w-4 h-4 text-indigo-600" />
+                    Submitted Details:
+                  </span>
+                  {Object.entries(previewDoc.subFieldValues).map(([key, val]) => (
+                    <span
+                      key={key}
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-white border border-indigo-200 text-slate-800 font-mono shadow-2xs"
+                    >
+                      <span className="text-slate-500 font-normal">{key}:</span>
+                      <span className="font-bold">{String(val)}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
+
             {/* Modal Body Previewer */}
             <div className="flex-1 bg-slate-100 p-4 overflow-auto flex items-center justify-center">
-              {previewDoc.fileType?.startsWith('image/') ? (
-                <img
-                  src={getFullFileUrl(previewDoc.fileUrl)}
-                  alt={previewDoc.documentType}
-                  className="max-h-full max-w-full object-contain rounded-lg shadow-md bg-white"
-                />
-              ) : previewDoc.fileType?.includes('pdf') ? (
-                <iframe
-                  src={getFullFileUrl(previewDoc.fileUrl)}
-                  title="PDF Preview"
-                  className="w-full h-full rounded-lg shadow-md border-0 bg-white"
-                />
+              {previewDoc.fileUrl ? (
+                previewDoc.fileType?.startsWith('image/') ? (
+                  <img
+                    src={getFullFileUrl(previewDoc.fileUrl)}
+                    alt={previewDoc.documentType}
+                    className="max-h-full max-w-full object-contain rounded-lg shadow-md bg-white"
+                  />
+                ) : previewDoc.fileType?.includes('pdf') ? (
+                  <iframe
+                    src={getFullFileUrl(previewDoc.fileUrl)}
+                    title="PDF Preview"
+                    className="w-full h-full rounded-lg shadow-md border-0 bg-white"
+                  />
+                ) : (
+                  <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-slate-200 max-w-md">
+                    <HiOutlineDocumentText className="w-12 h-12 text-indigo-600 mx-auto mb-3" />
+                    <h4 className="font-bold text-slate-800 text-sm">Preview not supported in browser</h4>
+                    <p className="text-xs text-slate-500 mt-1 mb-4">
+                      This file format cannot be directly previewed. Please download the file to inspect it.
+                    </p>
+                    <button
+                      onClick={() => handleDownloadFile(previewDoc)}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-all cursor-pointer"
+                    >
+                      <HiOutlineArrowDownTray className="w-4 h-4" />
+                      Download File to Device
+                    </button>
+                  </div>
+                )
               ) : (
                 <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-slate-200 max-w-md">
-                  <HiOutlineDocumentText className="w-12 h-12 text-indigo-600 mx-auto mb-3" />
-                  <h4 className="font-bold text-slate-800 text-sm">Preview not supported in browser</h4>
-                  <p className="text-xs text-slate-500 mt-1 mb-4">
-                    This file format cannot be directly previewed. Please download the file to inspect it.
+                  <HiOutlineDocumentCheck className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
+                  <h4 className="font-bold text-slate-800 text-sm">Details Submitted Successfully</h4>
+                  <p className="text-xs text-slate-500 mt-1">
+                    This document was configured as a details-only submission (no file upload required).
                   </p>
-                  <button
-                    onClick={() => handleDownloadFile(previewDoc)}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-all"
-                  >
-                    <HiOutlineArrowDownTray className="w-4 h-4" />
-                    Download File to Device
-                  </button>
                 </div>
               )}
             </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -15,11 +16,17 @@ import {
   HiOutlineUser,
   HiOutlineCalendarDays,
   HiOutlineClipboardDocumentList,
+  HiOutlineClock,
+  HiOutlinePlay,
+  HiOutlinePause,
+  HiOutlineShieldCheck,
+  HiOutlineLockClosed,
 } from 'react-icons/hi2';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
 import { useSocket } from '../../../context/SocketContext';
+import TaskTimerSection from '../../../components/tasks/TaskTimerSection';
 
 /* ============================================================
    DESIGN TOKENS (matches AdminProjects / RolesPage)
@@ -87,6 +94,23 @@ const StatusBadge = ({ status, size = 'sm' }) => {
 /* ============================================================
    HELPERS
    ============================================================ */
+const formatDurationMinutes = (mins) => {
+  if (!mins || mins <= 0) return null;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h > 0 && m > 0) return `${h}h ${m}m`;
+  if (h > 0) return `${h} hour${h > 1 ? 's' : ''}`;
+  return `${m} mins`;
+};
+
+const formatSecondsToHMS = (totalSeconds) => {
+  if (!totalSeconds || totalSeconds <= 0) return '0m';
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  if (hrs > 0) return `${hrs}h ${mins}m`;
+  return `${mins}m`;
+};
+
 const Loader = () => (
   <div className="flex justify-center items-center py-16">
     <div className="w-8 h-8 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
@@ -180,6 +204,8 @@ const TasksPage = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -190,8 +216,51 @@ const TasksPage = () => {
       startDate: '',
       dueDate: '',
       priority: 'Medium',
+      targetDurationMinutes: 0,
+      timeTrackingMode: 'stopwatch',
+      isTimerRequired: true,
     },
   });
+
+  const watchStartDate = watch('startDate');
+  const watchDueDate = watch('dueDate');
+  const watchTargetMinutes = watch('targetDurationMinutes', 0);
+
+  // Compute live duration between Start Date & Time and Due Date & Time
+  const calculatedDuration = useMemo(() => {
+    if (!watchStartDate || !watchDueDate) return null;
+    const start = new Date(watchStartDate).getTime();
+    const end = new Date(watchDueDate).getTime();
+    const diffMs = end - start;
+    if (isNaN(diffMs) || diffMs <= 0) {
+      return { isValid: false, message: 'End / Due Date & Time must be after Start Date & Time' };
+    }
+
+    const totalMinutes = Math.round(diffMs / (1000 * 60));
+    const days = Math.floor(totalMinutes / (60 * 24));
+    const hrs = Math.floor((totalMinutes % (60 * 24)) / 60);
+    const mins = totalMinutes % 60;
+
+    let textParts = [];
+    if (days > 0) textParts.push(`${days} Day${days > 1 ? 's' : ''}`);
+    if (hrs > 0) textParts.push(`${hrs} Hr${hrs > 1 ? 's' : ''}`);
+    if (mins > 0 || textParts.length === 0) textParts.push(`${mins} Min${mins > 1 ? 's' : ''}`);
+
+    return {
+      isValid: true,
+      totalMinutes,
+      totalHoursDecimal: (totalMinutes / 60).toFixed(1),
+      formattedText: textParts.join(' '),
+    };
+  }, [watchStartDate, watchDueDate]);
+
+  // When valid start & due dates are set, auto-update targetDurationMinutes and set mode to timeline
+  useEffect(() => {
+    if (calculatedDuration?.isValid && calculatedDuration.totalMinutes > 0) {
+      setValue('targetDurationMinutes', calculatedDuration.totalMinutes);
+      setValue('timeTrackingMode', 'timeline');
+    }
+  }, [calculatedDuration, setValue]);
 
   /* ---------------- Mutations (UNCHANGED) ---------------- */
   const createTaskMutation = useMutation({
@@ -275,6 +344,9 @@ const TasksPage = () => {
     formData.append('startDate', data.startDate);
     formData.append('dueDate', data.dueDate);
     formData.append('priority', data.priority);
+    formData.append('targetDurationMinutes', data.targetDurationMinutes || 0);
+    formData.append('timeTrackingMode', data.timeTrackingMode || 'stopwatch');
+    formData.append('isTimerRequired', data.isTimerRequired !== undefined ? data.isTimerRequired : true);
 
     if (taskAttachments && taskAttachments.length > 0) {
       for (let i = 0; i < taskAttachments.length; i++) {
@@ -641,6 +713,11 @@ const TasksPage = () => {
                       </div>
                     </div>
 
+                    {/* Target Timeline & Timer Info */}
+                    <div className="mb-3 p-2 rounded-lg bg-indigo-50/50 border border-indigo-100">
+                      <TaskTimerSection task={task} currentUser={user} variant="inline" />
+                    </div>
+
                     {/* Actions */}
                     <div className="flex gap-2">
                       <button
@@ -680,6 +757,7 @@ const TasksPage = () => {
                     <th className="px-4 lg:px-5 py-3 w-40">Assignee</th>
                     <th className="px-4 lg:px-5 py-3 w-32">Status</th>
                     <th className="px-4 lg:px-5 py-3 w-32">Due Date</th>
+                    <th className="px-4 lg:px-5 py-3 w-36">Timeline Target</th>
                     <th className="px-4 lg:px-5 py-3 w-32 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -722,7 +800,7 @@ const TasksPage = () => {
                         <td className="px-4 lg:px-5 py-3">
                           <div className="text-xs text-slate-700 whitespace-nowrap">
                             {task.dueDate
-                              ? new Date(task.dueDate).toLocaleDateString('en-IN')
+                              ? new Date(task.dueDate).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })
                               : '—'}
                           </div>
                           {delay && task.status !== 'Completed' && (
@@ -731,6 +809,9 @@ const TasksPage = () => {
                               {delay}
                             </span>
                           )}
+                        </td>
+                        <td className="px-4 lg:px-5 py-3">
+                          <TaskTimerSection task={task} currentUser={user} variant="inline" />
                         </td>
                         <td className="px-4 lg:px-5 py-3 text-right">
                           <div className="inline-flex items-center gap-1">
@@ -930,13 +1011,135 @@ const TasksPage = () => {
                 </div>
 
                 <div>
-                  <label className={tokens.label}>Start Date</label>
-                  <input type="date" {...register('startDate')} className={tokens.input} />
+                  <label className={tokens.label}>Start Date &amp; Time</label>
+                  <input type="datetime-local" {...register('startDate')} className={tokens.input} />
                 </div>
 
                 <div>
-                  <label className={tokens.label}>Due Date</label>
-                  <input type="date" {...register('dueDate')} className={tokens.input} />
+                  <label className={tokens.label}>End / Due Date &amp; Time</label>
+                  <input type="datetime-local" {...register('dueDate')} className={tokens.input} />
+                </div>
+              </div>
+
+              {/* Live Auto-Calculated Total Planned Duration Banner */}
+              {calculatedDuration && (
+                <div
+                  className={`p-3.5 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all ${
+                    calculatedDuration.isValid
+                      ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900 shadow-2xs'
+                      : 'bg-rose-50 border-rose-200 text-rose-800'
+                  }`}
+                >
+                  {calculatedDuration.isValid ? (
+                    <>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                          <HiOutlineClock className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 block">
+                            Auto-Calculated Total Planned Duration
+                          </span>
+                          <span className="font-bold text-sm text-emerald-950 font-mono">
+                            {calculatedDuration.formattedText} ({calculatedDuration.totalMinutes} mins / {calculatedDuration.totalHoursDecimal} hrs)
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[11px] font-semibold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md border border-emerald-200 self-start sm:self-auto shrink-0">
+                        ✓ Synced to Timeline Target
+                      </span>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                      <span className="font-semibold">{calculatedDuration.message}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Work Timer & Target Timeline Setup */}
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                      <HiOutlineClock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Work Timer &amp; Target Timeline</h4>
+                      <p className="text-[11px] text-slate-500">Configure target timeline &amp; tracking mode for this task</p>
+                    </div>
+                  </div>
+
+                  <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-700">
+                    <input
+                      type="checkbox"
+                      {...register('isTimerRequired')}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                    />
+                    <span>Timer Tracking</span>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className={tokens.label}>Timer Style</label>
+                    <select {...register('timeTrackingMode')} className={tokens.input}>
+                      <option value="stopwatch">Open Stopwatch (Track actual time)</option>
+                      <option value="timeline">Target Timeline (Countdown with Target)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={tokens.label}>Target Timeline Duration (Minutes)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        step="5"
+                        {...register('targetDurationMinutes')}
+                        placeholder="e.g. 120 (for 2 hrs)"
+                        className={tokens.input}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold pointer-events-none">
+                        mins
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-[11px] text-slate-400 font-medium mr-1">Quick Presets:</span>
+                  {[
+                    { label: '30 mins', mins: 30 },
+                    { label: '1 hour', mins: 60 },
+                    { label: '2 hours', mins: 120 },
+                    { label: '3 hours', mins: 180 },
+                    { label: '4 hours', mins: 240 },
+                    { label: '8 hours', mins: 480 },
+                  ].map((preset) => (
+                    <button
+                      key={preset.mins}
+                      type="button"
+                      onClick={() => setValue('targetDurationMinutes', preset.mins)}
+                      className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 text-slate-600 transition-colors cursor-pointer"
+                    >
+                      +{preset.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Exclusivity Notice */}
+                <div className="flex items-start gap-2 p-2.5 rounded-lg bg-indigo-50/80 border border-indigo-100 text-[11px] text-indigo-900">
+                  <HiOutlineShieldCheck className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Strict Access Control:</strong> Once created, <u>only the assigned user</u> ({(() => {
+                      const selId = watch('assignedTo');
+                      const foundUser = usersList.find((u) => u._id === selId);
+                      return foundUser ? foundUser.name : 'the assigned employee';
+                    })()}) will have authorization to start, pause, and end the work timer for this task.
+                  </span>
                 </div>
               </div>
 
@@ -1191,11 +1394,11 @@ const TasksPage = () => {
 
                   <div>
                     <span className="block text-[11px] text-slate-500 uppercase font-semibold">
-                      Due Date
+                      Due Date &amp; Time
                     </span>
                     <span className="text-xs text-slate-900 font-medium mt-1 block">
                       {selectedTask.dueDate
-                        ? new Date(selectedTask.dueDate).toLocaleDateString('en-IN')
+                        ? new Date(selectedTask.dueDate).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
                         : 'N/A'}
                     </span>
                     {(() => {
@@ -1212,13 +1415,56 @@ const TasksPage = () => {
                   {selectedTask.startDate && (
                     <div>
                       <span className="block text-[11px] text-slate-500 uppercase font-semibold">
-                        Start Date
+                        Start Date &amp; Time
                       </span>
                       <span className="text-xs text-slate-900 font-medium mt-1 block">
-                        {new Date(selectedTask.startDate).toLocaleDateString('en-IN')}
+                        {new Date(selectedTask.startDate).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
                       </span>
                     </div>
                   )}
+
+                  {(() => {
+                    if (!selectedTask.startDate || !selectedTask.dueDate) return null;
+                    const s = new Date(selectedTask.startDate).getTime();
+                    const e = new Date(selectedTask.dueDate).getTime();
+                    if (isNaN(s) || isNaN(e) || e <= s) return null;
+                    const totalMins = Math.round((e - s) / (1000 * 60));
+                    const days = Math.floor(totalMins / (60 * 24));
+                    const hrs = Math.floor((totalMins % (60 * 24)) / 60);
+                    const mins = totalMins % 60;
+                    let text = '';
+                    if (days > 0) text += `${days}d `;
+                    if (hrs > 0) text += `${hrs}h `;
+                    if (mins > 0 || !text) text += `${mins}m`;
+
+                    return (
+                      <div>
+                        <span className="block text-[11px] text-slate-500 uppercase font-semibold">
+                          Total Planned Duration
+                        </span>
+                        <span className="text-xs text-indigo-700 font-bold font-mono mt-1 block">
+                          {text.trim()} ({totalMins} mins)
+                        </span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Time Tracker & Target Timeline with live controls */}
+                  <div className="col-span-2 border-t border-slate-100 pt-3 mt-1">
+                    <TaskTimerSection
+                      task={selectedTask}
+                      currentUser={user}
+                      variant="card"
+                      onUpdate={async () => {
+                        try {
+                          const { data } = await api.get(`/tasks/${selectedTask._id}`);
+                          setSelectedTask(data);
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

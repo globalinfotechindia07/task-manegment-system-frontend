@@ -26,8 +26,16 @@ const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
     return children ? children : <Outlet />;
   }
 
-  // 4. Super Admin only route but user isn't Super Admin
-  if (allowedRoles && allowedRoles.includes('Super Admin')) {
+  // 4. Super Admin only route (Super Admin is allowed, but current user is not permitted)
+  if (
+    allowedRoles &&
+    allowedRoles.includes('Super Admin') &&
+    !allowedRoles.some(
+      (role) =>
+        role !== 'Super Admin' &&
+        (role === user.role || (isOfficeAdmin && (role === 'Admin' || role === 'CTO')))
+    )
+  ) {
     return <Navigate to="/" replace />;
   }
 

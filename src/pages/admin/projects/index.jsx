@@ -12,6 +12,7 @@ import {
   HiOutlineChevronRight,
 } from 'react-icons/hi2';
 import api from '../../../api/axios';
+import { useAuth } from '../../../context/AuthContext';
 import { API_BASE_URL } from '../../../config';
 
 const getStatusColor = (status) => {
@@ -28,11 +29,26 @@ const getStatusColor = (status) => {
 };
 
 const AdminProjects = () => {
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
+
+  const rawRole = typeof user?.role === 'object' ? user?.role?.name || '' : user?.role || '';
+  const userRole = (rawRole || '').toLowerCase();
+  const isAdminOrManager =
+    userRole === 'admin' ||
+    userRole === 'super admin' ||
+    userRole === 'cto' ||
+    userRole.includes('lead') ||
+    userRole.includes('manager') ||
+    Boolean(user?.permissions?.projects?.create);
+
+  const canCreate = isAdminOrManager || Boolean(user?.permissions?.projects?.create);
+  const canEdit = isAdminOrManager || Boolean(user?.permissions?.projects?.edit);
+  const canDelete = isAdminOrManager || Boolean(user?.permissions?.projects?.delete);
 
   const {
     register,
@@ -173,14 +189,16 @@ const AdminProjects = () => {
             Manage and track project lifecycles and milestones.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center gap-1.5 w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm cursor-pointer"
-        >
-          <HiOutlinePlus className="w-4 h-4" />
-          <span>Add Project</span>
-        </button>
+        {canCreate && (
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center gap-1.5 w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm cursor-pointer"
+          >
+            <HiOutlinePlus className="w-4 h-4" />
+            <span>Add Project</span>
+          </button>
+        )}
       </div>
 
       {/* ===================== TABLE / LIST ===================== */}
@@ -242,28 +260,38 @@ const AdminProjects = () => {
                   </span>
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleEdit(project)}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
-                  >
-                    <HiOutlinePencilSquare className="w-3.5 h-3.5" />
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm('Are you sure you want to delete this project?')) {
-                        deleteMutation.mutate(project._id);
-                      }
-                    }}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer"
-                  >
-                    <HiOutlineTrash className="w-3.5 h-3.5" />
-                    Delete
-                  </button>
-                </div>
+                {(canEdit || canDelete) ? (
+                  <div className="flex gap-2">
+                    {canEdit && (
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(project)}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
+                      >
+                        <HiOutlinePencilSquare className="w-3.5 h-3.5" />
+                        Edit
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to delete this project?')) {
+                            deleteMutation.mutate(project._id);
+                          }
+                        }}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer"
+                      >
+                        <HiOutlineTrash className="w-3.5 h-3.5" />
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-[11px] text-slate-400 font-medium pt-1">
+                    ✓ Assigned Company Project
+                  </div>
+                )}
               </div>
             ))
           )}
@@ -354,30 +382,38 @@ const AdminProjects = () => {
                         : '—'}
                     </td>
                     <td className="px-4 lg:px-6 py-3.5 whitespace-nowrap text-right text-xs">
-                      <div className="inline-flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(project)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
-                          title="Edit"
-                          aria-label="Edit project"
-                        >
-                          <HiOutlinePencilSquare className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (window.confirm('Are you sure you want to delete this project?')) {
-                              deleteMutation.mutate(project._id);
-                            }
-                          }}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                          title="Delete"
-                          aria-label="Delete project"
-                        >
-                          <HiOutlineTrash className="w-4 h-4" />
-                        </button>
-                      </div>
+                      {(canEdit || canDelete) ? (
+                        <div className="inline-flex items-center gap-1">
+                          {canEdit && (
+                            <button
+                              type="button"
+                              onClick={() => handleEdit(project)}
+                              className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
+                              title="Edit"
+                              aria-label="Edit project"
+                            >
+                              <HiOutlinePencilSquare className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this project?')) {
+                                  deleteMutation.mutate(project._id);
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete"
+                              aria-label="Delete project"
+                            >
+                              <HiOutlineTrash className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-medium">Read Only</span>
+                      )}
                     </td>
                   </tr>
                 ))

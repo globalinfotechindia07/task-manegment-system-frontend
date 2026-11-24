@@ -17,6 +17,8 @@ import MyAttendance from './pages/common/MyAttendance';
 import MySalarySlips from './pages/common/MySalarySlips';
 import MyLeaves from './pages/common/MyLeaves';
 import StickyNotesPage from './pages/common/StickyNotes';
+import TimeTracker from './pages/common/TimeTracker';
+import SalaryProcess from './pages/common/SalaryProcess';
 
 // Super Admin Pages
 import SuperAdminDashboard from './pages/super-admin/dashboard';
@@ -61,6 +63,7 @@ import AdminLeaves from './pages/admin/leaves';
 import OfferLettersPage from './pages/admin/offer-letters';
 import MyDocuments from './pages/common/MyDocuments';
 import AdminDocumentsManagement from './pages/admin/documents';
+import AdminBackup from './pages/admin/backup';
 
 import './App.css';
 
@@ -122,6 +125,8 @@ const App = () => {
             <Route path="/my-salary-slips" element={<MySalarySlips />} />
             <Route path="/my-documents" element={<MyDocuments />} />
             <Route path="/sticky-notes" element={<StickyNotesPage />} />
+            <Route path="/time-tracker" element={<TimeTracker />} />
+            <Route path="/admin/time-tracker" element={<TimeTracker />} />
             <Route path="/support-tickets" element={<SupportTickets />} />
             <Route path="/company-support" element={<CompanySupport />} />
             <Route path="/software-support" element={<SoftwareSupport />} />
@@ -154,11 +159,15 @@ const App = () => {
             <Route path="/admin/billing" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminBilling /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/email-settings" element={<ProtectedRoute allowedRoles={['Admin', 'CTO']}><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/backup" element={<ProtectedRoute allowedRoles={['Admin', 'CTO', 'Super Admin']}><AdminBackup /></ProtectedRoute>} />
             <Route path="/admin/integrations" element={<ProtectedRoute requiredPermission={['settings', 'view']}><IntegrationsManager /></ProtectedRoute>} />
             <Route path="/admin/configurations" element={<ProtectedRoute requiredPermission={['settings', 'view']}><IntegrationsManager /></ProtectedRoute>} />
             <Route path="/admin/roles" element={<ProtectedRoute requiredPermission={['settings', 'view']}><RolesPage /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requiredPermission={['users', 'view']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
+            <Route path="/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
+            <Route path="/user/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
+            <Route path="/team-lead/projects" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminProjects /></ProtectedRoute>} />
             <Route path="/admin/client-portal" element={<ProtectedRoute requiredPermission={['projects', 'view']}><AdminClientPortal /></ProtectedRoute>} />
             <Route path="/admin/sprints" element={<ProtectedRoute requiredPermission={['projects', 'view']}><SprintsManager /></ProtectedRoute>} />
             <Route path="/admin/tasks" element={<ProtectedRoute requiredPermission={['tasks', 'view']}><AdminTasks /></ProtectedRoute>} />
@@ -178,6 +187,9 @@ const App = () => {
             <Route path="/admin/documents" element={<ProtectedRoute requiredPermission={['documents', 'view']}><AdminDocumentsManagement /></ProtectedRoute>} />
             <Route path="/hr/documents" element={<ProtectedRoute requiredPermission={['documents', 'view']}><AdminDocumentsManagement /></ProtectedRoute>} />
             <Route path="/admin/salary-management" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryManagement /></ProtectedRoute>} />
+            <Route path="/salary-process" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryProcess /></ProtectedRoute>} />
+            <Route path="/admin/salary-process" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryProcess /></ProtectedRoute>} />
+            <Route path="/accountant/salary-process" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryProcess /></ProtectedRoute>} />
             <Route path="/admin/payroll-settings" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollSettings /></ProtectedRoute>} />
             <Route path="/admin/payroll-dashboard" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><PayrollSettings /></ProtectedRoute>} />
             <Route path="/accountant/billing" element={<AccountantBilling />} />

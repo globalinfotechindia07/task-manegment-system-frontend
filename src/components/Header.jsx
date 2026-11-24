@@ -10,6 +10,7 @@ import {
   HiOutlineArrowRightOnRectangle,
   HiOutlineInbox,
   HiOutlineFingerPrint,
+  HiOutlineClock,
 } from 'react-icons/hi2';
 
 const Header = ({ toggleSidebar }) => {
@@ -62,6 +63,18 @@ const Header = ({ toggleSidebar }) => {
     canPunchIn &&
     (isMorningWindow || isTestingMorning) &&
     !todayStatus?.hasPunchedIn;
+
+  // Active work timer session
+  const { data: activeTimerData } = useQuery({
+    queryKey: ['activeTimeSession'],
+    queryFn: async () => {
+      const { data } = await api.get('/time-sessions/active');
+      return data;
+    },
+    enabled: !!user,
+    staleTime: 10 * 1000,
+  });
+  const activeTimer = activeTimerData?.active ? activeTimerData.session : null;
 
   // Mark single notification as read
   const markAsReadMutation = useMutation({
@@ -153,6 +166,31 @@ const Header = ({ toggleSidebar }) => {
 
       {/* Right: notifications + logout */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Active Work Timer Quick Pill */}
+        {activeTimer && (
+          <button
+            type="button"
+            onClick={() => navigate('/time-tracker')}
+            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
+              activeTimer.status === 'running'
+                ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                : 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
+            }`}
+            title={activeTimer.status === 'running' ? `Timer active: ${activeTimer.taskTitle}` : `Timer paused: ${activeTimer.currentPauseReason || 'Break'}`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                activeTimer.status === 'running' ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'
+              }`}
+            />
+            <HiOutlineClock className="w-4 h-4 shrink-0" />
+            <span className="hidden md:inline truncate max-w-[140px]">
+              {activeTimer.status === 'running' ? activeTimer.taskTitle : `Paused (${activeTimer.currentPauseReason || 'Break'})`}
+            </span>
+            <span className="md:hidden">Timer</span>
+          </button>
+        )}
+
         {/* Morning Punch-In Quick Action Pill */}
         {needsMorningPunchIn && (
           <button
