@@ -374,14 +374,14 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Launchers Bar */}
-        <div className="relative z-10 mt-5 pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-400 font-semibold mr-1 flex items-center gap-1 text-[11px] uppercase tracking-wider">
+        <div className="relative z-10 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-800/80 flex items-center gap-2 text-xs overflow-x-auto no-scrollbar touch-scroll pb-1">
+          <span className="text-slate-400 font-semibold mr-1 flex items-center gap-1 text-[11px] uppercase tracking-wider shrink-0">
             <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-400" /> Quick Launch:
           </span>
 
           <Link
             to="/admin/tasks"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-indigo-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-indigo-500/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-indigo-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-indigo-500/40 transition-colors shrink-0"
           >
             <HiOutlinePlus className="w-3.5 h-3.5 text-indigo-400" />
             <span>New Task</span>
@@ -389,42 +389,42 @@ const AdminDashboard = () => {
 
           <Link
             to="/sticky-notes"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-amber-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-amber-500/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-amber-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-amber-500/40 transition-colors shrink-0"
           >
             <HiOutlineBookmark className="w-3.5 h-3.5 text-amber-400" />
-            <span>3D Sticky Notes</span>
+            <span>3D Notes</span>
           </Link>
 
           <Link
             to="/admin/users"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-blue-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-blue-500/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-blue-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-blue-500/40 transition-colors shrink-0"
           >
             <HiOutlineUsers className="w-3.5 h-3.5 text-blue-400" />
-            <span>Staff Directory</span>
+            <span>Staff</span>
           </Link>
 
           <Link
             to="/salary-process"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-emerald-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-emerald-500/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-emerald-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-emerald-500/40 transition-colors shrink-0"
           >
             <HiOutlineBanknotes className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Salary Processing</span>
+            <span>Salaries</span>
           </Link>
 
           <Link
             to="/admin/documents"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-purple-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-purple-500/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-purple-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-purple-500/40 transition-colors shrink-0"
           >
             <HiOutlineDocumentCheck className="w-3.5 h-3.5 text-purple-400" />
-            <span>KYC Verification</span>
+            <span>KYC Docs</span>
           </Link>
 
           <Link
             to="/admin/backup"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-teal-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-teal-500/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/60 hover:bg-teal-600/30 text-slate-300 hover:text-white border border-slate-700/60 hover:border-teal-500/40 transition-colors shrink-0"
           >
             <HiOutlineServer className="w-3.5 h-3.5 text-teal-400" />
-            <span>Backup & Restore</span>
+            <span>Backup</span>
           </Link>
         </div>
       </div>
@@ -884,7 +884,7 @@ const AdminDashboard = () => {
 
       {/* ===================== SECTION TABS FOR DEEP DIVES ===================== */}
       <div className="border-b border-slate-200">
-        <nav className="flex space-x-2 sm:space-x-6 overflow-x-auto" aria-label="Tabs">
+        <nav className="flex space-x-2 sm:space-x-6 overflow-x-auto no-scrollbar touch-scroll py-0.5" aria-label="Tabs">
           <button
             onClick={() => setActiveTab('overview')}
             className={`py-3 px-1 border-b-2 font-bold text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-colors ${

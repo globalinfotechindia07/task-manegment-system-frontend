@@ -118,19 +118,19 @@ const KpiCard = ({ config, value, onClick }) => {
       type="button"
       onClick={onClick}
       aria-label={`${config.label}: ${value}. Click to view.`}
-      className={`${tokens.card} border-t-4 ${config.accent} p-4 text-left w-full ` +
-        'hover:shadow-md hover:border-slate-300 active:scale-[0.99] ' +
+      className={`${tokens.card} border-t-4 ${config.accent} p-3.5 sm:p-4 text-left w-full ` +
+        'hover:shadow-md hover:border-slate-300 active:scale-[0.98] ' +
         'transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40'}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
+      <div className="flex items-start justify-between gap-1.5 mb-1.5">
         <p className={`${tokens.label} line-clamp-2`}>{config.label}</p>
         <div
-          className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${config.iconBg}`}
+          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center shrink-0 ${config.iconBg}`}
         >
-          <Icon className="w-4 h-4" />
+          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </div>
       </div>
-      <h3 className={`text-2xl sm:text-3xl font-extrabold leading-none ${config.valueClass}`}>
+      <h3 className={`text-xl sm:text-3xl font-extrabold leading-none ${config.valueClass}`}>
         {value}
       </h3>
     </button>

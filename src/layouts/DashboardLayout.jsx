@@ -26,14 +26,14 @@ const DashboardLayout = () => {
   }, [isSidebarOpen]);
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden selection:bg-indigo-500/20 antialiased">
+    <div className="flex min-h-[100dvh] h-[100dvh] bg-slate-50 text-slate-900 overflow-hidden selection:bg-indigo-500/20 antialiased">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       <div className="flex-1 flex flex-col w-full min-w-0 h-full relative overflow-hidden bg-slate-50">
         <Header toggleSidebar={() => setIsSidebarOpen((v) => !v)} />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 relative">
-          <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-5 lg:py-6">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 relative pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8 touch-scroll">
+          <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-5 lg:py-6">
             <Outlet />
           </div>
         </main>

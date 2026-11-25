@@ -630,11 +630,11 @@ const SprintsManager = () => {
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 shadow-2xs flex-wrap">
+        <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 shadow-2xs overflow-x-auto no-scrollbar touch-scroll max-w-full">
           <button
             type="button"
             onClick={() => setActiveTab('sprints')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'sprints'
                 ? 'bg-white text-indigo-700 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -646,7 +646,7 @@ const SprintsManager = () => {
           <button
             type="button"
             onClick={() => setActiveTab('daily')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'daily'
                 ? 'bg-white text-indigo-700 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -658,7 +658,7 @@ const SprintsManager = () => {
           <button
             type="button"
             onClick={() => setActiveTab('timeline')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'timeline'
                 ? 'bg-white text-indigo-700 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -670,7 +670,7 @@ const SprintsManager = () => {
           <button
             type="button"
             onClick={() => setActiveTab('team')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'team'
                 ? 'bg-white text-indigo-700 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -2402,8 +2402,12 @@ const SprintTasksSection = ({ sprintId, onAddTask, onDivideTasks, onUpdateTask }
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto touch-scroll">
+          <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+            <span>👉 Swipe horizontally for member, schedule & status</span>
+            <span>{tasks.length} tasks</span>
+          </div>
+          <table className="w-full text-left border-collapse text-xs bg-white rounded-lg border border-slate-200 overflow-hidden min-w-[760px]">
             <thead>
               <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-600 font-semibold text-[11px] uppercase tracking-wider">
                 <th className="py-2.5 px-3">Task Title</th>

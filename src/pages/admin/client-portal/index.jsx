@@ -781,10 +781,10 @@ const AdminClientPortal = () => {
       {/* 3. Navigation Tabs & Search */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-b border-slate-200">
-          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar touch-scroll w-full sm:w-auto pb-1 sm:pb-0">
             <button
               onClick={() => setActiveTab('projects')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
                 activeTab === 'projects'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -795,7 +795,7 @@ const AdminClientPortal = () => {
             </button>
             <button
               onClick={() => setActiveTab('milestones')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
                 activeTab === 'milestones'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -806,7 +806,7 @@ const AdminClientPortal = () => {
             </button>
             <button
               onClick={() => setActiveTab('clients')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
                 activeTab === 'clients'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -817,7 +817,7 @@ const AdminClientPortal = () => {
             </button>
             <button
               onClick={() => setActiveTab('queries')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
                 activeTab === 'queries'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -851,8 +851,12 @@ const AdminClientPortal = () => {
         <div className="p-4 md:p-6">
           {/* TAB 1: Projects & Billings */}
           {activeTab === 'projects' && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+            <div className="overflow-x-auto touch-scroll">
+              <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+                <span>👉 Swipe horizontally for budget, balance & progress</span>
+                <span>{filteredProjects.length} projects</span>
+              </div>
+              <table className="w-full text-left border-collapse text-sm min-w-[880px]">
                 <thead>
                   <tr className="border-b border-slate-200 text-slate-500 font-semibold uppercase text-xs tracking-wider">
                     <th className="pb-3 px-3">Project</th>
@@ -1003,8 +1007,12 @@ const AdminClientPortal = () => {
 
           {/* TAB 2: Invoices & Milestones */}
           {activeTab === 'milestones' && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+            <div className="overflow-x-auto touch-scroll">
+              <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+                <span>👉 Swipe horizontally for invoice amounts & actions</span>
+                <span>{allMilestones.length} milestones</span>
+              </div>
+              <table className="w-full text-left border-collapse text-sm min-w-[850px]">
                 <thead>
                   <tr className="border-b border-slate-200 text-slate-500 font-semibold uppercase text-xs tracking-wider">
                     <th className="pb-3 px-3">Invoice #</th>
@@ -1087,8 +1095,8 @@ const AdminClientPortal = () => {
                 </button>
               </div>
 
-              <div className="overflow-x-auto border border-slate-200 rounded-2xl">
-                <table className="w-full text-left border-collapse text-sm">
+              <div className="overflow-x-auto touch-scroll border border-slate-200 rounded-2xl">
+                <table className="w-full text-left border-collapse text-sm min-w-[780px]">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50/75 text-slate-500 font-bold uppercase text-[11px] tracking-wider">
                       <th className="py-3 px-4">Client Name & Org</th>
@@ -1183,8 +1191,12 @@ const AdminClientPortal = () => {
 
           {/* TAB 4: Client Inquiries */}
           {activeTab === 'queries' && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+            <div className="overflow-x-auto touch-scroll">
+              <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+                <span>👉 Swipe horizontally for message details & replies</span>
+                <span>{clientQueries.length} inquiries</span>
+              </div>
+              <table className="w-full text-left border-collapse text-sm min-w-[780px]">
                 <thead>
                   <tr className="border-b border-slate-200 text-slate-500 font-semibold uppercase text-xs tracking-wider">
                     <th className="pb-3 px-3">Project</th>
@@ -1426,8 +1438,8 @@ const AdminClientPortal = () => {
               </div>
 
               {/* Milestones Table */}
-              <div className="overflow-x-auto border border-slate-200 rounded-xl">
-                <table className="w-full text-left text-xs border-collapse">
+              <div className="overflow-x-auto touch-scroll border border-slate-200 rounded-xl">
+                <table className="w-full text-left text-xs border-collapse min-w-[560px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase">
                     <tr>
                       <th className="py-2.5 px-3">#</th>

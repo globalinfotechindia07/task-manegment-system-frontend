@@ -564,7 +564,7 @@ const ReportsCenter = () => {
         </div>
 
         {/* Primary Tabs */}
-        <div className="flex items-center gap-2 mt-6 pt-4 border-t border-indigo-700/50 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 mt-6 pt-4 border-t border-indigo-700/50 overflow-x-auto no-scrollbar touch-scroll">
           <button
             type="button"
             onClick={() => setActiveTab('attendance')}
@@ -806,9 +806,13 @@ const ReportsCenter = () => {
                   </span>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto touch-scroll">
+                  <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+                    <span>👉 Swipe horizontally for all punches & durations</span>
+                    <span>Monthly Record</span>
+                  </div>
                   {attendanceReportData.reportType === 'individual_attendance' ? (
-                    <table className="w-full text-left text-xs text-slate-700">
+                    <table className="w-full text-left text-xs text-slate-700 min-w-[760px]">
                       <thead className="bg-slate-50/80 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
                         <tr>
                           <th className="px-4 py-3">Date</th>
@@ -859,7 +863,7 @@ const ReportsCenter = () => {
                       </tbody>
                     </table>
                   ) : (
-                    <table className="w-full text-left text-xs text-slate-700">
+                    <table className="w-full text-left text-xs text-slate-700 min-w-[850px]">
                       <thead className="bg-slate-50/80 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
                         <tr>
                           <th className="px-4 py-3">Employee</th>
@@ -1043,8 +1047,12 @@ const ReportsCenter = () => {
                   </span>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
+                <div className="overflow-x-auto touch-scroll">
+                  <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+                    <span>👉 Swipe horizontally for gross, deductions & net salary</span>
+                    <span>{salaryReportData.salaries?.length || 0} employees</span>
+                  </div>
+                  <table className="w-full text-left text-xs text-slate-700 min-w-[860px]">
                     <thead className="bg-slate-50/80 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
                       <tr>
                         <th className="px-4 py-3">Employee Name</th>
@@ -1264,8 +1272,8 @@ const ReportsCenter = () => {
                       </span>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs text-slate-700">
+                    <div className="overflow-x-auto touch-scroll">
+                      <table className="w-full text-left text-xs text-slate-700 min-w-[720px]">
                         <thead className="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
                           <tr>
                             <th className="px-4 py-3">Team Member</th>
@@ -1320,8 +1328,8 @@ const ReportsCenter = () => {
                       </span>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs text-slate-700">
+                    <div className="overflow-x-auto touch-scroll">
+                      <table className="w-full text-left text-xs text-slate-700 min-w-[720px]">
                         <thead className="bg-slate-50/80 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
                           <tr>
                             <th className="px-4 py-3">Task Title</th>
@@ -1376,8 +1384,8 @@ const ReportsCenter = () => {
                     </span>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-slate-700">
+                  <div className="overflow-x-auto touch-scroll">
+                    <table className="w-full text-left text-xs text-slate-700 min-w-[750px]">
                       <thead className="bg-slate-50/80 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
                         <tr>
                           <th className="px-4 py-3">Project Name</th>

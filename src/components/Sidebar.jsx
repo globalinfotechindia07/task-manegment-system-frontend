@@ -676,7 +676,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 lg:z-0 w-72 lg:w-64 h-screen bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out flex flex-col shadow-xl lg:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 lg:z-0 w-72 lg:w-64 min-h-[100dvh] h-[100dvh] bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out flex flex-col shadow-xl lg:shadow-none pt-[env(safe-area-inset-top,0px)] ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         aria-label="Sidebar navigation"
       >
@@ -938,7 +938,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </nav>
 
         {/* User Footer */}
-        <div className="p-2.5 sm:p-3 border-t border-slate-200 bg-slate-50 shrink-0">
+        <div className="p-2.5 sm:p-3 border-t border-slate-200 bg-slate-50 shrink-0 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-3">
           <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-colors">
             <Link
               to="/admin/profile"

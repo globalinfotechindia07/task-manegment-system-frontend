@@ -16,6 +16,9 @@ import {
   HiOutlineCurrencyRupee,
   HiOutlineBuildingOffice2,
   HiOutlineArrowPath,
+  HiOutlineTableCells,
+  HiOutlineSquares2X2,
+  HiOutlineArrowsRightLeft,
 } from 'react-icons/hi2';
 import api from '../../../../api/axios';
 
@@ -27,6 +30,7 @@ const LeadsManager = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sourceFilter, setSourceFilter] = useState('ALL');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -243,7 +247,35 @@ const LeadsManager = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* View Mode Switcher */}
+          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                viewMode === 'table'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <HiOutlineTableCells className="w-3.5 h-3.5" />
+              <span>Table</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                viewMode === 'cards'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <HiOutlineSquares2X2 className="w-3.5 h-3.5" />
+              <span>Cards</span>
+            </button>
+          </div>
+
           <button
             onClick={() => refetch()}
             disabled={isRefetching}
@@ -264,37 +296,37 @@ const LeadsManager = () => {
       </div>
 
       {/* ===================== METRIC CARDS STRIP ===================== */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Leads</span>
-          <span className="text-lg font-black text-slate-900 font-mono mt-0.5 block">{stats.total}</span>
+          <span className="text-base sm:text-lg font-black text-slate-900 font-mono mt-0.5 block">{stats.total}</span>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">New Inquiries</span>
-          <span className="text-lg font-black text-blue-700 font-mono mt-0.5 block">{stats.newCount}</span>
+          <span className="text-base sm:text-lg font-black text-blue-700 font-mono mt-0.5 block">{stats.newCount}</span>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Contacted</span>
-          <span className="text-lg font-black text-amber-700 font-mono mt-0.5 block">{stats.contacted}</span>
+          <span className="text-base sm:text-lg font-black text-amber-700 font-mono mt-0.5 block">{stats.contacted}</span>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider block">Qualified</span>
-          <span className="text-lg font-black text-purple-700 font-mono mt-0.5 block">{stats.qualified}</span>
+          <span className="text-base sm:text-lg font-black text-purple-700 font-mono mt-0.5 block">{stats.qualified}</span>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Won / Converted</span>
-          <span className="text-lg font-black text-emerald-700 font-mono mt-0.5 block">{stats.won}</span>
+          <span className="text-base sm:text-lg font-black text-emerald-700 font-mono mt-0.5 block">{stats.won}</span>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+        <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 shadow-xs col-span-2 sm:col-span-1">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Est. Pipeline</span>
-          <span className="text-lg font-black text-slate-900 font-mono mt-0.5 block">₹{stats.totalValue.toLocaleString('en-IN')}</span>
+          <span className="text-base sm:text-lg font-black text-slate-900 font-mono mt-0.5 block truncate">₹{stats.totalValue.toLocaleString('en-IN')}</span>
         </div>
       </div>
 
       {/* ===================== SEARCH & FILTER BAR ===================== */}
-      <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
+      <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
         {/* Search */}
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-[200px]">
           <HiOutlineMagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -311,9 +343,9 @@ const LeadsManager = () => {
         </div>
 
         {/* Dropdowns */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar touch-scroll pb-1 sm:pb-0">
           {/* Status */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
             <HiOutlineFunnel className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <select
               value={statusFilter}
@@ -332,7 +364,7 @@ const LeadsManager = () => {
           </div>
 
           {/* Source */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
@@ -351,7 +383,7 @@ const LeadsManager = () => {
           </div>
 
           {/* Priority */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
@@ -373,7 +405,7 @@ const LeadsManager = () => {
                 setSourceFilter('ALL');
                 setPriorityFilter('ALL');
               }}
-              className="px-2.5 py-1.5 text-xs text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
+              className="px-2.5 py-1.5 text-xs text-rose-600 hover:text-rose-800 font-semibold cursor-pointer shrink-0"
             >
               Reset
             </button>
@@ -381,7 +413,7 @@ const LeadsManager = () => {
         </div>
       </div>
 
-      {/* ===================== LEADS TABLE ===================== */}
+      {/* ===================== LEADS CONTENT (TABLE / CARDS) ===================== */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
         {filteredLeads.length === 0 ? (
           <div className="p-12 text-center text-slate-400 space-y-3">
@@ -400,162 +432,339 @@ const LeadsManager = () => {
               Add Lead Inquiry
             </button>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50/60 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Lead Contact & Company</th>
-                  <th className="py-3 px-4">Inquiry Requirement</th>
-                  <th className="py-3 px-4 text-right">Est. Value</th>
-                  <th className="py-3 px-4">Channel & Priority</th>
-                  <th className="py-3 px-4">Pipeline Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {filteredLeads.map((lead) => {
-                  const priorityColors = {
-                    Urgent: 'bg-rose-50 text-rose-700 border-rose-200',
-                    High: 'bg-amber-50 text-amber-700 border-amber-200',
-                    Medium: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                    Low: 'bg-slate-100 text-slate-600 border-slate-200',
-                  };
+        ) : viewMode === 'cards' ? (
+          /* Cards View (Mobile-Friendly Stack) */
+          <div className="p-3 sm:p-4 bg-slate-50/50">
+            <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 mb-3 px-1">
+              <span>Showing {filteredLeads.length} leads in card view</span>
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className="text-indigo-600 font-bold hover:underline"
+              >
+                Switch to Table
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {filteredLeads.map((lead) => {
+                const priorityColors = {
+                  Urgent: 'bg-rose-50 text-rose-700 border-rose-200',
+                  High: 'bg-amber-50 text-amber-700 border-amber-200',
+                  Medium: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                  Low: 'bg-slate-100 text-slate-600 border-slate-200',
+                };
 
-                  return (
-                    <tr key={lead._id} className="hover:bg-slate-50/80 transition-colors">
-                      {/* Name & Company */}
-                      <td className="py-3.5 px-4 min-w-[200px]">
-                        <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                          <span>{lead.name}</span>
-                          {lead.isConverted && (
-                            <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">
-                              Converted
-                            </span>
-                          )}
+                return (
+                  <div
+                    key={lead._id}
+                    className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between gap-3"
+                  >
+                    <div>
+                      {/* Card Top: Name & Value */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                            <span className="truncate">{lead.name}</span>
+                            {lead.isConverted && (
+                              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 shrink-0">
+                                Converted
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-slate-500 mt-0.5 truncate">
+                            {lead.companyName || 'Individual Contact'}
+                          </div>
                         </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5 truncate">
-                          {lead.companyName || 'Individual Contact'}
+                        <div className="text-right shrink-0">
+                          <div className="font-mono font-bold text-slate-900 text-sm">
+                            ₹{Number(lead.value || 0).toLocaleString('en-IN')}
+                          </div>
+                          <span className="text-[10px] text-slate-400">Budget</span>
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-[11px] text-slate-400">
-                          {lead.phone && (
-                            <a
-                              href={`tel:${lead.phone}`}
-                              className="hover:text-indigo-600 flex items-center gap-1"
-                              title="Call Lead"
-                            >
-                              <HiOutlinePhone className="w-3 h-3" />
-                              {lead.phone}
-                            </a>
-                          )}
-                          {lead.email && (
-                            <a
-                              href={`mailto:${lead.email}`}
-                              className="hover:text-indigo-600 flex items-center gap-1 truncate max-w-[140px]"
-                              title="Email Lead"
-                            >
-                              <HiOutlineEnvelope className="w-3 h-3" />
-                              {lead.email}
-                            </a>
-                          )}
-                        </div>
-                      </td>
+                      </div>
 
-                      {/* Requirement */}
-                      <td className="py-3.5 px-4 min-w-[180px]">
-                        <div className="font-semibold text-slate-900 truncate">
+                      {/* Requirement & Notes */}
+                      <div className="mt-2.5 p-2 bg-slate-50 rounded-lg border border-slate-100">
+                        <div className="font-semibold text-slate-800 text-xs truncate">
                           {lead.title || 'General Inbound Inquiry'}
                         </div>
                         {lead.notes && (
-                          <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                          <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">
                             {lead.notes}
-                          </div>
+                          </p>
                         )}
-                      </td>
+                      </div>
 
-                      {/* Estimated Value */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <div className="font-mono font-bold text-slate-900 text-xs">
-                          ₹{Number(lead.value || 0).toLocaleString('en-IN')}
-                        </div>
-                        <span className="text-[10px] text-slate-400">Budget</span>
-                      </td>
-
-                      {/* Channel & Priority */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="font-semibold text-slate-800 text-xs">{lead.source}</div>
-                        <span
-                          className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-bold border mt-0.5 ${
-                            priorityColors[lead.priority] || priorityColors.Medium
-                          }`}
-                        >
-                          {lead.priority} Priority
-                        </span>
-                      </td>
-
-                      {/* Status Dropdown */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <select
-                          value={lead.status}
-                          onChange={(e) => handleStatusChange(lead._id, e.target.value)}
-                          className="py-1 px-2 rounded-lg text-xs font-bold border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-2xs"
-                        >
-                          <option value="New">New</option>
-                          <option value="Contacted">Contacted</option>
-                          <option value="Qualified">Qualified</option>
-                          <option value="Proposal">Proposal</option>
-                          <option value="Negotiation">Negotiation</option>
-                          <option value="Won">Won</option>
-                          <option value="Lost">Lost</option>
-                        </select>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {!lead.isConverted && (
-                            <button
-                              onClick={() => openConvertModal(lead)}
-                              className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-[11px] font-bold cursor-pointer transition-colors inline-flex items-center gap-1"
-                              title="Convert to Deal / Customer"
-                            >
-                              <HiOutlineArrowRightCircle className="w-3.5 h-3.5" />
-                              Convert
-                            </button>
-                          )}
-                          <button
-                            onClick={() => openEditModal(lead)}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg cursor-pointer transition-colors"
-                            title="Edit Lead"
+                      {/* Contact Quick Buttons */}
+                      <div className="grid grid-cols-2 gap-2 mt-2.5">
+                        {lead.phone ? (
+                          <a
+                            href={`tel:${lead.phone}`}
+                            className="py-1.5 px-2 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-700 hover:text-indigo-700 rounded-lg text-center text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors"
                           >
-                            <HiOutlinePencilSquare className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (window.confirm(`Delete lead "${lead.name}"?`)) {
-                                deleteLeadMutation.mutate(lead._id);
-                              }
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
-                            title="Delete Lead"
+                            <HiOutlinePhone className="w-3.5 h-3.5 text-slate-500" />
+                            <span className="truncate">{lead.phone}</span>
+                          </a>
+                        ) : (
+                          <span className="py-1.5 px-2 bg-slate-50/50 border border-slate-100 text-slate-400 rounded-lg text-center text-[11px] flex items-center justify-center gap-1">
+                            No Phone
+                          </span>
+                        )}
+
+                        {lead.email ? (
+                          <a
+                            href={`mailto:${lead.email}`}
+                            className="py-1.5 px-2 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-700 hover:text-indigo-700 rounded-lg text-center text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors"
                           >
-                            <HiOutlineTrash className="w-4 h-4" />
-                          </button>
+                            <HiOutlineEnvelope className="w-3.5 h-3.5 text-slate-500" />
+                            <span className="truncate">Email</span>
+                          </a>
+                        ) : (
+                          <span className="py-1.5 px-2 bg-slate-50/50 border border-slate-100 text-slate-400 rounded-lg text-center text-[11px] flex items-center justify-center gap-1">
+                            No Email
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Channel, Priority & Status Controls */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-3 border-t border-slate-100">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] text-slate-500 font-medium">{lead.source}</span>
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${
+                              priorityColors[lead.priority] || priorityColors.Medium
+                            }`}
+                          >
+                            {lead.priority}
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+
+                        <div>
+                          <select
+                            value={lead.status}
+                            onChange={(e) => handleStatusChange(lead._id, e.target.value)}
+                            className="py-1 px-2 rounded-lg text-xs font-bold border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-2xs"
+                          >
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Qualified">Qualified</option>
+                            <option value="Proposal">Proposal</option>
+                            <option value="Negotiation">Negotiation</option>
+                            <option value="Won">Won</option>
+                            <option value="Lost">Lost</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Actions */}
+                    <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
+                      {!lead.isConverted && (
+                        <button
+                          onClick={() => openConvertModal(lead)}
+                          className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold cursor-pointer transition-colors inline-flex items-center gap-1 mr-auto"
+                          title="Convert to Deal / Customer"
+                        >
+                          <HiOutlineArrowRightCircle className="w-4 h-4" />
+                          <span>Convert</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openEditModal(lead)}
+                        className="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer transition-colors inline-flex items-center gap-1"
+                      >
+                        <HiOutlinePencilSquare className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete lead "${lead.name}"?`)) {
+                            deleteLeadMutation.mutate(lead._id);
+                          }
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
+                        title="Delete Lead"
+                      >
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+        ) : (
+          /* Table View with Mobile Swipe Banner & min-w-[880px] */
+          <>
+            <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 px-3 py-2 border-b border-slate-200">
+              <span className="flex items-center gap-1.5 font-medium">
+                <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+                Swipe horizontally to view full table
+              </span>
+              <button
+                type="button"
+                onClick={() => setViewMode('cards')}
+                className="text-indigo-600 font-bold hover:underline"
+              >
+                Switch to Cards
+              </button>
+            </div>
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full min-w-[880px] text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/60 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3 px-4">Lead Contact & Company</th>
+                    <th className="py-3 px-4">Inquiry Requirement</th>
+                    <th className="py-3 px-4 text-right">Est. Value</th>
+                    <th className="py-3 px-4">Channel & Priority</th>
+                    <th className="py-3 px-4">Pipeline Status</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {filteredLeads.map((lead) => {
+                    const priorityColors = {
+                      Urgent: 'bg-rose-50 text-rose-700 border-rose-200',
+                      High: 'bg-amber-50 text-amber-700 border-amber-200',
+                      Medium: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                      Low: 'bg-slate-100 text-slate-600 border-slate-200',
+                    };
+
+                    return (
+                      <tr key={lead._id} className="hover:bg-slate-50/80 transition-colors">
+                        {/* Name & Company */}
+                        <td className="py-3.5 px-4 min-w-[200px]">
+                          <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                            <span>{lead.name}</span>
+                            {lead.isConverted && (
+                              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">
+                                Converted
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+                            {lead.companyName || 'Individual Contact'}
+                          </div>
+                          <div className="flex items-center gap-3 mt-1 text-[11px] text-slate-400">
+                            {lead.phone && (
+                              <a
+                                href={`tel:${lead.phone}`}
+                                className="hover:text-indigo-600 flex items-center gap-1"
+                                title="Call Lead"
+                              >
+                                <HiOutlinePhone className="w-3 h-3" />
+                                {lead.phone}
+                              </a>
+                            )}
+                            {lead.email && (
+                              <a
+                                href={`mailto:${lead.email}`}
+                                className="hover:text-indigo-600 flex items-center gap-1 truncate max-w-[140px]"
+                                title="Email Lead"
+                              >
+                                <HiOutlineEnvelope className="w-3 h-3" />
+                                {lead.email}
+                              </a>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Requirement */}
+                        <td className="py-3.5 px-4 min-w-[180px]">
+                          <div className="font-semibold text-slate-900 truncate">
+                            {lead.title || 'General Inbound Inquiry'}
+                          </div>
+                          {lead.notes && (
+                            <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                              {lead.notes}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Estimated Value */}
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          <div className="font-mono font-bold text-slate-900 text-xs">
+                            ₹{Number(lead.value || 0).toLocaleString('en-IN')}
+                          </div>
+                          <span className="text-[10px] text-slate-400">Budget</span>
+                        </td>
+
+                        {/* Channel & Priority */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <div className="font-semibold text-slate-800 text-xs">{lead.source}</div>
+                          <span
+                            className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-bold border mt-0.5 ${
+                              priorityColors[lead.priority] || priorityColors.Medium
+                            }`}
+                          >
+                            {lead.priority} Priority
+                          </span>
+                        </td>
+
+                        {/* Status Dropdown */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <select
+                            value={lead.status}
+                            onChange={(e) => handleStatusChange(lead._id, e.target.value)}
+                            className="py-1 px-2 rounded-lg text-xs font-bold border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer shadow-2xs"
+                          >
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Qualified">Qualified</option>
+                            <option value="Proposal">Proposal</option>
+                            <option value="Negotiation">Negotiation</option>
+                            <option value="Won">Won</option>
+                            <option value="Lost">Lost</option>
+                          </select>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5">
+                            {!lead.isConverted && (
+                              <button
+                                onClick={() => openConvertModal(lead)}
+                                className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-[11px] font-bold cursor-pointer transition-colors inline-flex items-center gap-1"
+                                title="Convert to Deal / Customer"
+                              >
+                                <HiOutlineArrowRightCircle className="w-3.5 h-3.5" />
+                                Convert
+                              </button>
+                            )}
+                            <button
+                              onClick={() => openEditModal(lead)}
+                              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg cursor-pointer transition-colors"
+                              title="Edit Lead"
+                            >
+                              <HiOutlinePencilSquare className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Delete lead "${lead.name}"?`)) {
+                                  deleteLeadMutation.mutate(lead._id);
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
+                              title="Delete Lead"
+                            >
+                              <HiOutlineTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* ===================== CREATE / EDIT LEAD MODAL ===================== */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden my-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg max-h-[90dvh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
@@ -643,7 +852,7 @@ const LeadsManager = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                 <div>
                   <label className="text-[11px] font-semibold text-slate-700 block mb-1">Estimated Value (₹)</label>
                   <input
@@ -724,7 +933,7 @@ const LeadsManager = () => {
       {/* ===================== CONVERT LEAD MODAL ===================== */}
       {convertingLead && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md overflow-hidden my-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md max-h-[90dvh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="p-4 border-b border-slate-200 bg-emerald-50/70 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">

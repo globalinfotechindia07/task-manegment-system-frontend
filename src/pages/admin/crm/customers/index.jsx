@@ -20,6 +20,9 @@ import {
   HiOutlineStar,
   HiOutlineCheckCircle,
   HiOutlineUserGroup,
+  HiOutlineTableCells,
+  HiOutlineSquares2X2,
+  HiOutlineArrowsRightLeft,
 } from 'react-icons/hi2';
 import api from '../../../../api/axios';
 
@@ -51,6 +54,7 @@ const CustomersManager = () => {
   // Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -234,6 +238,34 @@ const CustomersManager = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* View Mode Switcher */}
+          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                viewMode === 'table'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <HiOutlineTableCells className="w-3.5 h-3.5" />
+              <span>Table</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                viewMode === 'cards'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <HiOutlineSquares2X2 className="w-3.5 h-3.5" />
+              <span>Cards</span>
+            </button>
+          </div>
+
           <button
             onClick={() => refetch()}
             disabled={isRefetching}
@@ -256,79 +288,79 @@ const CustomersManager = () => {
       </div>
 
       {/* ===================== SUMMARY STATS ROW ===================== */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Total Accounts
             </span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-              <HiOutlineBuildingStorefront className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+              <HiOutlineBuildingStorefront className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-slate-900">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-slate-900">
               {aggregateStats.totalCount}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">Active corporate clients</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">Active corporate clients</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Active Clients
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-              <HiOutlineCheckCircle className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+              <HiOutlineCheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-emerald-700">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-emerald-700">
               {aggregateStats.activeCount}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">Engaged accounts</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">Engaged accounts</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               VIP Tier
             </span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
-              <HiOutlineStar className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
+              <HiOutlineStar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-purple-700">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-purple-700">
               {aggregateStats.vipCount}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">Key enterprise accounts</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">Key enterprise accounts</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Cumulative LTV
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-              <HiOutlineCurrencyRupee className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
+              <HiOutlineCurrencyRupee className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-slate-900">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-slate-900 truncate">
               ₹{aggregateStats.totalSpend.toLocaleString('en-IN')}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">Total client billed value</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">Total client billed value</span>
         </div>
       </div>
 
       {/* ===================== FILTER & SEARCH BAR ===================== */}
-      <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <div className="relative flex-1 min-w-[240px]">
+      <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-3.5 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className="relative flex-1 min-w-[200px]">
           <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input
             type="text"
@@ -367,52 +399,50 @@ const CustomersManager = () => {
         </div>
       </div>
 
-      {/* ===================== CUSTOMERS DIRECTORY TABLE ===================== */}
+      {/* ===================== CUSTOMERS DIRECTORY (TABLE / CARDS) ===================== */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
-                <th className="py-3 px-4">Account / Organization</th>
-                <th className="py-3 px-4">Primary Contact</th>
-                <th className="py-3 px-4">Industry</th>
-                <th className="py-3 px-4">Account Status</th>
-                <th className="py-3 px-4">Lifetime Spend (LTV)</th>
-                <th className="py-3 px-4">Client Since</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              {isLoading ? (
-                <tr>
-                  <td colSpan="7" className="py-12 text-center text-slate-400">
-                    <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                    Loading customer accounts...
-                  </td>
-                </tr>
-              ) : filteredCustomers.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="py-12 text-center text-slate-400">
-                    No customer accounts match your criteria. Click &quot;Add Customer&quot; to register your first account.
-                  </td>
-                </tr>
-              ) : (
-                filteredCustomers.map((cust) => {
-                  const statusBadgeClass =
-                    STATUS_CONFIG[cust.status] || STATUS_CONFIG.Active;
+        {isLoading ? (
+          <div className="py-12 text-center text-slate-400">
+            <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            Loading customer accounts...
+          </div>
+        ) : filteredCustomers.length === 0 ? (
+          <div className="py-12 text-center text-slate-400 px-4">
+            No customer accounts match your criteria. Click &quot;Add Customer&quot; to register your first account.
+          </div>
+        ) : viewMode === 'cards' ? (
+          /* Cards View */
+          <div className="p-3 sm:p-4 bg-slate-50/50">
+            <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 mb-3 px-1">
+              <span>Showing {filteredCustomers.length} accounts in card view</span>
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className="text-indigo-600 font-bold hover:underline"
+              >
+                Switch to Table
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {filteredCustomers.map((cust) => {
+                const statusBadgeClass = STATUS_CONFIG[cust.status] || STATUS_CONFIG.Active;
 
-                  return (
-                    <tr key={cust._id} className="hover:bg-slate-50/70 transition-colors">
-                      {/* Company Name & Website */}
-                      <td className="py-3.5 px-4 font-semibold text-slate-900 max-w-[240px]">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
+                return (
+                  <div
+                    key={cust._id}
+                    className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between gap-3"
+                  >
+                    <div>
+                      {/* Top: Company Name, Logo & Status */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
                             {cust.name.slice(0, 2).toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <span className="truncate block font-semibold text-slate-900">
+                            <h4 className="font-bold text-slate-900 text-xs sm:text-sm truncate">
                               {cust.name}
-                            </span>
+                            </h4>
                             {cust.website && (
                               <a
                                 href={
@@ -422,7 +452,7 @@ const CustomersManager = () => {
                                 }
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-normal"
+                                className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-normal truncate"
                               >
                                 <HiOutlineGlobeAlt className="w-3 h-3 shrink-0" />
                                 <span className="truncate">{cust.website.replace(/^https?:\/\//, '')}</span>
@@ -430,94 +460,256 @@ const CustomersManager = () => {
                             )}
                           </div>
                         </div>
-                      </td>
 
-                      {/* Contact Person */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-medium text-slate-800">
-                          {cust.contactPerson || '—'}
-                        </div>
-                        <div className="text-[11px] text-slate-500 space-y-0.5 mt-0.5">
-                          {cust.email && (
-                            <div className="flex items-center gap-1 truncate">
-                              <HiOutlineEnvelope className="w-3 h-3 text-slate-400 shrink-0" />
-                              <span>{cust.email}</span>
-                            </div>
-                          )}
-                          {cust.phone && (
-                            <div className="flex items-center gap-1 truncate">
-                              <HiOutlinePhone className="w-3 h-3 text-slate-400 shrink-0" />
-                              <span>{cust.phone}</span>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Industry */}
-                      <td className="py-3.5 px-4 text-slate-600">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
-                          {cust.industry || 'General'}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-3.5 px-4">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadgeClass}`}
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border shrink-0 ${statusBadgeClass}`}
                         >
                           {cust.status === 'VIP' && <HiOutlineStar className="w-3 h-3 mr-1" />}
                           {cust.status}
                         </span>
-                      </td>
+                      </div>
 
-                      {/* Lifetime Spend */}
-                      <td className="py-3.5 px-4 font-bold text-slate-900">
-                        ₹{Number(cust.totalSpend || 0).toLocaleString('en-IN')}
-                      </td>
+                      {/* Primary Contact Person */}
+                      <div className="mt-3 p-2.5 bg-slate-50 rounded-lg border border-slate-100 space-y-1.5 text-xs">
+                        <div className="flex items-center gap-1.5 font-medium text-slate-800">
+                          <HiOutlineUser className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="truncate">{cust.contactPerson || 'No contact assigned'}</span>
+                        </div>
 
-                      {/* Created Date */}
-                      <td className="py-3.5 px-4 text-slate-500">
+                        {/* Direct Call & Email Buttons */}
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          {cust.phone ? (
+                            <a
+                              href={`tel:${cust.phone}`}
+                              className="py-1 px-2 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-700 hover:text-indigo-700 rounded-md text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors"
+                            >
+                              <HiOutlinePhone className="w-3 h-3 text-slate-400" />
+                              <span className="truncate">{cust.phone}</span>
+                            </a>
+                          ) : (
+                            <span className="py-1 px-2 bg-slate-100/50 text-slate-400 rounded-md text-[11px] flex items-center justify-center">
+                              No Phone
+                            </span>
+                          )}
+
+                          {cust.email ? (
+                            <a
+                              href={`mailto:${cust.email}`}
+                              className="py-1 px-2 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-700 hover:text-indigo-700 rounded-md text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors"
+                            >
+                              <HiOutlineEnvelope className="w-3 h-3 text-slate-400" />
+                              <span className="truncate">Email</span>
+                            </a>
+                          ) : (
+                            <span className="py-1 px-2 bg-slate-100/50 text-slate-400 rounded-md text-[11px] flex items-center justify-center">
+                              No Email
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Financials & Industry info */}
+                      <div className="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-slate-100 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block">Lifetime Spend (LTV)</span>
+                          <span className="font-bold text-slate-900 text-xs sm:text-sm">
+                            ₹{Number(cust.totalSpend || 0).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200 truncate inline-block max-w-[130px]">
+                            {cust.industry || 'General'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom row: Created date & actions */}
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px] text-slate-400">
+                      <span>
+                        Since{' '}
                         {new Date(cust.createdAt).toLocaleDateString('en-IN', {
-                          day: '2-digit',
                           month: 'short',
                           year: 'numeric',
                         })}
-                      </td>
+                      </span>
 
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(cust)}
-                            className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                            title="Edit Account"
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(cust)}
+                          className="px-2.5 py-1 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer transition-colors inline-flex items-center gap-1"
+                        >
+                          <HiOutlinePencilSquare className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCustomerToDelete(cust)}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Delete Account"
+                        >
+                          <HiOutlineTrash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          /* Table View with Mobile Swipe Banner & min-w-[880px] */
+          <>
+            <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 px-3 py-2 border-b border-slate-200">
+              <span className="flex items-center gap-1.5 font-medium">
+                <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+                Swipe horizontally to view full table
+              </span>
+              <button
+                type="button"
+                onClick={() => setViewMode('cards')}
+                className="text-indigo-600 font-bold hover:underline"
+              >
+                Switch to Cards
+              </button>
+            </div>
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full min-w-[880px] text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                    <th className="py-3 px-4">Account / Organization</th>
+                    <th className="py-3 px-4">Primary Contact</th>
+                    <th className="py-3 px-4">Industry</th>
+                    <th className="py-3 px-4">Account Status</th>
+                    <th className="py-3 px-4">Lifetime Spend (LTV)</th>
+                    <th className="py-3 px-4">Client Since</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {filteredCustomers.map((cust) => {
+                    const statusBadgeClass =
+                      STATUS_CONFIG[cust.status] || STATUS_CONFIG.Active;
+
+                    return (
+                      <tr key={cust._id} className="hover:bg-slate-50/70 transition-colors">
+                        {/* Company Name & Website */}
+                        <td className="py-3.5 px-4 font-semibold text-slate-900 max-w-[240px]">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
+                              {cust.name.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="truncate block font-semibold text-slate-900">
+                                {cust.name}
+                              </span>
+                              {cust.website && (
+                                <a
+                                  href={
+                                    cust.website.startsWith('http')
+                                      ? cust.website
+                                      : `https://${cust.website}`
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-normal"
+                                >
+                                  <HiOutlineGlobeAlt className="w-3 h-3 shrink-0" />
+                                  <span className="truncate">{cust.website.replace(/^https?:\/\//, '')}</span>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Contact Person */}
+                        <td className="py-3.5 px-4">
+                          <div className="font-medium text-slate-800">
+                            {cust.contactPerson || '—'}
+                          </div>
+                          <div className="text-[11px] text-slate-500 space-y-0.5 mt-0.5">
+                            {cust.email && (
+                              <div className="flex items-center gap-1 truncate">
+                                <HiOutlineEnvelope className="w-3 h-3 text-slate-400 shrink-0" />
+                                <span>{cust.email}</span>
+                              </div>
+                            )}
+                            {cust.phone && (
+                              <div className="flex items-center gap-1 truncate">
+                                <HiOutlinePhone className="w-3 h-3 text-slate-400 shrink-0" />
+                                <span>{cust.phone}</span>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Industry */}
+                        <td className="py-3.5 px-4 text-slate-600">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                            {cust.industry || 'General'}
+                          </span>
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadgeClass}`}
                           >
-                            <HiOutlinePencilSquare className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setCustomerToDelete(cust)}
-                            className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                            title="Delete Account"
-                          >
-                            <HiOutlineTrash className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                            {cust.status === 'VIP' && <HiOutlineStar className="w-3 h-3 mr-1" />}
+                            {cust.status}
+                          </span>
+                        </td>
+
+                        {/* Lifetime Spend */}
+                        <td className="py-3.5 px-4 font-bold text-slate-900">
+                          ₹{Number(cust.totalSpend || 0).toLocaleString('en-IN')}
+                        </td>
+
+                        {/* Created Date */}
+                        <td className="py-3.5 px-4 text-slate-500">
+                          {new Date(cust.createdAt).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(cust)}
+                              className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                              title="Edit Account"
+                            >
+                              <HiOutlinePencilSquare className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setCustomerToDelete(cust)}
+                              className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Account"
+                            >
+                              <HiOutlineTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
 
       {/* ===================== CREATE / EDIT CUSTOMER MODAL ===================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl border border-slate-200 overflow-hidden my-auto">
+          <div className="bg-white rounded-2xl w-full max-w-xl max-h-[90dvh] overflow-y-auto shadow-2xl border border-slate-200 my-auto">
             {/* Modal Header */}
             <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
               <div>
@@ -715,7 +907,7 @@ const CustomersManager = () => {
       {/* ===================== DELETE CONFIRMATION MODAL ===================== */}
       {customerToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-slate-200 text-center">
+          <div className="bg-white rounded-2xl w-full max-w-sm max-h-[90dvh] overflow-y-auto p-5 shadow-2xl border border-slate-200 text-center my-auto">
             <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
               <HiOutlineTrash className="w-5 h-5" />
             </div>

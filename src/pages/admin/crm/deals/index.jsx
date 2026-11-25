@@ -23,6 +23,7 @@ import {
   HiOutlinePhone,
   HiOutlineEnvelope,
   HiOutlineArrowTrendingUp,
+  HiOutlineArrowsRightLeft,
 } from 'react-icons/hi2';
 import api from '../../../../api/axios';
 
@@ -381,77 +382,77 @@ const DealsPipeline = () => {
       </div>
 
       {/* ===================== SUMMARY KPI ROW ===================== */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Active Pipeline
             </span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-              <HiOutlineCurrencyRupee className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+              <HiOutlineCurrencyRupee className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-slate-900">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-slate-900 truncate">
               ₹{summaryMetrics.activeValue.toLocaleString('en-IN')}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">
             Across ongoing active negotiations
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Won Revenue
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-              <HiOutlineCheckCircle className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+              <HiOutlineCheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-emerald-700">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-emerald-700 truncate">
               ₹{summaryMetrics.wonRevenue.toLocaleString('en-IN')}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">Successfully closed deals</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">Successfully closed deals</span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Win Rate
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-              <HiOutlineArrowTrendingUp className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
+              <HiOutlineArrowTrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-amber-700">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-amber-700">
               {summaryMetrics.winRate}%
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">
             Deal closing conversion efficiency
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">
               Total Deals
             </span>
-            <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600">
-              <HiOutlineBriefcase className="w-4 h-4" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600">
+              <HiOutlineBriefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-slate-900">
+            <span className="text-base sm:text-xl lg:text-2xl font-bold text-slate-900">
               {summaryMetrics.totalDeals}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-1 block">Total pipeline records</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 mt-1 block truncate">Total pipeline records</span>
         </div>
       </div>
 
@@ -498,8 +499,22 @@ const DealsPipeline = () => {
 
       {/* ===================== VIEW: KANBAN BOARD ===================== */}
       {viewMode === 'kanban' && (
-        <div className="overflow-x-auto pb-4">
-          <div className="flex gap-4 min-w-[1200px] items-start">
+        <>
+          <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 mb-3">
+            <span className="flex items-center gap-1.5 font-medium">
+              <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+              Swipe horizontally to browse stages
+            </span>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className="text-indigo-600 font-bold hover:underline"
+            >
+              Table View
+            </button>
+          </div>
+          <div className="overflow-x-auto touch-scroll no-scrollbar pb-4">
+            <div className="flex gap-3 sm:gap-4 min-w-[1200px] items-start">
             {STAGES.map((stage) => {
               const stageDeals = groupedDeals[stage] || [];
               const stageTotal = stageDeals.reduce(
@@ -683,13 +698,27 @@ const DealsPipeline = () => {
             })}
           </div>
         </div>
+        </>
       )}
 
       {/* ===================== VIEW: TABLE VIEW ===================== */}
       {viewMode === 'table' && (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 px-3 py-2 border-b border-slate-200">
+            <span className="flex items-center gap-1.5 font-medium">
+              <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+              Swipe horizontally to view full table
+            </span>
+            <button
+              type="button"
+              onClick={() => setViewMode('kanban')}
+              className="text-indigo-600 font-bold hover:underline"
+            >
+              Kanban View
+            </button>
+          </div>
+          <div className="overflow-x-auto touch-scroll">
+            <table className="w-full min-w-[920px] text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
                   <th className="py-3 px-4">Deal Title</th>
@@ -795,7 +824,7 @@ const DealsPipeline = () => {
       {/* ===================== CREATE / EDIT DEAL MODAL ===================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl border border-slate-200 overflow-hidden my-auto">
+          <div className="bg-white rounded-2xl w-full max-w-xl max-h-[90dvh] overflow-y-auto shadow-2xl border border-slate-200 my-auto">
             {/* Modal Header */}
             <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
               <div>
@@ -1014,7 +1043,7 @@ const DealsPipeline = () => {
       {/* ===================== DELETE CONFIRMATION MODAL ===================== */}
       {dealToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl border border-slate-200 text-center">
+          <div className="bg-white rounded-2xl w-full max-w-sm max-h-[90dvh] overflow-y-auto p-5 shadow-2xl border border-slate-200 text-center my-auto">
             <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
               <HiOutlineTrash className="w-5 h-5" />
             </div>

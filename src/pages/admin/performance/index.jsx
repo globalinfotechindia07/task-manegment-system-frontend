@@ -18,6 +18,7 @@ import {
 const COLORS = ['#10b981', '#6366f1', '#f59e0b', '#64748b', '#ec4899'];
 
 const AdminPerformancePage = () => {
+  const [mobileDisplayMode, setMobileDisplayMode] = useState('table'); // 'cards' | 'table'
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {
@@ -268,17 +269,46 @@ const AdminPerformancePage = () => {
       {/* ===================== INDIVIDUAL PERFORMANCE TABLE ===================== */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap justify-between items-center gap-2">
-          <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-            <HiOutlineUserGroup className="w-4 h-4 text-slate-500" />
-            Individual Performance
-          </h3>
-          <span className="text-[11px] sm:text-xs text-slate-500">
-            {userMetrics.length} member{userMetrics.length !== 1 ? 's' : ''}
-          </span>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+              <HiOutlineUserGroup className="w-4 h-4 text-slate-500" />
+              Individual Performance
+            </h3>
+            <span className="text-[11px] sm:text-xs text-slate-500">
+              ({userMetrics.length})
+            </span>
+          </div>
+
+          {/* Mobile Display Switcher */}
+          <div className="flex items-center md:hidden bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
+            <button
+              type="button"
+              onClick={() => setMobileDisplayMode('table')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer font-bold ${
+                mobileDisplayMode === 'table'
+                  ? 'bg-white text-indigo-700 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900 font-medium'
+              }`}
+            >
+              Table View
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileDisplayMode('cards')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer font-bold ${
+                mobileDisplayMode === 'cards'
+                  ? 'bg-white text-indigo-700 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900 font-medium'
+              }`}
+            >
+              Cards
+            </button>
+          </div>
         </div>
 
         {/* Mobile Card View (< md) */}
-        <div className="md:hidden divide-y divide-slate-100">
+        {mobileDisplayMode === 'cards' && (
+          <div className="md:hidden divide-y divide-slate-100">
           {userMetrics.map((user) => (
             <div key={user._id} className="p-4 hover:bg-slate-50/60 transition-colors">
               <div className="flex items-center gap-2.5 mb-2">
@@ -337,10 +367,15 @@ const AdminPerformancePage = () => {
             </div>
           )}
         </div>
+      )}
 
-        {/* Desktop Table View (md+) */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-700 min-w-[720px]">
+      {/* Table View (Always on md+, and on mobile when mobileDisplayMode === 'table') */}
+      <div className={`${mobileDisplayMode === 'table' ? 'block' : 'hidden md:block'} overflow-x-auto touch-scroll`}>
+        <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+          <span>👉 Swipe horizontally for completion stats</span>
+          <span>{userMetrics.length} members</span>
+        </div>
+        <table className="w-full text-left text-sm text-slate-700 min-w-[720px]">
             <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 text-[11px] uppercase font-semibold">
               <tr>
                 <th className="px-4 lg:px-6 py-3.5 whitespace-nowrap">Employee</th>

@@ -122,88 +122,88 @@ const CRMOverview = () => {
       </div>
 
       {/* ===================== METRIC CARDS ===================== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Total Leads */}
-        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-            <span className="font-bold flex items-center gap-1.5 text-slate-700">
-              <HiOutlineUserGroup className="w-4 h-4 text-indigo-600" />
-              Total Inquiries & Leads
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 mb-1.5 sm:mb-2 gap-1">
+            <span className="font-bold flex items-center gap-1.5 text-slate-700 truncate">
+              <HiOutlineUserGroup className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 shrink-0" />
+              <span className="truncate">Inquiries & Leads</span>
             </span>
-            <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+            <span className="text-[9px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-indigo-200 shrink-0">
               {stats.leadsByStatus?.New || 0} New
             </span>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tight">
+          <div className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 font-mono tracking-tight truncate">
             {stats.totalLeads}
           </div>
-          <div className="pt-2 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span>Qualified: <strong className="text-slate-800">{stats.leadsByStatus?.Qualified || 0}</strong></span>
-            <Link to="/admin/crm/leads" className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-0.5">
-              View all <HiOutlineArrowRight className="w-3 h-3" />
+          <div className="pt-2 mt-2 sm:mt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500">
+            <span className="truncate">Qualified: <strong className="text-slate-800">{stats.leadsByStatus?.Qualified || 0}</strong></span>
+            <Link to="/admin/crm/leads" className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-0.5 shrink-0 ml-1">
+              View <HiOutlineArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
 
         {/* Active Pipeline Value */}
-        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-            <span className="font-bold flex items-center gap-1.5 text-slate-700">
-              <HiOutlinePresentationChartBar className="w-4 h-4 text-amber-600" />
-              Active Pipeline Value
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 mb-1.5 sm:mb-2 gap-1">
+            <span className="font-bold flex items-center gap-1.5 text-slate-700 truncate">
+              <HiOutlinePresentationChartBar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0" />
+              <span className="truncate">Pipeline Value</span>
             </span>
-            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            <span className="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-200 shrink-0">
               {stats.activeDealsCount} Deals
             </span>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tight">
+          <div className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 font-mono tracking-tight truncate">
             ₹{stats.activePipelineValue.toLocaleString('en-IN')}.00
           </div>
-          <div className="pt-2 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span>In negotiation: <strong className="text-slate-800">{stageCounts.Negotiation || 0}</strong></span>
-            <Link to="/admin/crm/deals" className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-0.5">
+          <div className="pt-2 mt-2 sm:mt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500">
+            <span className="truncate">Negot: <strong className="text-slate-800">{stageCounts.Negotiation || 0}</strong></span>
+            <Link to="/admin/crm/deals" className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-0.5 shrink-0 ml-1">
               Pipeline <HiOutlineArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
 
         {/* Closed Won Revenue */}
-        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-            <span className="font-bold flex items-center gap-1.5 text-slate-700">
-              <HiOutlineCheckCircle className="w-4 h-4 text-emerald-600" />
-              Closed Won Revenue
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 mb-1.5 sm:mb-2 gap-1">
+            <span className="font-bold flex items-center gap-1.5 text-slate-700 truncate">
+              <HiOutlineCheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
+              <span className="truncate">Won Revenue</span>
             </span>
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              {stats.wonDealsCount} Won Deals
+            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+              {stats.wonDealsCount} Won
             </span>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 font-mono tracking-tight">
+          <div className="text-base sm:text-xl lg:text-2xl font-black text-emerald-700 font-mono tracking-tight truncate">
             ₹{stats.wonRevenue.toLocaleString('en-IN')}.00
           </div>
-          <div className="pt-2 mt-3 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
-            <span>Win Rate: <strong className="text-emerald-700">{stats.winRate}%</strong></span>
-            <span className="text-slate-400">Converted Deals</span>
+          <div className="pt-2 mt-2 sm:mt-3 border-t border-slate-100 text-[10px] sm:text-[11px] text-slate-500 flex items-center justify-between">
+            <span className="truncate">Win Rate: <strong className="text-emerald-700">{stats.winRate}%</strong></span>
+            <span className="text-slate-400 hidden sm:inline">Converted</span>
           </div>
         </div>
 
         {/* Customer Accounts */}
-        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-            <span className="font-bold flex items-center gap-1.5 text-slate-700">
-              <HiOutlineBuildingStorefront className="w-4 h-4 text-slate-500" />
-              Customer Accounts
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 mb-1.5 sm:mb-2 gap-1">
+            <span className="font-bold flex items-center gap-1.5 text-slate-700 truncate">
+              <HiOutlineBuildingStorefront className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 shrink-0" />
+              <span className="truncate">Customer Accounts</span>
             </span>
-            <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+            <span className="text-[9px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-indigo-200 shrink-0">
               Client Base
             </span>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tight">
+          <div className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 font-mono tracking-tight truncate">
             {stats.totalCustomers} Accounts
           </div>
-          <div className="pt-2 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+          <div className="pt-2 mt-2 sm:mt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500">
             <span>Active Clients</span>
-            <Link to="/admin/crm/customers" className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-0.5">
+            <Link to="/admin/crm/customers" className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-0.5 shrink-0 ml-1">
               Directory <HiOutlineArrowRight className="w-3 h-3" />
             </Link>
           </div>
@@ -211,9 +211,9 @@ const CRMOverview = () => {
       </div>
 
       {/* ===================== PIPELINE & SOURCES BREAKDOWN ===================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
         {/* Pipeline Stage Funnel */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs space-y-3.5 sm:space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <h3 className="font-bold text-slate-900 text-sm">Pipeline Stages Distribution</h3>
@@ -237,8 +237,8 @@ const CRMOverview = () => {
               return (
                 <div key={stage.name} className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-slate-700">{stage.name}</span>
-                    <span className="font-bold text-slate-900 font-mono">
+                    <span className="font-medium text-slate-700 truncate pr-2">{stage.name}</span>
+                    <span className="font-bold text-slate-900 font-mono shrink-0">
                       {stage.count} deal{stage.count !== 1 ? 's' : ''} ({percent}%)
                     </span>
                   </div>
@@ -255,7 +255,7 @@ const CRMOverview = () => {
         </div>
 
         {/* Lead Sources Distribution */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs space-y-3.5 sm:space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <h3 className="font-bold text-slate-900 text-sm">Leads by Acquisition Channel</h3>
@@ -271,15 +271,15 @@ const CRMOverview = () => {
               No lead source data available yet. Create your first lead to see channel breakdown.
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
               {Object.entries(stats.leadsBySource).map(([source, count]) => (
                 <div
                   key={source}
-                  className="p-3 rounded-lg border border-slate-200 bg-slate-50/60 flex flex-col justify-between"
+                  className="p-2.5 sm:p-3 rounded-lg border border-slate-200 bg-slate-50/60 flex flex-col justify-between"
                 >
                   <span className="text-[11px] font-semibold text-slate-600 truncate">{source}</span>
                   <div className="flex items-baseline gap-1 mt-1">
-                    <span className="text-lg font-black text-slate-900 font-mono">{count}</span>
+                    <span className="text-base sm:text-lg font-black text-slate-900 font-mono">{count}</span>
                     <span className="text-[10px] text-slate-400">leads</span>
                   </div>
                 </div>
@@ -290,7 +290,7 @@ const CRMOverview = () => {
       </div>
 
       {/* ===================== PARALLEL PREVIEWS: RECENT LEADS & RECENT DEALS ===================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
         {/* Recent Inquiries & Leads */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">

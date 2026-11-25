@@ -140,108 +140,116 @@ const Header = ({ toggleSidebar }) => {
   const companyLabel = user?.company?.name || 'Enterprise';
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-4 lg:px-6 sticky top-0 z-30 shadow-sm">
-      {/* Left: hamburger + workspace badge */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          className="lg:hidden p-2 -ml-1 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-          title="Toggle Navigation"
-          aria-label="Toggle Navigation"
-        >
-          <HiOutlineBars3 className="w-5 h-5" />
-        </button>
-
-        <div className="hidden sm:flex items-center gap-2 text-xs min-w-0">
-          <span className="font-semibold text-slate-800 truncate max-w-[160px] lg:max-w-[240px]">
-            {companyLabel}
-          </span>
-          <span className="text-slate-300 shrink-0">/</span>
-          <span className="text-slate-500 font-medium truncate max-w-[120px] lg:max-w-[160px]">
-            {roleLabel}
-          </span>
-        </div>
-      </div>
-
-      {/* Right: notifications + logout */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* Active Work Timer Quick Pill */}
-        {activeTimer && (
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs pt-[env(safe-area-inset-top,0px)]">
+      <div className="h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-4 lg:px-6">
+        {/* Left: hamburger + workspace badge */}
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
           <button
             type="button"
-            onClick={() => navigate('/time-tracker')}
-            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
-              activeTimer.status === 'running'
-                ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
-                : 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
-            }`}
-            title={activeTimer.status === 'running' ? `Timer active: ${activeTimer.taskTitle}` : `Timer paused: ${activeTimer.currentPauseReason || 'Break'}`}
+            onClick={toggleSidebar}
+            className="lg:hidden p-2 -ml-1 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            title="Toggle Navigation"
+            aria-label="Toggle Navigation"
           >
-            <span
-              className={`w-2 h-2 rounded-full ${
-                activeTimer.status === 'running' ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'
-              }`}
-            />
-            <HiOutlineClock className="w-4 h-4 shrink-0" />
-            <span className="hidden md:inline truncate max-w-[140px]">
-              {activeTimer.status === 'running' ? activeTimer.taskTitle : `Paused (${activeTimer.currentPauseReason || 'Break'})`}
+            <HiOutlineBars3 className="w-5 h-5" />
+          </button>
+
+          {/* Mobile Brand Name */}
+          <div className="sm:hidden flex items-center gap-1.5 min-w-0">
+            <span className="font-bold text-xs text-slate-900 truncate max-w-[125px]">
+              {companyLabel}
             </span>
-            <span className="md:hidden">Timer</span>
-          </button>
-        )}
+          </div>
 
-        {/* Morning Punch-In Quick Action Pill */}
-        {needsMorningPunchIn && (
-          <button
-            type="button"
-            onClick={() => navigate('/punch-in')}
-            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-bold transition-all shadow-2xs cursor-pointer"
-            title="Morning shift attendance punch-in pending"
-          >
-            <HiOutlineFingerPrint className="w-4 h-4 text-emerald-600" />
-            <span className="hidden sm:inline">Punch In</span>
-          </button>
-        )}
+          <div className="hidden sm:flex items-center gap-2 text-xs min-w-0">
+            <span className="font-semibold text-slate-800 truncate max-w-[160px] lg:max-w-[240px]">
+              {companyLabel}
+            </span>
+            <span className="text-slate-300 shrink-0">/</span>
+            <span className="text-slate-500 font-medium truncate max-w-[120px] lg:max-w-[160px]">
+              {roleLabel}
+            </span>
+          </div>
+        </div>
 
-        {/* User Manual Shortcut Button */}
-        <button
-          type="button"
-          onClick={() => navigate('/user-manual')}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 border border-indigo-200/80 text-indigo-700 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
-          title="User Manual & Employee Operations Guide"
-        >
-          <HiOutlineBookOpen className="w-4 h-4 text-indigo-600" />
-          <span className="hidden sm:inline">Manual</span>
-        </button>
-
-        {/* Notification Bell */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setShowDropdown((v) => !v)}
-            className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-            title="Notifications"
-            aria-label="Notifications"
-            aria-expanded={showDropdown}
-          >
-            <HiOutlineBell className="w-5 h-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-4 px-1 bg-rose-600 text-white text-[10px] font-bold rounded-full border-2 border-white shadow-sm leading-none">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
-
-          {/* Notifications Dropdown — responsive width, safe on small screens */}
-          {showDropdown && (
-            <div
-              className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-24px)] sm:w-80 lg:w-96 max-w-md bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
-              role="dialog"
-              aria-label="Notifications"
+        {/* Right: notifications + logout */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Active Work Timer Quick Pill */}
+          {activeTimer && (
+            <button
+              type="button"
+              onClick={() => navigate('/time-tracker')}
+              className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer border ${
+                activeTimer.status === 'running'
+                  ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                  : 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
+              }`}
+              title={activeTimer.status === 'running' ? `Timer active: ${activeTimer.taskTitle}` : `Timer paused: ${activeTimer.currentPauseReason || 'Break'}`}
             >
-              {/* Dropdown Header */}
-              <div className="flex justify-between items-center gap-2 p-3 sm:p-3.5 border-b border-slate-200 bg-slate-50">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  activeTimer.status === 'running' ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'
+                }`}
+              />
+              <HiOutlineClock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="hidden md:inline truncate max-w-[140px]">
+                {activeTimer.status === 'running' ? activeTimer.taskTitle : `Paused (${activeTimer.currentPauseReason || 'Break'})`}
+              </span>
+              <span className="md:hidden text-[11px]">Timer</span>
+            </button>
+          )}
+
+          {/* Morning Punch-In Quick Action Pill */}
+          {needsMorningPunchIn && (
+            <button
+              type="button"
+              onClick={() => navigate('/punch-in')}
+              className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              title="Morning shift attendance punch-in pending"
+            >
+              <HiOutlineFingerPrint className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
+              <span className="hidden sm:inline">Punch In</span>
+            </button>
+          )}
+
+          {/* User Manual Shortcut Button */}
+          <button
+            type="button"
+            onClick={() => navigate('/user-manual')}
+            className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 border border-indigo-200/80 text-indigo-700 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
+            title="User Manual & Employee Operations Guide"
+          >
+            <HiOutlineBookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600" />
+            <span className="hidden sm:inline">Manual</span>
+          </button>
+
+          {/* Notification Bell */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setShowDropdown((v) => !v)}
+              className="relative p-1.5 sm:p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              title="Notifications"
+              aria-label="Notifications"
+              aria-expanded={showDropdown}
+            >
+              <HiOutlineBell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 flex items-center justify-center min-w-[15px] h-3.5 px-0.5 bg-rose-600 text-white text-[9px] font-bold rounded-full border border-white shadow-xs leading-none">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notifications Dropdown — responsive width, safe on small screens */}
+            {showDropdown && (
+              <div
+                className="fixed sm:absolute right-2 sm:right-0 top-14 sm:top-auto sm:mt-2 w-[calc(100vw-16px)] sm:w-80 lg:w-96 max-w-md bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                role="dialog"
+                aria-label="Notifications"
+              >
+                {/* Dropdown Header */}
+                <div className="flex justify-between items-center gap-2 p-3 sm:p-3.5 border-b border-slate-200 bg-slate-50">
                 <div className="flex items-center gap-2 min-w-0">
                   <h3 className="font-semibold text-slate-900 text-sm truncate">Notifications</h3>
                   {unreadCount > 0 && (
@@ -329,8 +337,9 @@ const Header = ({ toggleSidebar }) => {
           <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
+      </div>
     </header>
   );
 };
 
-export default Header;
+export default Header; 

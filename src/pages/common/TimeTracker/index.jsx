@@ -882,7 +882,7 @@ const TimeTracker = () => {
       </div>
 
       {/* ===================== NAVIGATION TABS ===================== */}
-      <div className="flex items-center gap-2 p-1.5 bg-slate-200/70 rounded-2xl w-fit text-xs sm:text-sm font-bold">
+      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-slate-200/70 rounded-2xl max-w-full overflow-x-auto no-scrollbar touch-scroll text-xs sm:text-sm font-bold">
         <button
           type="button"
           onClick={() => setActiveTab('timer')}
@@ -1921,8 +1921,12 @@ const TimeTracker = () => {
             </div>
 
             {/* Logs Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="overflow-x-auto touch-scroll">
+              <div className="md:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100 text-[11px] text-indigo-700 font-semibold flex items-center justify-between">
+                <span>👉 Swipe horizontally for work session details</span>
+                <span>{(adminLogsData?.sessions || []).length} sessions</span>
+              </div>
+              <table className="w-full text-left text-xs border-collapse min-w-[780px]">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
                     <th className="py-3 px-4">Employee</th>
