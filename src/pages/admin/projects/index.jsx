@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import useViewMode from '../../../hooks/useViewMode';
 import {
   HiOutlinePlus,
   HiOutlinePencilSquare,
@@ -33,7 +34,7 @@ const AdminProjects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [mobileDisplayMode, setMobileDisplayMode] = useState('table'); // 'cards' | 'table'
+  const [mobileDisplayMode, setMobileDisplayMode] = useViewMode('projects_mobile_view', 'table'); // 'cards' | 'table' (cached in localStorage)
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
 

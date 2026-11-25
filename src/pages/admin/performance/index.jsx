@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import useViewMode from '../../../hooks/useViewMode';
 import {
   HiOutlineClipboardDocumentCheck,
   HiOutlineCheckCircle,
@@ -18,7 +19,7 @@ import {
 const COLORS = ['#10b981', '#6366f1', '#f59e0b', '#64748b', '#ec4899'];
 
 const AdminPerformancePage = () => {
-  const [mobileDisplayMode, setMobileDisplayMode] = useState('table'); // 'cards' | 'table'
+  const [mobileDisplayMode, setMobileDisplayMode] = useViewMode('performance_mobile_view', 'table'); // 'cards' | 'table' (cached in localStorage)
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {

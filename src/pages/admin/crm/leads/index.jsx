@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import useViewMode from '../../../../hooks/useViewMode';
 import {
   HiOutlineUserGroup,
   HiOutlinePlus,
@@ -30,7 +31,7 @@ const LeadsManager = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sourceFilter, setSourceFilter] = useState('ALL');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
-  const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
+  const [viewMode, setViewMode] = useViewMode('crm_leads_view', 'table'); // 'table' | 'cards' (cached in localStorage)
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

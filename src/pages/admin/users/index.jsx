@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import useViewMode from '../../../hooks/useViewMode';
 import Swal from 'sweetalert2';
 import {
   HiOutlinePlus,
@@ -61,7 +62,7 @@ const UsersPage = () => {
   const [permissionsModalUser, setPermissionsModalUser] = useState(null);
   const [seatLimitWarning, setSeatLimitWarning] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [mobileView, setMobileView] = useState('cards'); // 'cards' | 'table'
+  const [mobileView, setMobileView] = useViewMode('users_mobile_view', 'cards'); // 'cards' | 'table' (cached in localStorage)
   const itemsPerPage = 5;
   const queryClient = useQueryClient();
 

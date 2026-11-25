@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import useViewMode from '../../../../hooks/useViewMode';
 import {
   HiOutlineBriefcase,
   HiOutlinePlus,
@@ -65,8 +66,8 @@ const STAGE_CONFIG = {
 const DealsPipeline = () => {
   const queryClient = useQueryClient();
 
-  // View state: 'kanban' | 'table'
-  const [viewMode, setViewMode] = useState('kanban');
+  // View state: 'kanban' | 'table' (cached in localStorage)
+  const [viewMode, setViewMode] = useViewMode('crm_deals_view', 'kanban');
 
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState('');

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../../api/axios';
+import useViewMode from '../../../hooks/useViewMode';
 import {
   HiOutlinePlus,
   HiOutlineBellAlert,
@@ -252,8 +253,8 @@ const StickyNotesPage = () => {
   const queryClient = useQueryClient();
   const boardRef = useRef(null);
 
-  // View Mode: 'canvas' (Free-form 3D Desk) vs 'grid' (Organized 3D Grid)
-  const [viewMode, setViewMode] = useState('canvas');
+  // View Mode: 'canvas' (Free-form 3D Desk) vs 'grid' (Organized 3D Grid) (cached in localStorage)
+  const [viewMode, setViewMode] = useViewMode('sticky_notes_view', 'canvas');
   // Board Theme
   const [boardTheme, setBoardTheme] = useState('corkboard');
 

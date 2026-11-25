@@ -20,6 +20,7 @@ import {
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
 import { useSocket } from '../../../context/SocketContext';
+import useViewMode from '../../../hooks/useViewMode';
 
 /* ============================================================
    DESIGN TOKENS — same as AdminProjects (CRM classic)
@@ -131,7 +132,7 @@ const AdminReportsPage = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [editingTaskId, setEditingTaskId] = useState(null);
-  const [mobileDisplayMode, setMobileDisplayMode] = useState('table'); // 'cards' | 'table'
+  const [mobileDisplayMode, setMobileDisplayMode] = useViewMode('reports_mobile_view', 'table'); // 'cards' | 'table' (cached in localStorage)
   const selectedTaskRef = useRef(null);
   const isDetailsModalOpenRef = useRef(false);
 

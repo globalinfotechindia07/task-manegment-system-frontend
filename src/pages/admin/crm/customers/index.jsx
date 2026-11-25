@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import useViewMode from '../../../../hooks/useViewMode';
 import {
   HiOutlineBuildingStorefront,
   HiOutlinePlus,
@@ -54,7 +55,7 @@ const CustomersManager = () => {
   // Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
+  const [viewMode, setViewMode] = useViewMode('crm_customers_view', 'table'); // 'table' | 'cards' (cached in localStorage)
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);

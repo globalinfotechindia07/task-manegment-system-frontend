@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import api from '../../../api/axios';
 import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
+import useViewMode from '../../../hooks/useViewMode';
 import {
   HiOutlineDocumentCheck,
   HiOutlineFolderArrowDown,
@@ -45,7 +46,7 @@ const AdminDocumentsManagement = () => {
   const queryClient = useQueryClient();
 
   const [mainTab, setMainTab] = useState('hub'); // 'hub' | 'config'
-  const [activeView, setActiveView] = useState('grouped'); // 'grouped' | 'table'
+  const [activeView, setActiveView] = useViewMode('documents_active_view', 'grouped'); // 'grouped' | 'table' (cached in localStorage)
   const [statusFilter, setStatusFilter] = useState('All');
   const [departmentFilter, setDepartmentFilter] = useState('All');
   const [docTypeFilter, setDocTypeFilter] = useState('All');

@@ -27,6 +27,7 @@ import { API_BASE_URL } from '../../../config';
 import { useAuth } from '../../../context/AuthContext';
 import { useSocket } from '../../../context/SocketContext';
 import TaskTimerSection from '../../../components/tasks/TaskTimerSection';
+import useViewMode from '../../../hooks/useViewMode';
 
 /* ============================================================
    DESIGN TOKENS (matches AdminProjects / RolesPage)
@@ -170,7 +171,7 @@ const TasksPage = () => {
   const itemsPerPage = 8;
 
   const [showFilters, setShowFilters] = useState(false);
-  const [mobileDisplayMode, setMobileDisplayMode] = useState('table'); // 'cards' | 'table'
+  const [mobileDisplayMode, setMobileDisplayMode] = useViewMode('tasks_mobile_view', 'table'); // 'cards' | 'table' (cached in localStorage)
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
