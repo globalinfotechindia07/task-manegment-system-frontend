@@ -1,6 +1,54 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const ROUTE_SUBMENU_MAP = [
+  { prefix: '/admin/projects', id: 'work_projects' },
+  { prefix: '/projects', id: 'work_projects' },
+  { prefix: '/user/projects', id: 'work_projects' },
+  { prefix: '/admin/client-portal', id: 'work_client_portal' },
+  { prefix: '/admin/sprints', id: 'work_sprints' },
+  { prefix: '/admin/tasks', id: 'work_tasks' },
+  { prefix: '/user/tasks', id: 'work_tasks' },
+  { prefix: '/admin/reports-center', id: 'work_reports_center' },
+  { prefix: '/reports-center', id: 'work_reports_center' },
+  { prefix: '/user/reports-center', id: 'work_reports_center' },
+  { prefix: '/admin/reports', id: 'work_task_reports' },
+  { prefix: '/user/reports', id: 'work_task_reports' },
+  { prefix: '/admin/performance', id: 'work_performance' },
+  { prefix: '/time-tracker', id: 'work_time_tracker' },
+  { prefix: '/admin/crm/leads', id: 'crm_leads' },
+  { prefix: '/admin/crm/deals', id: 'crm_deals' },
+  { prefix: '/admin/crm/customers', id: 'crm_customers' },
+  { prefix: '/admin/crm', id: 'crm_overview' },
+  { prefix: '/admin/users', id: 'hr_users' },
+  { prefix: '/admin/offer-letters', id: 'hr_offer_letters' },
+  { prefix: '/admin/documents', id: 'hr_documents' },
+  { prefix: '/admin/attendance-settings', id: 'hr_attendance_settings' },
+  { prefix: '/admin/attendance', id: 'hr_attendance' },
+  { prefix: '/admin/leaves', id: 'hr_leaves' },
+  { prefix: '/admin/announcements', id: 'hr_announcements' },
+  { prefix: '/salary-process', id: 'payroll_salary_process' },
+  { prefix: '/accountant/billing', id: 'payroll_billing' },
+  { prefix: '/admin/salary-management', id: 'payroll_salary_management' },
+  { prefix: '/admin/payroll-settings', id: 'payroll_settings' },
+  { prefix: '/admin/chat', id: 'collab_chat' },
+  { prefix: '/team-meeting', id: 'collab_meeting' },
+  { prefix: '/punch-in', id: 'self_punch' },
+  { prefix: '/my-attendance', id: 'self_attendance' },
+  { prefix: '/my-leaves', id: 'self_leaves' },
+  { prefix: '/my-salary-slips', id: 'self_salary_slips' },
+  { prefix: '/my-documents', id: 'self_documents' },
+  { prefix: '/sticky-notes', id: 'self_sticky_notes' },
+  { prefix: '/user-manual', id: 'self_user_manual' },
+  { prefix: '/admin/roles', id: 'admin_roles' },
+  { prefix: '/admin/billing', id: 'admin_billing' },
+  { prefix: '/admin/backup', id: 'admin_backup' },
+  { prefix: '/admin/integrations', id: 'config_website_feeds' },
+  { prefix: '/company-support', id: 'support_company' },
+  { prefix: '/software-support', id: 'support_software' },
+  { prefix: '/support-tickets', id: 'support_system' },
+];
+
 const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
   const { user } = useAuth();
   const location = useLocation();
@@ -56,13 +104,31 @@ const ProtectedRoute = ({ allowedRoles, requiredPermission, children }) => {
 
   if (isOfficeAdmin) {
     hasAccess = true;
-  } else if (requiredPermission) {
-    const [moduleName, action = 'view'] = requiredPermission;
-    hasAccess = Boolean(user.permissions?.[moduleName]?.[action]);
-  } else if (allowedRoles) {
-    hasAccess = allowedRoles.includes(user.role);
   } else {
-    hasAccess = true;
+    // 5.1 Check granular sub-menu permission first
+    const matchedSubmenu = ROUTE_SUBMENU_MAP.find((m) =>
+      location.pathname === m.prefix || location.pathname.startsWith(m.prefix + '/')
+    );
+
+    if (matchedSubmenu && user.permissions?.submenus) {
+      if (typeof user.permissions.submenus[matchedSubmenu.id] !== 'undefined') {
+        hasAccess = Boolean(user.permissions.submenus[matchedSubmenu.id]);
+      } else if (requiredPermission) {
+        const [moduleName, action = 'view'] = requiredPermission;
+        hasAccess = Boolean(user.permissions?.[moduleName]?.[action]);
+      } else if (allowedRoles) {
+        hasAccess = allowedRoles.includes(user.role);
+      } else {
+        hasAccess = true;
+      }
+    } else if (requiredPermission) {
+      const [moduleName, action = 'view'] = requiredPermission;
+      hasAccess = Boolean(user.permissions?.[moduleName]?.[action]);
+    } else if (allowedRoles) {
+      hasAccess = allowedRoles.includes(user.role);
+    } else {
+      hasAccess = true;
+    }
   }
 
   if (!hasAccess) {

@@ -17,8 +17,10 @@ import {
   HiOutlineChevronRight,
   HiOutlineInformationCircle,
   HiOutlineFolderArrowDown,
+  HiOutlineKey,
 } from 'react-icons/hi2';
 import api from '../../../api/axios';
+import UserPermissionsModal from '../../../components/permissions/UserPermissionsModal';
 
 const fallbackRoleTypes = {
   User: [
@@ -53,6 +55,7 @@ const UsersPage = () => {
   const { user: currentUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [permissionsModalUser, setPermissionsModalUser] = useState(null);
   const [seatLimitWarning, setSeatLimitWarning] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -362,6 +365,17 @@ const UsersPage = () => {
                         <HiOutlineFolderArrowDown className="w-3.5 h-3.5" />
                         KYC Docs
                       </Link>
+                      {canEditUser && (
+                        <button
+                          type="button"
+                          onClick={() => setPermissionsModalUser(user)}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
+                          title="Configure Sub-Menu Access Permissions"
+                        >
+                          <HiOutlineKey className="w-3.5 h-3.5" />
+                          Access
+                        </button>
+                      )}
                       {canDeleteUser && (
                         <button
                           type="button"
@@ -501,6 +515,17 @@ const UsersPage = () => {
                             >
                               <HiOutlineFolderArrowDown className="w-4 h-4" />
                             </Link>
+                            {canEditUser && (
+                              <button
+                                type="button"
+                                onClick={() => setPermissionsModalUser(user)}
+                                title="Configure Sub-Menu Access Permissions"
+                                aria-label="Configure sub-menu access permissions"
+                                className={`${iconBtnBase} text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border border-indigo-200`}
+                              >
+                                <HiOutlineKey className="w-4 h-4" />
+                              </button>
+                            )}
                       {canDeleteUser && (
                               <button
                                 type="button"
@@ -793,6 +818,14 @@ const UsersPage = () => {
             </form>
           </div>
         </div>
+      )}
+      {/* User Sub-Menu Access Permissions Modal */}
+      {permissionsModalUser && (
+        <UserPermissionsModal
+          user={permissionsModalUser}
+          isOpen={!!permissionsModalUser}
+          onClose={() => setPermissionsModalUser(null)}
+        />
       )}
     </div>
   );

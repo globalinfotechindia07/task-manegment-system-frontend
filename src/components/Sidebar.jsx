@@ -42,6 +42,7 @@ import {
   HiOutlineDocumentArrowDown,
   HiOutlineServer,
   HiOutlineMagnifyingGlass,
+  HiOutlineBookOpen,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -270,12 +271,27 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           icon: HiOutlineUser,
           isDirect: true,
         },
+        {
+          id: 'accountant-user-manual',
+          name: 'User Manual & Guide',
+          path: '/user-manual',
+          icon: HiOutlineBookOpen,
+          isDirect: true,
+        },
       ];
     }
 
     // 4. Company Office Navigation
     const isAdmin = user.role === 'Admin' || user.role === 'CTO';
     const perms = user.permissions || {};
+
+    const hasSubmenuAccess = (submenuId, fallbackCondition = true) => {
+      if (isAdmin) return true;
+      if (perms?.submenus && typeof perms.submenus[submenuId] !== 'undefined') {
+        return Boolean(perms.submenus[submenuId]);
+      }
+      return Boolean(fallbackCondition);
+    };
 
     let dashboardPath = '/admin/dashboard';
     if (!isAdmin) {
@@ -302,16 +318,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Work & Projects
     const workChildren = [];
-    if (isAdmin || perms.projects?.view || r === 'user' || r === 'employee' || r === 'team head' || r.includes('lead')) {
+    if (hasSubmenuAccess('work_projects', isAdmin || perms.projects?.view || r === 'user' || r === 'employee' || r === 'team head' || r.includes('lead'))) {
       workChildren.push({ name: 'Projects', path: '/admin/projects', icon: HiOutlineFolder });
     }
-    if (isAdmin || perms.projects?.edit || perms.projects?.create) {
+    if (hasSubmenuAccess('work_client_portal', isAdmin || perms.projects?.edit || perms.projects?.create)) {
       workChildren.push({ name: 'Client Portal & Billings', path: '/admin/client-portal', icon: HiOutlineBanknotes });
     }
-    if (isAdmin || perms.sprints?.view || perms.projects?.view || perms.tasks?.view) {
+    if (hasSubmenuAccess('work_sprints', isAdmin || perms.sprints?.view || perms.projects?.view || perms.tasks?.view)) {
       workChildren.push({ name: 'Sprints & Timeline', path: '/admin/sprints', icon: HiOutlineRocketLaunch });
     }
-    if (isAdmin || perms.tasks?.view) {
+    if (hasSubmenuAccess('work_tasks', isAdmin || perms.tasks?.view)) {
       workChildren.push({
         name: 'Daily Tasks',
         path: '/admin/tasks',
@@ -319,16 +335,20 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         badge: newTasksCount > 0 ? newTasksCount : null,
       });
     }
-    if (isAdmin || perms.reports?.view) {
+    if (hasSubmenuAccess('work_task_reports', isAdmin || perms.reports?.view)) {
       workChildren.push({ name: 'Task Reports', path: '/admin/reports', icon: HiOutlineDocumentText });
+    }
+    if (hasSubmenuAccess('work_reports_center', isAdmin || perms.reports?.view)) {
       workChildren.push({ name: 'Reports & Export Hub', path: '/admin/reports-center', icon: HiOutlineDocumentArrowDown });
     }
-    workChildren.push({
-      name: 'Time Tracker & Logs',
-      path: '/time-tracker',
-      icon: HiOutlineClock,
-    });
-    if (isAdmin || perms.performance?.view) {
+    if (hasSubmenuAccess('work_time_tracker', true)) {
+      workChildren.push({
+        name: 'Time Tracker & Logs',
+        path: '/time-tracker',
+        icon: HiOutlineClock,
+      });
+    }
+    if (hasSubmenuAccess('work_performance', isAdmin || perms.performance?.view)) {
       workChildren.push({ name: 'Performance Analysis', path: '/admin/performance', icon: HiOutlineChartBar });
     }
     if (workChildren.length > 0) {
@@ -342,10 +362,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // CRM & Sales
     const crmChildren = [];
-    if (isAdmin || perms.crm?.view) {
+    if (hasSubmenuAccess('crm_overview', isAdmin || perms.crm?.view)) {
       crmChildren.push({ name: 'CRM Overview', path: '/admin/crm', icon: HiOutlineChartBarSquare });
+    }
+    if (hasSubmenuAccess('crm_leads', isAdmin || perms.crm?.view)) {
       crmChildren.push({ name: 'Leads & Inquiries', path: '/admin/crm/leads', icon: HiOutlineUserGroup });
+    }
+    if (hasSubmenuAccess('crm_deals', isAdmin || perms.crm?.view)) {
       crmChildren.push({ name: 'Deals & Pipeline', path: '/admin/crm/deals', icon: HiOutlineBriefcase });
+    }
+    if (hasSubmenuAccess('crm_customers', isAdmin || perms.crm?.view)) {
       crmChildren.push({ name: 'Customer Accounts', path: '/admin/crm/customers', icon: HiOutlineBuildingStorefront });
     }
     if (crmChildren.length > 0) {
@@ -359,23 +385,25 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Human Resources
     const teamChildren = [];
-    if (isAdmin || perms.users?.view) {
+    if (hasSubmenuAccess('hr_users', isAdmin || perms.users?.view)) {
       teamChildren.push({ name: 'Users & Staff', path: '/admin/users', icon: HiOutlineUsers });
     }
-    if (isAdmin || perms.users?.view || perms.payroll?.view) {
+    if (hasSubmenuAccess('hr_offer_letters', isAdmin || perms.users?.view || perms.payroll?.view)) {
       teamChildren.push({ name: 'Offer Letters', path: '/admin/offer-letters', icon: HiOutlineDocumentText });
     }
-    if (isAdmin || perms.documents?.view || perms.users?.view) {
+    if (hasSubmenuAccess('hr_documents', isAdmin || perms.documents?.view || perms.users?.view)) {
       teamChildren.push({ name: 'Document Management', path: '/admin/documents', icon: HiOutlineFolderArrowDown });
     }
-    if (isAdmin || perms.attendance?.view || perms.attendance?.edit) {
+    if (hasSubmenuAccess('hr_attendance', isAdmin || perms.attendance?.view || perms.attendance?.edit)) {
       teamChildren.push({ name: 'Daily Attendance & Edit', path: '/admin/attendance', icon: HiOutlineCalendarDays });
+    }
+    if (hasSubmenuAccess('hr_attendance_settings', isAdmin || perms.attendance?.view || perms.attendance?.edit)) {
       teamChildren.push({ name: 'Attendance Policy', path: '/admin/attendance-settings', icon: HiOutlineClock });
     }
-    if (isAdmin || perms.attendance?.view || perms.users?.view || perms.leaves?.view) {
+    if (hasSubmenuAccess('hr_leaves', isAdmin || perms.attendance?.view || perms.users?.view || perms.leaves?.view)) {
       teamChildren.push({ name: 'Leaves & Holidays', path: '/admin/leaves', icon: HiOutlineCalendarDays });
     }
-    if (isAdmin || perms.announcements?.view) {
+    if (hasSubmenuAccess('hr_announcements', isAdmin || perms.announcements?.view)) {
       teamChildren.push({ name: 'Announcements', path: '/admin/announcements', icon: HiOutlineMegaphone });
     }
     if (teamChildren.length > 0) {
@@ -389,10 +417,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Payroll & Finance
     const payrollChildren = [];
-    if (isAdmin || perms.payroll?.view) {
+    if (hasSubmenuAccess('payroll_salary_process', isAdmin || perms.payroll?.view)) {
       payrollChildren.push({ name: 'Salary Process & Status', path: '/salary-process', icon: HiOutlineBanknotes });
+    }
+    if (hasSubmenuAccess('payroll_billing', isAdmin || perms.payroll?.view)) {
       payrollChildren.push({ name: 'Client Invoicing & Billing', path: '/accountant/billing', icon: HiOutlineBanknotes });
+    }
+    if (hasSubmenuAccess('payroll_salary_management', isAdmin || perms.payroll?.view)) {
       payrollChildren.push({ name: 'Salary Management', path: '/admin/salary-management', icon: HiOutlineBanknotes });
+    }
+    if (hasSubmenuAccess('payroll_settings', isAdmin || perms.payroll?.view)) {
       payrollChildren.push({ name: 'Payroll Settings', path: '/admin/payroll-settings', icon: HiOutlineCog6Tooth });
     }
     if (payrollChildren.length > 0) {
@@ -406,13 +440,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Collaboration
     const commChildren = [];
-    if (isAdmin || perms.chat?.view) {
+    if (hasSubmenuAccess('collab_chat', isAdmin || perms.chat?.view)) {
       commChildren.push({
         name: 'Team Chat',
         path: '/admin/chat',
         icon: HiOutlineChatBubbleLeftRight,
         badge: unreadChatsCount > 0 ? unreadChatsCount : null,
       });
+    }
+    if (hasSubmenuAccess('collab_meeting', isAdmin || perms.chat?.view)) {
       commChildren.push({
         name: 'Team Meeting',
         path: '/team-meeting',
@@ -430,33 +466,58 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     }
 
     // Self Service
-    structure.push({
-      id: 'self-service',
-      name: 'My Self-Service',
-      icon: HiOutlineFingerPrint,
-      children: [
-        { name: 'Punch In / Out', path: '/punch-in', icon: HiOutlineFingerPrint },
-        { name: 'My Attendance', path: '/my-attendance', icon: HiOutlineCalendarDays },
-        { name: 'My Leaves & Apply', path: '/my-leaves', icon: HiOutlineCalendarDays },
-        { name: 'My Salary Slips', path: '/my-salary-slips', icon: HiOutlineDocumentCheck },
-        { name: 'My Documents & KYC', path: '/my-documents', icon: HiOutlineFolderArrowDown },
-        { name: 'Sticky Notes & Reminders', path: '/sticky-notes', icon: HiOutlineBookmark },
-        { name: 'Work Timer & Tracker', path: '/time-tracker', icon: HiOutlineClock },
-        { name: 'My Profile', path: '/admin/profile', icon: HiOutlineUser },
-      ],
-    });
+    const selfChildren = [];
+    if (hasSubmenuAccess('self_punch', true)) {
+      selfChildren.push({ name: 'Punch In / Out', path: '/punch-in', icon: HiOutlineFingerPrint });
+    }
+    if (hasSubmenuAccess('self_attendance', true)) {
+      selfChildren.push({ name: 'My Attendance', path: '/my-attendance', icon: HiOutlineCalendarDays });
+    }
+    if (hasSubmenuAccess('self_leaves', true)) {
+      selfChildren.push({ name: 'My Leaves & Apply', path: '/my-leaves', icon: HiOutlineCalendarDays });
+    }
+    if (hasSubmenuAccess('self_salary_slips', true)) {
+      selfChildren.push({ name: 'My Salary Slips', path: '/my-salary-slips', icon: HiOutlineDocumentCheck });
+    }
+    if (hasSubmenuAccess('self_documents', true)) {
+      selfChildren.push({ name: 'My Documents & KYC', path: '/my-documents', icon: HiOutlineFolderArrowDown });
+    }
+    if (hasSubmenuAccess('self_sticky_notes', true)) {
+      selfChildren.push({ name: 'Sticky Notes & Reminders', path: '/sticky-notes', icon: HiOutlineBookmark });
+    }
+    if (hasSubmenuAccess('self_time_tracker', true)) {
+      selfChildren.push({ name: 'Work Timer & Tracker', path: '/time-tracker', icon: HiOutlineClock });
+    }
+    if (hasSubmenuAccess('self_user_manual', true)) {
+      selfChildren.push({ name: 'User Manual & Guide', path: '/user-manual', icon: HiOutlineBookOpen });
+    }
+    if (hasSubmenuAccess('self_profile', true)) {
+      selfChildren.push({ name: 'My Profile', path: '/admin/profile', icon: HiOutlineUser });
+    }
+    if (selfChildren.length > 0) {
+      structure.push({
+        id: 'self-service',
+        name: 'My Self-Service',
+        icon: HiOutlineFingerPrint,
+        children: selfChildren,
+      });
+    }
 
     // System Admin
     const adminChildren = [];
-    if (isAdmin || perms.settings?.view) {
+    if (hasSubmenuAccess('admin_roles', isAdmin || perms.settings?.view)) {
       adminChildren.push({ name: 'Roles & Permissions', path: '/admin/roles', icon: HiOutlineShieldCheck });
     }
-    if (isAdmin) {
+    if (hasSubmenuAccess('admin_billing', isAdmin)) {
       adminChildren.push({ name: 'Billing & Invoices', path: '/admin/billing', icon: HiOutlineCreditCard });
     }
-    if (isAdmin || perms.settings?.view) {
+    if (hasSubmenuAccess('admin_settings_org', isAdmin || perms.settings?.view)) {
       adminChildren.push({ name: 'Office Settings', path: '/admin/settings?tab=org', icon: HiOutlineCog6Tooth });
+    }
+    if (hasSubmenuAccess('admin_settings_email', isAdmin || perms.settings?.view)) {
       adminChildren.push({ name: 'Company SMTP & Mail', path: '/admin/settings?tab=email', icon: HiOutlineEnvelope });
+    }
+    if (hasSubmenuAccess('admin_backup', isAdmin || perms.settings?.view)) {
       adminChildren.push({ name: 'Data Backup & Restore', path: '/admin/backup', icon: HiOutlineServer });
     }
     if (adminChildren.length > 0) {
@@ -470,12 +531,22 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Configurations & External Third-Party APIs
     const configChildren = [];
-    if (isAdmin || perms.settings?.view || perms.integrations?.view) {
+    if (hasSubmenuAccess('config_website_feeds', isAdmin || perms.settings?.view || perms.integrations?.view)) {
       configChildren.push({ name: 'Website Feeds & Overview', path: '/admin/integrations', icon: HiOutlineGlobeAlt });
+    }
+    if (hasSubmenuAccess('config_contacts', isAdmin || perms.settings?.view || perms.integrations?.view)) {
       configChildren.push({ name: 'Contact Enquiries', path: '/admin/integrations?tab=contacts', icon: HiOutlineEnvelope });
+    }
+    if (hasSubmenuAccess('config_appointments', isAdmin || perms.settings?.view || perms.integrations?.view)) {
       configChildren.push({ name: 'Appointments', path: '/admin/integrations?tab=appointments', icon: HiOutlineCalendarDays });
+    }
+    if (hasSubmenuAccess('config_careers', isAdmin || perms.settings?.view || perms.integrations?.view)) {
       configChildren.push({ name: 'Career Applications', path: '/admin/integrations?tab=careers', icon: HiOutlineBriefcase });
+    }
+    if (hasSubmenuAccess('config_api_endpoints', isAdmin || perms.settings?.view || perms.integrations?.view)) {
       configChildren.push({ name: 'API Endpoints Setup', path: '/admin/integrations?tab=config', icon: HiOutlineCog6Tooth });
+    }
+    if (hasSubmenuAccess('config_integration_docs', isAdmin || perms.settings?.view || perms.integrations?.view)) {
       configChildren.push({ name: 'Integration Docs', path: '/admin/integrations?tab=docs', icon: HiOutlineCommandLine });
     }
     if (configChildren.length > 0) {
@@ -488,28 +559,43 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     }
 
     // Help & Support (Company Support + Softwares Support + System Support)
-    structure.push({
-      id: 'support-help',
-      name: 'Help & Support',
-      icon: HiOutlineLifebuoy,
-      children: [
-        {
-          name: 'Company Support',
-          path: '/company-support',
-          icon: HiOutlineBuildingOffice2,
-        },
-        {
-          name: 'Softwares Support',
-          path: '/software-support',
-          icon: HiOutlineComputerDesktop,
-        },
-        {
-          name: 'System Support',
-          path: '/support-tickets',
-          icon: HiOutlineLifebuoy,
-        },
-      ],
-    });
+    const supportChildren = [];
+    if (hasSubmenuAccess('support_company', true)) {
+      supportChildren.push({
+        name: 'Company Support',
+        path: '/company-support',
+        icon: HiOutlineBuildingOffice2,
+      });
+    }
+    if (hasSubmenuAccess('support_software', true)) {
+      supportChildren.push({
+        name: 'Softwares Support',
+        path: '/software-support',
+        icon: HiOutlineComputerDesktop,
+      });
+    }
+    if (hasSubmenuAccess('self_user_manual', true)) {
+      supportChildren.push({
+        name: 'User Manual & Guide',
+        path: '/user-manual',
+        icon: HiOutlineBookOpen,
+      });
+    }
+    if (hasSubmenuAccess('support_system', true)) {
+      supportChildren.push({
+        name: 'System Support',
+        path: '/support-tickets',
+        icon: HiOutlineLifebuoy,
+      });
+    }
+    if (supportChildren.length > 0) {
+      structure.push({
+        id: 'support-help',
+        name: 'Help & Support',
+        icon: HiOutlineLifebuoy,
+        children: supportChildren,
+      });
+    }
 
     return structure;
   };

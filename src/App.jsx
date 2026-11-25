@@ -19,6 +19,7 @@ import MyLeaves from './pages/common/MyLeaves';
 import StickyNotesPage from './pages/common/StickyNotes';
 import TimeTracker from './pages/common/TimeTracker';
 import SalaryProcess from './pages/common/SalaryProcess';
+import UserManual from './pages/common/UserManual';
 
 // Super Admin Pages
 import SuperAdminDashboard from './pages/super-admin/dashboard';
@@ -128,6 +129,8 @@ const App = () => {
             <Route path="/sticky-notes" element={<StickyNotesPage />} />
             <Route path="/time-tracker" element={<TimeTracker />} />
             <Route path="/admin/time-tracker" element={<TimeTracker />} />
+            <Route path="/user-manual" element={<UserManual />} />
+            <Route path="/user/manual" element={<UserManual />} />
             <Route path="/support-tickets" element={<SupportTickets />} />
             <Route path="/company-support" element={<CompanySupport />} />
             <Route path="/software-support" element={<SoftwareSupport />} />

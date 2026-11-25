@@ -225,6 +225,8 @@ const RolesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
   const [selectedTemplateKey, setSelectedTemplateKey] = useState(null);
+  const [roleModalTab, setRoleModalTab] = useState('modules');
+  const [submenuSearchQuery, setSubmenuSearchQuery] = useState('');
   const [roleForm, setRoleForm] = useState({
     name: '',
     displayName: '',
@@ -243,6 +245,14 @@ const RolesPage = () => {
     queryFn: async () => {
       const { data } = await api.get('/roles');
       return Array.isArray(data) ? data : [];
+    },
+  });
+
+  const { data: submenusCatalog = [] } = useQuery({
+    queryKey: ['submenusCatalog'],
+    queryFn: async () => {
+      const res = await api.get('/roles/submenus-catalog');
+      return res.data?.submenus || [];
     },
   });
 
@@ -362,6 +372,10 @@ const RolesPage = () => {
     Object.entries(defaultTmpl.permissions).forEach(([k, v]) => {
       newPerms[k] = { ...v };
     });
+    newPerms.submenus = {};
+    submenusCatalog.forEach((sub) => {
+      newPerms.submenus[sub.id] = sub.defaultRoles.includes(defaultTmpl.name) || sub.defaultRoles.includes(defaultTmpl.key);
+    });
 
     setRoleForm({
       name: defaultTmpl.name,
@@ -369,6 +383,7 @@ const RolesPage = () => {
       description: defaultTmpl.description,
       permissions: newPerms,
     });
+    setRoleModalTab('modules');
     setIsModalOpen(true);
   };
 
@@ -413,22 +428,32 @@ const RolesPage = () => {
     const existingPerms = role.permissions || {};
     const filledPerms = {};
 
-    allAvailableModules.forEach((m) => {
-      filledPerms[m.key] = {
-        view: Boolean(existingPerms[m.key]?.view),
-        create: Boolean(existingPerms[m.key]?.create),
-        edit: Boolean(existingPerms[m.key]?.edit),
-        delete: Boolean(existingPerms[m.key]?.delete),
-      };
-    });
+      allAvailableModules.forEach((m) => {
+        filledPerms[m.key] = {
+          view: Boolean(existingPerms[m.key]?.view),
+          create: Boolean(existingPerms[m.key]?.create),
+          edit: Boolean(existingPerms[m.key]?.edit),
+          delete: Boolean(existingPerms[m.key]?.delete),
+        };
+      });
 
-    setRoleForm({
-      name: role.name,
-      displayName: role.displayName || role.name,
-      description: role.description || '',
-      permissions: filledPerms,
-    });
-    setIsModalOpen(true);
+      filledPerms.submenus = { ...(existingPerms.submenus || {}) };
+      if (Object.keys(filledPerms.submenus).length === 0 && submenusCatalog.length > 0) {
+        submenusCatalog.forEach((sub) => {
+          filledPerms.submenus[sub.id] =
+            sub.defaultRoles.includes(role.name) ||
+            (matchedTmpl && sub.defaultRoles.includes(matchedTmpl.key));
+        });
+      }
+
+      setRoleForm({
+        name: role.name,
+        displayName: role.displayName || role.name,
+        description: role.description || '',
+        permissions: filledPerms,
+      });
+      setRoleModalTab('modules');
+      setIsModalOpen(true);
   };
 
   const handleResetRoleDefaults = (role) => {
@@ -1249,190 +1274,330 @@ const RolesPage = () => {
                 </div>
               </div>
 
-              {/* ---------- PERMISSIONS MATRIX ---------- */}
-              <div className="border-t border-slate-200 pt-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      Modular Capabilities Matrix
-                    </h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      Toggle View, Create, Edit, and Delete actions.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {selectedTemplateKey && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const tmpl = ROLE_TEMPLATES.find((t) => t.key === selectedTemplateKey);
-                          if (tmpl) handleApplyTemplate(tmpl);
-                        }}
-                        className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <HiOutlineArrowPath className="w-3 h-3" />
-                        Reset
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleBulkSetPermissions('full')}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <HiOutlineCheck className="w-3 h-3" />
-                      All
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleBulkSetPermissions('read')}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <HiOutlineEye className="w-3 h-3" />
-                      Read
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleBulkSetPermissions('clear')}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors cursor-pointer"
-                    >
-                      <HiOutlineXMark className="w-3 h-3" />
-                      Clear
-                    </button>
-                  </div>
+              {/* ---------- PERMISSIONS TABS & MATRIX ---------- */}
+              <div className="border-t border-slate-200 pt-3">
+                <div className="flex border-b border-slate-200 gap-4 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setRoleModalTab('modules')}
+                    className={`pb-2 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer ${
+                      roleModalTab === 'modules'
+                        ? 'border-indigo-600 text-indigo-700'
+                        : 'border-transparent text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    1. CRUD Module Matrix
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRoleModalTab('submenus')}
+                    className={`pb-2 text-xs sm:text-sm font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                      roleModalTab === 'submenus'
+                        ? 'border-indigo-600 text-indigo-700'
+                        : 'border-transparent text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    <span>2. Granular Sub-Menus Access</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      {Object.values(roleForm.permissions?.submenus || {}).filter(Boolean).length} Enabled
+                    </span>
+                  </button>
                 </div>
 
-                {/* Matrix — scrollable on mobile */}
-                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-slate-700 min-w-[600px]">
-                      <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 font-semibold uppercase tracking-wider text-[10px]">
-                        <tr>
-                          <th className="px-3 py-2.5">Module</th>
-                          <th className="px-2 py-2.5 text-center w-16">View</th>
-                          <th className="px-2 py-2.5 text-center w-16">Create</th>
-                          <th className="px-2 py-2.5 text-center w-16">Edit</th>
-                          <th className="px-2 py-2.5 text-center w-16">Delete</th>
-                          <th className="px-2 py-2.5 text-right w-20">Row</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {allAvailableModules.map((mod) => {
-                          const perm =
-                            roleForm.permissions[mod.key] || {
-                              view: false, create: false, edit: false, delete: false,
-                            };
-                          const activeTemplate = ROLE_TEMPLATES.find(
-                            (t) => t.key === selectedTemplateKey
-                          );
-                          const ModIcon = mod.icon || HiOutlineSparkles;
-
-                          return (
-                            <tr key={mod.key} className="hover:bg-slate-50/70 transition-colors">
-                              <td className="px-3 py-2.5">
-                                <div className="font-bold text-slate-900 text-[11px] flex items-center gap-1.5">
-                                  <div className="w-5 h-5 rounded bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
-                                    <ModIcon className="w-3 h-3" />
-                                  </div>
-                                  <span className="truncate">{mod.label}</span>
-                                  {activeTemplate?.permissions?.[mod.key]?.view && (
-                                    <span className="hidden sm:inline text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shrink-0">
-                                      Base
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="text-[10px] text-slate-500 ml-6.5 line-clamp-1">
-                                  {mod.desc}
-                                </div>
-                              </td>
-
-                              {['view', 'create', 'edit', 'delete'].map((action) => (
-                                <td key={action} className="px-2 py-2.5 text-center">
-                                  <input
-                                    type="checkbox"
-                                    checked={perm[action]}
-                                    onChange={() => handlePermissionToggle(mod.key, action)}
-                                    className={`w-4 h-4 rounded cursor-pointer ${action === 'delete'
-                                      ? 'text-rose-600 border-slate-300 focus:ring-rose-500'
-                                      : 'text-indigo-600 border-slate-300 focus:ring-indigo-500'
-                                      } ${activeTemplate?.permissions?.[mod.key]?.[action]
-                                        ? action === 'delete'
-                                          ? 'ring-1 ring-rose-400'
-                                          : 'ring-1 ring-emerald-400'
-                                        : ''
-                                      }`}
-                                  />
-                                </td>
-                              ))}
-
-                              <td className="px-2 py-2.5 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => handleRowToggle(mod.key)}
-                                  className="text-[10px] font-semibold text-indigo-700 hover:text-indigo-800 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 cursor-pointer"
-                                  title="Toggle all for this row"
-                                >
-                                  <HiOutlineArrowsRightLeft className="w-2.5 h-2.5" />
-                                  All
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Add Custom Module */}
-                <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
-                      <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-600" />
-                      Extend System with Custom Module
-                    </span>
-                    <span className="text-[10px] text-slate-500 mt-0.5 block">
-                      e.g. Inventory, CRM Leads, Fleet, etc.
-                    </span>
-                  </div>
-
-                  {!showAddModuleInput ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowAddModuleInput(true)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-indigo-700 border border-slate-300 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0"
-                    >
-                      <HiOutlinePlus className="w-3 h-3" />
-                      Add Module
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 w-full sm:w-auto">
-                      <input
-                        type="text"
-                        value={newModuleName}
-                        onChange={(e) => setNewModuleName(e.target.value)}
-                        placeholder="Module name"
-                        className="flex-1 sm:flex-initial sm:w-40 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-900 outline-none focus:border-indigo-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddNewModule}
-                        className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-bold transition-colors shrink-0"
-                      >
-                        Add
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowAddModuleInput(false)}
-                        className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 shrink-0"
-                        aria-label="Cancel"
-                      >
-                        <HiOutlineXMark className="w-3.5 h-3.5" />
-                      </button>
+                {roleModalTab === 'submenus' ? (
+                  <div className="space-y-4">
+                    {/* Submenu Top Controls */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div className="relative flex-1 w-full sm:max-w-xs">
+                        <input
+                          type="text"
+                          value={submenuSearchQuery}
+                          onChange={(e) => setSubmenuSearchQuery(e.target.value)}
+                          placeholder="Filter sub-menus..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = {};
+                            submenusCatalog.forEach((s) => { cur[s.id] = true; });
+                            setRoleForm((prev) => ({
+                              ...prev,
+                              permissions: { ...prev.permissions, submenus: cur },
+                            }));
+                          }}
+                          className="px-2.5 py-1 text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
+                        >
+                          Enable All Sub-Menus
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = {};
+                            submenusCatalog.forEach((s) => { cur[s.id] = false; });
+                            setRoleForm((prev) => ({
+                              ...prev,
+                              permissions: { ...prev.permissions, submenus: cur },
+                            }));
+                          }}
+                          className="px-2.5 py-1 text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors"
+                        >
+                          Disable All
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    {/* Sub-Menus List by Category */}
+                    <div className="max-h-[50vh] overflow-y-auto space-y-3 pr-1">
+                      {Object.entries(
+                        submenusCatalog.reduce((acc, sub) => {
+                          if (
+                            !submenuSearchQuery.trim() ||
+                            sub.name.toLowerCase().includes(submenuSearchQuery.toLowerCase()) ||
+                            sub.path.toLowerCase().includes(submenuSearchQuery.toLowerCase())
+                          ) {
+                            if (!acc[sub.category]) acc[sub.category] = [];
+                            acc[sub.category].push(sub);
+                          }
+                          return acc;
+                        }, {})
+                      ).map(([cat, items]) => (
+                        <div key={cat} className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+                          <div className="px-3.5 py-2 bg-slate-50 border-b border-slate-100 font-bold text-xs text-slate-800 flex items-center justify-between">
+                            <span>{cat}</span>
+                            <span className="text-[10px] text-slate-500">
+                              {items.filter((it) => roleForm.permissions?.submenus?.[it.id]).length} / {items.length} Enabled
+                            </span>
+                          </div>
+                          <div className="divide-y divide-slate-100">
+                            {items.map((it) => {
+                              const isChecked = Boolean(roleForm.permissions?.submenus?.[it.id]);
+                              return (
+                                <div
+                                  key={it.id}
+                                  className="px-3.5 py-2 flex items-center justify-between gap-2 hover:bg-slate-50/70 transition-colors"
+                                >
+                                  <div>
+                                    <div className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+                                      <span>{it.name}</span>
+                                      <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-1 py-0.2 rounded">
+                                        {it.path}
+                                      </span>
+                                    </div>
+                                    <p className="text-[10px] text-slate-500">{it.description}</p>
+                                  </div>
+                                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      onChange={() => {
+                                        const cur = { ...(roleForm.permissions?.submenus || {}) };
+                                        cur[it.id] = !cur[it.id];
+                                        setRoleForm((prev) => ({
+                                          ...prev,
+                                          permissions: { ...prev.permissions, submenus: cur },
+                                        }));
+                                      }}
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-9 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                  </label>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                      <div>
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          Modular Capabilities Matrix
+                        </h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          Toggle View, Create, Edit, and Delete actions.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {selectedTemplateKey && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const tmpl = ROLE_TEMPLATES.find((t) => t.key === selectedTemplateKey);
+                              if (tmpl) handleApplyTemplate(tmpl);
+                            }}
+                            className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <HiOutlineArrowPath className="w-3 h-3" />
+                            Reset
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleBulkSetPermissions('full')}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <HiOutlineCheck className="w-3 h-3" />
+                          All
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleBulkSetPermissions('read')}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <HiOutlineEye className="w-3 h-3" />
+                          Read
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleBulkSetPermissions('clear')}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <HiOutlineXMark className="w-3 h-3" />
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Matrix — scrollable on mobile */}
+                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs text-slate-700 min-w-[600px]">
+                          <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 font-semibold uppercase tracking-wider text-[10px]">
+                            <tr>
+                              <th className="px-3 py-2.5">Module</th>
+                              <th className="px-2 py-2.5 text-center w-16">View</th>
+                              <th className="px-2 py-2.5 text-center w-16">Create</th>
+                              <th className="px-2 py-2.5 text-center w-16">Edit</th>
+                              <th className="px-2 py-2.5 text-center w-16">Delete</th>
+                              <th className="px-2 py-2.5 text-right w-20">Row</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {allAvailableModules.map((mod) => {
+                              const perm =
+                                roleForm.permissions[mod.key] || {
+                                  view: false, create: false, edit: false, delete: false,
+                                };
+                              const activeTemplate = ROLE_TEMPLATES.find(
+                                (t) => t.key === selectedTemplateKey
+                              );
+                              const ModIcon = mod.icon || HiOutlineSparkles;
+
+                              return (
+                                <tr key={mod.key} className="hover:bg-slate-50/70 transition-colors">
+                                  <td className="px-3 py-2.5">
+                                    <div className="font-bold text-slate-900 text-[11px] flex items-center gap-1.5">
+                                      <div className="w-5 h-5 rounded bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 shrink-0">
+                                        <ModIcon className="w-3 h-3" />
+                                      </div>
+                                      <span className="truncate">{mod.label}</span>
+                                      {activeTemplate?.permissions?.[mod.key]?.view && (
+                                        <span className="hidden sm:inline text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shrink-0">
+                                          Base
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="text-[10px] text-slate-500 ml-6.5 line-clamp-1">
+                                      {mod.desc}
+                                    </div>
+                                  </td>
+
+                                  {['view', 'create', 'edit', 'delete'].map((action) => (
+                                    <td key={action} className="px-2 py-2.5 text-center">
+                                      <input
+                                        type="checkbox"
+                                        checked={perm[action]}
+                                        onChange={() => handlePermissionToggle(mod.key, action)}
+                                        className={`w-4 h-4 rounded cursor-pointer ${action === 'delete'
+                                          ? 'text-rose-600 border-slate-300 focus:ring-rose-500'
+                                          : 'text-indigo-600 border-slate-300 focus:ring-indigo-500'
+                                          } ${activeTemplate?.permissions?.[mod.key]?.[action]
+                                            ? action === 'delete'
+                                              ? 'ring-1 ring-rose-400'
+                                              : 'ring-1 ring-emerald-400'
+                                            : ''
+                                          }`}
+                                      />
+                                    </td>
+                                  ))}
+
+                                  <td className="px-2 py-2.5 text-right">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRowToggle(mod.key)}
+                                      className="text-[10px] font-semibold text-indigo-700 hover:text-indigo-800 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 cursor-pointer"
+                                      title="Toggle all for this row"
+                                    >
+                                      <HiOutlineArrowsRightLeft className="w-2.5 h-2.5" />
+                                      All
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Add Custom Module */}
+                    <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
+                          <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-600" />
+                          Extend System with Custom Module
+                        </span>
+                        <span className="text-[10px] text-slate-500 mt-0.5 block">
+                          e.g. Inventory, CRM Leads, Fleet, etc.
+                        </span>
+                      </div>
+
+                      {!showAddModuleInput ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowAddModuleInput(true)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-indigo-700 border border-slate-300 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0"
+                        >
+                          <HiOutlinePlus className="w-3 h-3" />
+                          Add Module
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                          <input
+                            type="text"
+                            value={newModuleName}
+                            onChange={(e) => setNewModuleName(e.target.value)}
+                            placeholder="Module name"
+                            className="flex-1 sm:flex-initial sm:w-40 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-900 outline-none focus:border-indigo-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddNewModule}
+                            className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-bold transition-colors shrink-0"
+                          >
+                            Add
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowAddModuleInput(false)}
+                            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 shrink-0"
+                            aria-label="Cancel"
+                          >
+                            <HiOutlineXMark className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </form>
 

@@ -11,11 +11,12 @@ import {
   HiOutlineInbox,
   HiOutlineFingerPrint,
   HiOutlineClock,
+  HiOutlineBookOpen,
 } from 'react-icons/hi2';
 
 const Header = ({ toggleSidebar }) => {
   const { logout, user } = useAuth();
-  const { socket } = useSocket();
+  const { socket } = useSocket(); 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,7 +43,6 @@ const Header = ({ toggleSidebar }) => {
     enabled: !!user,
   });
 
-  // Today's attendance status for morning reminder
   const { data: todayStatus } = useQuery({
     queryKey: ['todayAttendanceStatus'],
     queryFn: async () => {
@@ -203,6 +203,17 @@ const Header = ({ toggleSidebar }) => {
             <span className="hidden sm:inline">Punch In</span>
           </button>
         )}
+
+        {/* User Manual Shortcut Button */}
+        <button
+          type="button"
+          onClick={() => navigate('/user-manual')}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 border border-indigo-200/80 text-indigo-700 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
+          title="User Manual & Employee Operations Guide"
+        >
+          <HiOutlineBookOpen className="w-4 h-4 text-indigo-600" />
+          <span className="hidden sm:inline">Manual</span>
+        </button>
 
         {/* Notification Bell */}
         <div className="relative" ref={dropdownRef}>

@@ -9,6 +9,7 @@ import ModuleShowcase from '../components/landing/ModuleShowcase';
 import RoleWorkflows from '../components/landing/RoleWorkflows';
 import HowItWorks from '../components/landing/HowItWorks';
 import ScrollingFeatureTicker from '../components/landing/ScrollingFeatureTicker';
+import DemoCredentialsSection from '../components/landing/DemoCredentialsSection';
 import { 
   HiOutlineCheck, 
   HiStar, 
@@ -274,6 +275,9 @@ const Landing = () => {
             <a href="#plans" className="hover:text-indigo-600 transition-colors">
               Plans &amp; Pricing
             </a>
+            <a href="#demo" className="text-amber-600 font-bold hover:text-amber-700 transition-colors flex items-center gap-1">
+              <span>⚡ Demo Accounts</span>
+            </a>
             <a href="#about" className="hover:text-indigo-600 transition-colors">
               About
             </a>
@@ -312,6 +316,13 @@ const Landing = () => {
               </Link>
             ) : (
               <>
+                <a
+                  href="#demo"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors flex items-center gap-1.5 shadow-xs"
+                >
+                  <HiOutlineSparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Live Demo</span>
+                </a>
                 <Link
                   to="/login"
                   className="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors"
@@ -399,6 +410,14 @@ const Landing = () => {
                 >
                   <span>Plans &amp; Pricing</span>
                   <HiOutlineArrowRight className="w-4 h-4 text-slate-400" />
+                </a>
+                <a
+                  href="#demo"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-amber-700 bg-amber-50/80 border border-amber-200/60 hover:bg-amber-100 transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">⚡ Public Demo Accounts</span>
+                  <HiOutlineArrowRight className="w-4 h-4 text-amber-600" />
                 </a>
                 <a
                   href="#about"
@@ -514,6 +533,13 @@ const Landing = () => {
           </p>
 
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center items-stretch sm:items-center gap-3 sm:gap-4 px-2">
+            <a
+              href="#demo"
+              className="inline-flex items-center justify-center gap-2 font-bold rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/25 px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base transition-all hover:scale-[1.02] cursor-pointer"
+            >
+              <span>⚡ Test Live Demo Accounts</span>
+              <HiOutlineSparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-200" />
+            </a>
             <a
               href="#modules"
               className={`${tokens.btnPrimary} px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base`}
@@ -794,6 +820,9 @@ const Landing = () => {
           )}
         </div>
       </section>
+
+      {/* ===================== LIVE DEMO ACCOUNTS & SANDBOX ===================== */}
+      <DemoCredentialsSection />
 
       {/* ===================== 4. INTERACTIVE MODULES SHOWCASE ===================== */}
       <ModuleShowcase />
