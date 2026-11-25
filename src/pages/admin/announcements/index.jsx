@@ -179,7 +179,7 @@ const AdminAnnouncements = () => {
       </div>
 
       {/* ===================== TABS ===================== */}
-      <div className="border-b border-slate-200 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto">
+      <div className="border-b border-slate-200 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar touch-scroll">
         <div className="flex min-w-max">
           {['Active', 'Previous'].map((tab) => (
             <button
@@ -311,7 +311,7 @@ const AdminAnnouncements = () => {
           />
 
           {/* Modal card — full-screen bottom sheet on mobile, centered card on desktop */}
-          <div className="relative bg-white sm:rounded-2xl rounded-t-2xl border-0 sm:border border-slate-200 shadow-2xl w-full sm:max-w-2xl max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+          <div className="relative bg-white sm:rounded-2xl rounded-t-2xl border-0 sm:border border-slate-200 shadow-2xl w-full sm:max-w-2xl max-h-[92dvh] sm:max-h-[90dvh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             {/* Header */}
             <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50 shrink-0">
               <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate">

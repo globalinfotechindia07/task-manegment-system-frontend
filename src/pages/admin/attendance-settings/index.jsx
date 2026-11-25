@@ -114,7 +114,7 @@ const AttendanceSettings = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
 
       {/* Page Header */}
       <div>
@@ -127,7 +127,7 @@ const AttendanceSettings = () => {
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-3.5 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
 
           {/* ===================== GEOFENCING SECTION ===================== */}
           <section>

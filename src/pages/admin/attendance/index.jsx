@@ -22,6 +22,7 @@ import {
   HiOutlineInformationCircle,
   HiOutlineBuildingOffice2,
   HiOutlineArrowTopRightOnSquare,
+  HiOutlineArrowsRightLeft,
 } from 'react-icons/hi2';
 
 const AdminAttendance = () => {
@@ -262,11 +263,11 @@ const AdminAttendance = () => {
       </div>
 
       {/* ===================== TABS NAVIGATION ===================== */}
-      <div className="flex border-b border-slate-200 gap-2 sm:gap-6">
+      <div className="flex border-b border-slate-200 gap-2 sm:gap-6 overflow-x-auto no-scrollbar touch-scroll flex-nowrap">
         <button
           type="button"
           onClick={() => setActiveTab('daily')}
-          className={`pb-3 text-sm font-bold border-b-2 flex items-center gap-2 transition cursor-pointer ${
+          className={`pb-3 text-sm font-bold border-b-2 flex items-center gap-2 transition cursor-pointer shrink-0 whitespace-nowrap ${
             activeTab === 'daily'
               ? 'border-indigo-600 text-indigo-600'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -279,7 +280,7 @@ const AdminAttendance = () => {
         <button
           type="button"
           onClick={() => setActiveTab('audit')}
-          className={`pb-3 text-sm font-bold border-b-2 flex items-center gap-2 transition cursor-pointer ${
+          className={`pb-3 text-sm font-bold border-b-2 flex items-center gap-2 transition cursor-pointer shrink-0 whitespace-nowrap ${
             activeTab === 'audit'
               ? 'border-indigo-600 text-indigo-600'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -299,7 +300,7 @@ const AdminAttendance = () => {
           {/* DATE SELECTOR BAR */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
             {/* Quick Day Stepper */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
               <button
                 type="button"
                 onClick={() => changeDateByDays(-1)}
@@ -382,7 +383,7 @@ const AdminAttendance = () => {
               <p className="text-[10px] font-bold uppercase text-purple-700">On Leave</p>
               <p className="text-lg font-black text-purple-800 font-mono">{summary.onLeaveCount}</p>
             </div>
-            <div className="bg-indigo-50/60 p-3 rounded-xl border border-indigo-200/80 shadow-2xs">
+            <div className="bg-indigo-50/60 p-3 rounded-xl border border-indigo-200/80 shadow-2xs col-span-2 sm:col-span-1">
               <p className="text-[10px] font-bold uppercase text-indigo-700">Manual Edits</p>
               <p className="text-lg font-black text-indigo-800 font-mono">{summary.editedCount}</p>
             </div>
@@ -433,8 +434,14 @@ const AdminAttendance = () => {
 
           {/* ATTENDANCE RECORDS TABLE */}
           <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-700 min-w-[760px]">
+            <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 px-3 py-2 border-b border-slate-200">
+              <span className="flex items-center gap-1 font-medium">
+                <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+                Swipe horizontally to view punches, duration & audit
+              </span>
+            </div>
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full text-left text-xs text-slate-700 min-w-[820px]">
                 <thead>
                   <tr className="bg-slate-50 text-[10px] uppercase text-slate-500 border-b border-slate-200 font-bold tracking-wider">
                     <th className="px-4 py-3.5">Employee</th>
@@ -630,8 +637,14 @@ const AdminAttendance = () => {
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-700 min-w-[740px]">
+            <div className="sm:hidden flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 px-3 py-2 border-b border-slate-200">
+              <span className="flex items-center gap-1 font-medium">
+                <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+                Swipe horizontally to view audit trail details
+              </span>
+            </div>
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full text-left text-xs text-slate-700 min-w-[780px]">
                 <thead>
                   <tr className="bg-slate-50 text-[10px] uppercase text-slate-500 border-b border-slate-200 font-bold tracking-wider">
                     <th className="px-4 py-3">Attendance Date</th>
@@ -695,8 +708,8 @@ const AdminAttendance = () => {
 
       {/* ===================== MODAL 1: EDIT / MARK ATTENDANCE ===================== */}
       {editingRecord && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-2xl border border-slate-200 shadow-2xl animate-in fade-in zoom-in-95 my-auto">
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -830,8 +843,8 @@ const AdminAttendance = () => {
 
       {/* ===================== MODAL 2: VIEW RECORD EDIT HISTORY ===================== */}
       {viewHistoryRecord && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-2xl border border-slate-200 shadow-2xl animate-in fade-in zoom-in-95 my-auto">
             <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-1.5">

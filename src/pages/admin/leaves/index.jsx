@@ -19,6 +19,7 @@ import {
   HiOutlineMoon,
   HiOutlineExclamationTriangle,
   HiOutlineInformationCircle,
+  HiOutlineArrowsRightLeft,
 } from 'react-icons/hi2';
 
 const AdminLeaves = () => {
@@ -383,23 +384,23 @@ const AdminLeaves = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-3.5 sm:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <HiOutlineCalendarDays className="w-8 h-8 text-indigo-600" />
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <HiOutlineCalendarDays className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600 flex-shrink-0" />
             Leaves & Holidays Management
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Configure company holidays, set annual leave policies, assign employee quotas, and review leave requests.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {activeTab === 'holidays' && (
             <button
               onClick={handleOpenAddHoliday}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-sm flex items-center gap-2 transition shadow-sm"
+              className="w-full sm:w-auto justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
             >
               <HiOutlinePlus className="w-4 h-4" />
               Add Holiday
@@ -408,7 +409,7 @@ const AdminLeaves = () => {
           {activeTab === 'balances' && (
             <button
               onClick={() => setRolloverModalOpen(true)}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm flex items-center gap-2 transition shadow-sm"
+              className="w-full sm:w-auto justify-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
             >
               <HiOutlineArrowPath className="w-4 h-4" />
               Rollover Carry Forward
@@ -418,67 +419,67 @@ const AdminLeaves = () => {
       </div>
 
       {/* Overview Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-            <HiOutlineClock className="w-6 h-6" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold flex-shrink-0">
+            <HiOutlineClock className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Pending Requests</p>
-            <p className="text-2xl font-bold text-slate-900">{pendingRequestsCount}</p>
-            <span className="text-xs text-amber-600 font-medium">Requires your review</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-            <HiOutlineCheckCircle className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Approved This Month</p>
-            <p className="text-2xl font-bold text-slate-900">{approvedThisMonthCount}</p>
-            <span className="text-xs text-emerald-600 font-medium">Synced with attendance</span>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 truncate">Pending Requests</p>
+            <p className="text-lg sm:text-2xl font-bold text-slate-900 leading-tight">{pendingRequestsCount}</p>
+            <span className="text-[10px] sm:text-xs text-amber-600 font-medium hidden sm:inline">Requires your review</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-            <HiOutlineCalendarDays className="w-6 h-6" />
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold flex-shrink-0">
+            <HiOutlineCheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Official Holidays</p>
-            <p className="text-2xl font-bold text-slate-900">{holidaysCount}</p>
-            <span className="text-xs text-indigo-600 font-medium">Year {holidayYear} Calendar</span>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 truncate">Approved (Month)</p>
+            <p className="text-lg sm:text-2xl font-bold text-slate-900 leading-tight">{approvedThisMonthCount}</p>
+            <span className="text-[10px] sm:text-xs text-emerald-600 font-medium hidden sm:inline">Synced with attendance</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-            <HiOutlineUserGroup className="w-6 h-6" />
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold flex-shrink-0">
+            <HiOutlineCalendarDays className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Staff Quotas</p>
-            <p className="text-2xl font-bold text-slate-900">{totalEmployeesWithBalance}</p>
-            <span className="text-xs text-blue-600 font-medium">Active employees enrolled</span>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 truncate">Official Holidays</p>
+            <p className="text-lg sm:text-2xl font-bold text-slate-900 leading-tight">{holidaysCount}</p>
+            <span className="text-[10px] sm:text-xs text-indigo-600 font-medium hidden sm:inline">Year {holidayYear} Calendar</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-3.5 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold flex-shrink-0">
+            <HiOutlineUserGroup className="w-5 h-5 sm:w-6 sm:h-6" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 truncate">Staff Quotas</p>
+            <p className="text-lg sm:text-2xl font-bold text-slate-900 leading-tight">{totalEmployeesWithBalance}</p>
+            <span className="text-[10px] sm:text-xs text-blue-600 font-medium hidden sm:inline">Active employees enrolled</span>
           </div>
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="bg-white border border-slate-200 rounded-xl p-1.5 flex gap-1 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-xl p-1.5 flex gap-1 shadow-sm overflow-x-auto no-scrollbar touch-scroll flex-nowrap">
         <button
           onClick={() => setActiveTab('requests')}
-          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition ${
+          className={`flex-shrink-0 min-w-max py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 sm:gap-2 transition ${
             activeTab === 'requests'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <HiOutlineClock className="w-4 h-4" />
+          <HiOutlineClock className="w-4 h-4 flex-shrink-0" />
           Leave Requests
           {pendingRequestsCount > 0 && (
             <span
-              className={`px-2 py-0.5 text-xs rounded-full font-bold ${
+              className={`px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs rounded-full font-bold ${
                 activeTab === 'requests' ? 'bg-white text-indigo-700' : 'bg-amber-100 text-amber-800'
               }`}
             >
@@ -489,37 +490,37 @@ const AdminLeaves = () => {
 
         <button
           onClick={() => setActiveTab('balances')}
-          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition ${
+          className={`flex-shrink-0 min-w-max py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 sm:gap-2 transition ${
             activeTab === 'balances'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <HiOutlineUserGroup className="w-4 h-4" />
+          <HiOutlineUserGroup className="w-4 h-4 flex-shrink-0" />
           Leave Quotas & Balances
         </button>
 
         <button
           onClick={() => setActiveTab('holidays')}
-          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition ${
+          className={`flex-shrink-0 min-w-max py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 sm:gap-2 transition ${
             activeTab === 'holidays'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <HiOutlineCalendarDays className="w-4 h-4" />
+          <HiOutlineCalendarDays className="w-4 h-4 flex-shrink-0" />
           Holidays Register
         </button>
 
         <button
           onClick={() => setActiveTab('policy')}
-          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition ${
+          className={`flex-shrink-0 min-w-max py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 sm:gap-2 transition ${
             activeTab === 'policy'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <HiOutlineShieldCheck className="w-4 h-4" />
+          <HiOutlineShieldCheck className="w-4 h-4 flex-shrink-0" />
           Leave Policy
         </button>
       </div>
@@ -581,8 +582,15 @@ const AdminLeaves = () => {
           ) : filteredRequests.length === 0 ? (
             <div className="p-12 text-center text-slate-400">No leave requests found matching filters.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto touch-scroll">
+              <div className="sm:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100/60 flex items-center justify-between text-[11px] text-indigo-700 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+                  Swipe horizontally to review requests & take actions
+                </span>
+                <span className="text-[10px] text-indigo-500 font-mono">Scroll &rarr;</span>
+              </div>
+              <table className="w-full text-left border-collapse min-w-[850px]">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                     <th className="py-3 px-4">Employee</th>
@@ -780,8 +788,15 @@ const AdminLeaves = () => {
           ) : filteredBalances.length === 0 ? (
             <div className="p-12 text-center text-slate-400">No employee leave records found.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto touch-scroll">
+              <div className="sm:hidden px-3 py-1.5 bg-indigo-50/70 border-b border-indigo-100/60 flex items-center justify-between text-[11px] text-indigo-700 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineArrowsRightLeft className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+                  Swipe horizontally to view quotas & adjust
+                </span>
+                <span className="text-[10px] text-indigo-500 font-mono">Scroll &rarr;</span>
+              </div>
+              <table className="w-full text-left border-collapse min-w-[850px]">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                     <th className="py-3 px-4">Employee</th>
@@ -1146,7 +1161,7 @@ const AdminLeaves = () => {
           ============================================================ */}
       {rejectModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-xl border border-slate-200 max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4 text-rose-600">
               <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center">
                 <HiOutlineExclamationTriangle className="w-6 h-6" />
@@ -1197,7 +1212,7 @@ const AdminLeaves = () => {
           ============================================================ */}
       {holidayModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-xl border border-slate-200 max-h-[90dvh] overflow-y-auto">
             <h3 className="text-lg font-bold text-slate-900 mb-4">
               {editingHoliday ? 'Edit Official Holiday' : 'Add Official Holiday'}
             </h3>
@@ -1299,7 +1314,7 @@ const AdminLeaves = () => {
           ============================================================ */}
       {editBalanceModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-xl border border-slate-200 max-h-[90dvh] overflow-y-auto">
             <h3 className="text-lg font-bold text-slate-900 mb-1">
               Adjust Leave Quota ({balanceYear})
             </h3>
@@ -1474,7 +1489,7 @@ const AdminLeaves = () => {
           ============================================================ */}
       {rolloverModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-xl border border-slate-200 max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4 text-emerald-600">
               <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
                 <HiOutlineArrowPath className="w-6 h-6" />
