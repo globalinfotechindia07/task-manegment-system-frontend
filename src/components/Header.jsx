@@ -14,7 +14,7 @@ import {
   HiOutlineBookOpen,
 } from 'react-icons/hi2';
 
-const Header = ({ toggleSidebar }) => {
+const Header = ({ toggleSidebar, className = '' }) => {
   const { logout, user } = useAuth();
   const { socket } = useSocket(); 
   const queryClient = useQueryClient();
@@ -140,7 +140,7 @@ const Header = ({ toggleSidebar }) => {
   const companyLabel = user?.company?.name || 'Enterprise';
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs pt-[env(safe-area-inset-top,0px)]">
+    <header className={`bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs pt-[env(safe-area-inset-top,0px)] ${className}`}>
       <div className="h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-4 lg:px-6">
         {/* Left: hamburger + workspace badge */}
         <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">

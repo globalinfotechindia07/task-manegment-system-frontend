@@ -18,7 +18,7 @@ const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 const AgreementSettingsModal = ({ isOpen, onClose, onSaved }) => {
   const [activeTab, setActiveTab] = useState('sandbox'); // 'sandbox' or 'production'
   const [activeEnvironment, setActiveEnvironment] = useState('sandbox'); // which env is active for execution
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
   const [autoSyncTemplates, setAutoSyncTemplates] = useState(true);
 
   // Sandbox settings state
@@ -333,41 +333,24 @@ const AgreementSettingsModal = ({ isOpen, onClose, onSaved }) => {
             </div>
           </div>
 
-          {/* Master Toggles */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isEnabled}
-                onChange={(e) => setIsEnabled(e.target.checked)}
-                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 cursor-pointer"
-              />
+          {/* Active Live Gateway Status Banner */}
+          <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shrink-0 ring-4 ring-emerald-200" />
               <div>
-                <span className="text-xs font-heading font-bold text-slate-800 block">
-                  Enable Remote Gateway Dispatch
+                <span className="text-xs font-heading font-extrabold text-emerald-950 block">
+                  Connected Gateway Dispatch Active
                 </span>
-                <span className="text-[11px] text-slate-500 font-sans-modern">
-                  Send real requests to external APIs instead of local mock
+                <span className="text-[11px] text-emerald-800 font-sans-modern">
+                  All 4 E-Agreement requests (Fetch, Create, Initiate, Status) dispatch directly to the APIs configured below.
                 </span>
               </div>
-            </label>
-
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={autoSyncTemplates}
-                onChange={(e) => setAutoSyncTemplates(e.target.checked)}
-                className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 cursor-pointer"
-              />
-              <div>
-                <span className="text-xs font-heading font-bold text-slate-800 block">
-                  Auto-Sync Templates
-                </span>
-                <span className="text-[11px] text-slate-500 font-sans-modern">
-                  Sync templates automatically on page load
-                </span>
-              </div>
-            </label>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="px-3 py-1 rounded-full bg-emerald-600 text-white font-mono-tech text-[10px] font-bold uppercase tracking-wider shadow-xs">
+                ● Live Dispatch
+              </span>
+            </div>
           </div>
 
           {/* Configuration Tabs: Sandbox vs Production */}

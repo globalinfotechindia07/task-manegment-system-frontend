@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import {
   useQuery,
   useMutation,
@@ -105,11 +106,22 @@ const Avatar = ({ name, src, isGroup, size = 'md' }) => {
 const Chat = () => {
   const { user } = useAuth();
   const { socket, clearUnreadChats } = useSocket();
+  const outlet = useOutletContext();
   const queryClient = useQueryClient();
   const [selectedChat, setSelectedChat] = useState(null);
   const [messageText, setMessageText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const messagesEndRef = useRef(null);
+
+  // Sync active conversation with layout to hide outer header on mobile
+  useEffect(() => {
+    if (outlet?.setHideHeaderOnMobile) {
+      outlet.setHideHeaderOnMobile(!!selectedChat);
+    }
+    return () => {
+      outlet?.setHideHeaderOnMobile?.(false);
+    };
+  }, [selectedChat, outlet]);
 
   // Media
   const [selectedFile, setSelectedFile] = useState(null);
@@ -479,10 +491,18 @@ const Chat = () => {
   }, [selectedChat]);
 
   const handleInputFocus = () => {
-    // Delay slightly for keyboard slide-up animation on mobile
+    // Scroll smoothly and prevent any window scrolling on mobile WebView
+    if (typeof window !== 'undefined' && window.scrollY !== 0) {
+      window.scrollTo(0, 0);
+    }
     setTimeout(() => {
+      if (typeof window !== 'undefined' && window.scrollY !== 0) window.scrollTo(0, 0);
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 280);
+    }, 150);
+    setTimeout(() => {
+      if (typeof window !== 'undefined' && window.scrollY !== 0) window.scrollTo(0, 0);
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+    }, 350);
   };
 
   const handleScroll = useCallback(
@@ -783,7 +803,7 @@ const Chat = () => {
               {selectedChat ? (
                 <>
                   {/* Chat header */}
-                  <div className="px-3 py-2.5 sm:py-3 border-b border-slate-200 flex items-center justify-between gap-2 bg-white shrink-0 z-10 shadow-2xs">
+                  <div className="px-3 py-2.5 sm:py-3 pt-[max(0.6rem,env(safe-area-inset-top,0px))] sm:pt-2.5 border-b border-slate-200 flex items-center justify-between gap-2 bg-white shrink-0 z-10 shadow-2xs">
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       {/* Mobile back */}
                       <button
@@ -1038,7 +1058,7 @@ const Chat = () => {
                           isRecording ? 'Recording audio…' : 'Type a message…'
                         }
                         disabled={isRecording}
-                        className="flex-1 bg-slate-100/80 border border-slate-200 rounded-full px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none min-w-0 disabled:opacity-50 transition-colors"
+                        className="flex-1 bg-slate-100/80 border border-slate-200 rounded-full px-4 py-2 sm:py-2.5 text-base sm:text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none min-w-0 disabled:opacity-50 transition-colors"
                       />
 
                       {!messageText.trim() && !selectedFile && !audioBlob && (
