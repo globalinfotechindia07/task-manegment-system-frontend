@@ -615,17 +615,17 @@ export const ModuleShowcase = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-indigo-600/15 blur-3xl pointer-events-none rounded-full" />
       <div className="absolute bottom-10 right-10 w-[400px] h-[200px] bg-violet-600/10 blur-3xl pointer-events-none rounded-full" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950/80 px-3.5 py-1.5 rounded-full border border-indigo-800/80 inline-flex items-center gap-1.5">
+          <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950/80 px-3.5 py-1.5 rounded-full border border-indigo-800/80 inline-flex items-center gap-1.5">
             <HiOutlineSparkles className="w-3.5 h-3.5" />
             Interactive Software Showcase &amp; Tour
           </span>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mt-3">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-white tracking-tight mt-3">
             Every Enterprise Module Explained &amp; Visualized
           </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-3 leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-400 mt-3 leading-relaxed max-w-2xl mx-auto">
             See exactly how each module looks and operates. Click any module below to inspect its features, live UI screens, and role workflows.
           </p>
         </div>
@@ -639,7 +639,7 @@ export const ModuleShowcase = () => {
               <button
                 key={mod.id}
                 onClick={() => setActiveModuleId(mod.id)}
-                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-heading font-bold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 scale-102'
                     : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700/60'
@@ -653,15 +653,15 @@ export const ModuleShowcase = () => {
         </div>
 
         {/* Active Module Visual Tour Box */}
-        <div className="bg-slate-800/60 border border-slate-700/80 rounded-3xl p-5 sm:p-8 lg:p-10 backdrop-blur-md">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="bg-slate-800/60 border border-slate-700/80 rounded-3xl p-4 sm:p-8 lg:p-10 backdrop-blur-md">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
             {/* Left Info Column */}
             <div className="lg:col-span-5 space-y-4 sm:space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950/80 text-indigo-400 border border-indigo-800">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono-tech font-bold bg-indigo-950/80 text-indigo-400 border border-indigo-800">
                 <span>{activeModule.tag}</span>
               </div>
 
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white leading-tight">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-heading font-extrabold text-white leading-tight">
                 {activeModule.title}
               </h3>
 
@@ -671,7 +671,7 @@ export const ModuleShowcase = () => {
 
               {/* "Kya Hai" Explanation Card */}
               <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-700/80 space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                <span className="text-[10px] font-heading font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
                   <HiOutlineCheckCircle className="w-3.5 h-3.5" />
                   Yeh Module Kya Hai &amp; Kaisa Kaam Karta Hai:
                 </span>
@@ -682,7 +682,7 @@ export const ModuleShowcase = () => {
 
               {/* Key Capabilities Checklist */}
               <div className="space-y-2 pt-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-heading font-bold uppercase tracking-wider text-slate-400">
                   Key Capabilities:
                 </span>
                 <ul className="space-y-2">
@@ -701,7 +701,7 @@ export const ModuleShowcase = () => {
                 {activeModule.roles.map((r, i) => (
                   <span
                     key={i}
-                    className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-700/80 text-slate-200 border border-slate-600"
+                    className="px-2.5 py-0.5 rounded-full text-[10px] font-mono-tech font-semibold bg-slate-700/80 text-slate-200 border border-slate-600"
                   >
                     {r}
                   </span>

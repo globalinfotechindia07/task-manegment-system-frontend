@@ -131,16 +131,16 @@ export const RoleWorkflows = () => {
 
   return (
     <section id="roles" className="py-16 sm:py-24 bg-white border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">
+          <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">
             Tailored Experiences
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
             Designed for Every Stakeholder in Your Enterprise
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-600 mt-3 leading-relaxed max-w-2xl mx-auto">
             One platform, personalized workspaces. See how each role in your organization gains efficiency from day one.
           </p>
         </div>
@@ -154,7 +154,7 @@ export const RoleWorkflows = () => {
               <button
                 key={r.id}
                 onClick={() => setActiveRole(r.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-heading font-bold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
                     ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20'
                     : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80'
@@ -168,15 +168,15 @@ export const RoleWorkflows = () => {
         </div>
 
         {/* Role Detail Card */}
-        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-5 sm:p-10 shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
             {/* Info */}
             <div className="lg:col-span-7 space-y-4">
-              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${currentRole.tagColor}`}>
+              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-mono-tech font-bold border ${currentRole.tagColor}`}>
                 {currentRole.badge}
               </span>
 
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 leading-snug">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-heading font-extrabold text-slate-900 leading-snug">
                 {currentRole.headline}
               </h3>
 
@@ -185,7 +185,7 @@ export const RoleWorkflows = () => {
               </p>
 
               <div className="pt-2 space-y-2.5">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                <span className="text-[10px] font-heading font-bold uppercase text-slate-400 tracking-wider">
                   Key Role Privileges:
                 </span>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -201,15 +201,15 @@ export const RoleWorkflows = () => {
 
             {/* Visual KPI Mini-Card */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md shadow-slate-200/50 space-y-4">
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-md shadow-slate-200/50 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
                       <currentRole.icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-xs">{currentRole.name} Workspace</h4>
-                      <p className="text-[10px] text-slate-400">Security &amp; Permissions Scoped</p>
+                      <h4 className="font-heading font-bold text-slate-900 text-xs">{currentRole.name} Workspace</h4>
+                      <p className="text-[10px] text-slate-400 font-mono-tech">Security &amp; Permissions Scoped</p>
                     </div>
                   </div>
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -218,15 +218,15 @@ export const RoleWorkflows = () => {
                 <div className="grid grid-cols-3 gap-2 text-center pt-1">
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                     <span className="text-[10px] font-semibold text-slate-400 block">Scope</span>
-                    <span className="text-xs font-bold text-slate-800 block mt-1">{currentRole.mockupSummary.stat1}</span>
+                    <span className="text-xs font-heading font-bold text-slate-800 block mt-1">{currentRole.mockupSummary.stat1}</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                     <span className="text-[10px] font-semibold text-slate-400 block">Security</span>
-                    <span className="text-xs font-bold text-emerald-600 block mt-1">{currentRole.mockupSummary.stat2}</span>
+                    <span className="text-xs font-heading font-bold text-emerald-600 block mt-1">{currentRole.mockupSummary.stat2}</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                     <span className="text-[10px] font-semibold text-slate-400 block">Outcome</span>
-                    <span className="text-xs font-bold text-indigo-600 block mt-1">{currentRole.mockupSummary.stat3}</span>
+                    <span className="text-xs font-heading font-bold text-indigo-600 block mt-1">{currentRole.mockupSummary.stat3}</span>
                   </div>
                 </div>
 

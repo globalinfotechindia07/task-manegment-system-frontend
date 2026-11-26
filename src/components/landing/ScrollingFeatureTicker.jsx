@@ -134,8 +134,8 @@ export const ScrollingFeatureTicker = () => {
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-white block leading-tight">{item.title}</span>
-                  <span className="text-[10px] text-slate-400 font-medium">{item.subtitle}</span>
+                  <span className="text-xs font-heading font-bold text-white block leading-tight">{item.title}</span>
+                  <span className="text-[10px] font-mono-tech text-slate-400 font-medium">{item.subtitle}</span>
                 </div>
               </div>
             );
@@ -157,8 +157,8 @@ export const ScrollingFeatureTicker = () => {
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-white block leading-tight">{item.title}</span>
-                  <span className="text-[10px] text-slate-400 font-medium">{item.subtitle}</span>
+                  <span className="text-xs font-heading font-bold text-white block leading-tight">{item.title}</span>
+                  <span className="text-[10px] font-mono-tech text-slate-400 font-medium">{item.subtitle}</span>
                 </div>
               </div>
             );

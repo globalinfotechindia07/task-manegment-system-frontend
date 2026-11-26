@@ -8,6 +8,11 @@ const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
+  const isChatRoute =
+    location.pathname.startsWith('/admin/chat') ||
+    location.pathname.startsWith('/chat') ||
+    location.pathname.endsWith('/chat');
+
   // Close mobile sidebar on route change (extra safety)
   useEffect(() => {
     setIsSidebarOpen(false);
@@ -32,8 +37,20 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col w-full min-w-0 h-full relative overflow-hidden bg-slate-50">
         <Header toggleSidebar={() => setIsSidebarOpen((v) => !v)} />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 relative pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8 touch-scroll">
-          <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-5 lg:py-6">
+        <main
+          className={`flex-1 min-w-0 relative flex flex-col ${
+            isChatRoute
+              ? 'overflow-hidden p-0 pb-0'
+              : 'overflow-y-auto overflow-x-hidden bg-slate-50 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8 touch-scroll'
+          }`}
+        >
+          <div
+            className={
+              isChatRoute
+                ? 'w-full h-full flex-1 flex flex-col min-h-0 overflow-hidden'
+                : 'mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-5 lg:py-6'
+            }
+          >
             <Outlet />
           </div>
         </main>

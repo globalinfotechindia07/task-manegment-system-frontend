@@ -21,12 +21,22 @@ import {
   HiOutlineGlobeAlt,
   HiOutlineLifebuoy,
   HiChevronDown,
+  HiOutlineClock,
+  HiOutlineCalendarDays,
+  HiOutlineCreditCard,
+  HiOutlineDocumentChartBar,
 } from 'react-icons/hi2';
 
 const CATEGORY_ICONS = {
   'Work & Projects': HiOutlineFolder,
+  'Time & Productivity': HiOutlineClock,
   'CRM & Sales': HiOutlineBriefcase,
+  'E-Agreements': HiOutlineShieldCheck,
   'Human Resources': HiOutlineUsers,
+  'Attendance & Leaves': HiOutlineCalendarDays,
+  'Finance & Billing': HiOutlineCreditCard,
+  'Payroll Management': HiOutlineBanknotes,
+  'Reports & Analytics': HiOutlineDocumentChartBar,
   'Payroll & Finance': HiOutlineBanknotes,
   'Collaboration': HiOutlineChatBubbleLeftRight,
   'My Self-Service': HiOutlineFingerPrint,
@@ -37,12 +47,18 @@ const CATEGORY_ICONS = {
 
 const CATEGORY_COLORS = {
   'Work & Projects': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Time & Productivity': 'bg-emerald-50 text-emerald-700 border-emerald-200',
   'CRM & Sales': 'bg-blue-50 text-blue-700 border-blue-200',
+  'E-Agreements': 'bg-teal-50 text-teal-700 border-teal-200',
   'Human Resources': 'bg-purple-50 text-purple-700 border-purple-200',
+  'Attendance & Leaves': 'bg-sky-50 text-sky-700 border-sky-200',
+  'Finance & Billing': 'bg-amber-50 text-amber-700 border-amber-200',
+  'Payroll Management': 'bg-green-50 text-green-700 border-green-200',
+  'Reports & Analytics': 'bg-rose-50 text-rose-700 border-rose-200',
   'Payroll & Finance': 'bg-amber-50 text-amber-700 border-amber-200',
   'Collaboration': 'bg-emerald-50 text-emerald-700 border-emerald-200',
   'My Self-Service': 'bg-violet-50 text-violet-700 border-violet-200',
-  'System Admin': 'bg-rose-50 text-rose-700 border-rose-200',
+  'System Admin': 'bg-slate-50 text-slate-700 border-slate-200',
   'Configurations': 'bg-cyan-50 text-cyan-700 border-cyan-200',
   'Help & Support': 'bg-orange-50 text-orange-700 border-orange-200',
 };

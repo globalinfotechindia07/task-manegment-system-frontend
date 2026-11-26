@@ -49,35 +49,35 @@ const STEPS = [
 export const HowItWorks = () => {
   return (
     <section className="py-16 sm:py-24 bg-slate-50 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100/70 px-3.5 py-1.5 rounded-full border border-indigo-200">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+          <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100/70 px-3.5 py-1.5 rounded-full border border-indigo-200">
             Rapid Implementation
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
             How It Works: From Setup to Total Automation
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-600 mt-3 leading-relaxed max-w-2xl mx-auto">
             Get your company fully operational in under 15 minutes with our guided 4-step workflow.
           </p>
         </div>
 
         {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {STEPS.map((s, idx) => {
             const Icon = s.icon;
             return (
               <div
                 key={idx}
-                className="relative bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between group"
+                className="relative bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-black font-mono text-indigo-200 group-hover:text-indigo-600 transition-colors">
+                    <span className="text-2xl sm:text-3xl font-heading font-black text-indigo-200 group-hover:text-indigo-600 transition-colors">
                       {s.step}
                     </span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono-tech font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
                       {s.badge}
                     </span>
                   </div>
@@ -86,10 +86,10 @@ export const HowItWorks = () => {
                     <Icon className="w-5 h-5" />
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 mb-1">
+                  <h3 className="text-base font-heading font-bold text-slate-900 mb-1">
                     {s.title}
                   </h3>
-                  <p className="text-[11px] font-semibold text-indigo-600 mb-2">
+                  <p className="text-[11px] font-heading font-semibold text-indigo-600 mb-2">
                     {s.subtitle}
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -97,7 +97,7 @@ export const HowItWorks = () => {
                   </p>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center text-[11px] font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center text-[11px] font-heading font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">
                   <span>Seamless &amp; Automated</span>
                   <HiOutlineArrowRight className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" />
                 </div>

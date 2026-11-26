@@ -66,6 +66,7 @@ import MyDocuments from './pages/common/MyDocuments';
 import AdminDocumentsManagement from './pages/admin/documents';
 import AdminBackup from './pages/admin/backup';
 import ReportsCenter from './pages/admin/reports-center';
+import EAgreementsHub from './pages/admin/e-agreements';
 
 import './App.css';
 
@@ -192,6 +193,10 @@ const App = () => {
             <Route path="/admin/offer-letters" element={<OfferLettersPage />} />
             <Route path="/admin/documents" element={<ProtectedRoute requiredPermission={['documents', 'view']}><AdminDocumentsManagement /></ProtectedRoute>} />
             <Route path="/hr/documents" element={<ProtectedRoute requiredPermission={['documents', 'view']}><AdminDocumentsManagement /></ProtectedRoute>} />
+            <Route path="/admin/e-agreements" element={<ProtectedRoute requiredPermission={['agreements', 'view']}><EAgreementsHub /></ProtectedRoute>} />
+            <Route path="/admin/e-agreements/templates" element={<ProtectedRoute requiredPermission={['agreements', 'view']}><EAgreementsHub /></ProtectedRoute>} />
+            <Route path="/admin/e-agreements/list" element={<ProtectedRoute requiredPermission={['agreements', 'view']}><EAgreementsHub /></ProtectedRoute>} />
+            <Route path="/admin/e-agreements/settings" element={<ProtectedRoute requiredPermission={['agreements', 'view']}><EAgreementsHub /></ProtectedRoute>} />
             <Route path="/admin/salary-management" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryManagement /></ProtectedRoute>} />
             <Route path="/salary-process" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryProcess /></ProtectedRoute>} />
             <Route path="/admin/salary-process" element={<ProtectedRoute requiredPermission={['payroll', 'view']}><SalaryProcess /></ProtectedRoute>} />

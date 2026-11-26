@@ -198,23 +198,23 @@ const DemoCredentialsSection = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[900px] h-[500px] bg-indigo-600/15 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none -z-0" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-300 text-xs font-mono-tech font-bold uppercase tracking-wider mb-4 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
             <HiOutlineSparkles className="w-4 h-4 text-indigo-300" />
             <span>Public Interactive Demo Sandbox</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h2 className="text-2.5xl xs:text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-white leading-tight">
             Test Drive Real Accounts with{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent font-heading">
               1-Click Instant Login
             </span>
           </h2>
 
-          <p className="mt-4 text-sm sm:text-base lg:text-lg text-slate-300 leading-relaxed">
+          <p className="mt-4 text-xs sm:text-base lg:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
             Choose any pre-configured enterprise role below to explore live features immediately. No credit card, no sign-up form required.
           </p>
         </div>
@@ -226,10 +226,10 @@ const DemoCredentialsSection = () => {
           </div>
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm sm:text-base font-bold text-white">
+              <span className="text-sm sm:text-base font-heading font-bold text-white">
                 🛡️ 24-Hour Rolling Sandbox Auto-Purge
               </span>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-mono-tech font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 Active &amp; Automated
               </span>
             </div>
@@ -238,14 +238,14 @@ const DemoCredentialsSection = () => {
               <strong className="text-amber-300 font-semibold">automatically permanently purged within 24 hours</strong>. Real enterprise customer workspaces and production databases remain completely isolated and unaffected.
             </p>
           </div>
-          <div className="shrink-0 flex items-center gap-1.5 text-[11px] font-mono text-slate-400 bg-slate-900/80 px-3 py-2 rounded-xl border border-slate-700">
+          <div className="shrink-0 flex items-center gap-1.5 text-[11px] font-mono-tech text-slate-400 bg-slate-900/80 px-3 py-2 rounded-xl border border-slate-700">
             <HiOutlineKey className="w-4 h-4 text-amber-400" />
             <span>Shared Pass: <strong className="text-white">demo123</strong></span>
           </div>
         </div>
 
         {/* Demo Accounts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
           {DEMO_ACCOUNTS.map((acc) => {
             const Icon = acc.icon;
             const isLoggingIn = loggingInRole === acc.roleKey;
@@ -255,7 +255,7 @@ const DemoCredentialsSection = () => {
             return (
               <div
                 key={acc.roleKey}
-                className={`group rounded-2xl bg-slate-850/90 border border-slate-700/80 hover:border-slate-500 transition-all duration-300 p-6 flex flex-col justify-between shadow-xl ${acc.accent.glow} relative`}
+                className={`group rounded-2xl bg-slate-850/90 border border-slate-700/80 hover:border-slate-500 transition-all duration-300 p-5 sm:p-6 flex flex-col justify-between shadow-xl ${acc.accent.glow} relative`}
               >
                 {/* Header */}
                 <div>
@@ -265,13 +265,13 @@ const DemoCredentialsSection = () => {
                         <Icon className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                        <h3 className="text-base sm:text-lg font-heading font-bold text-white leading-snug">
                           {acc.roleLabel}
                         </h3>
                         <span className="text-xs text-slate-400 font-medium">{acc.name}</span>
                       </div>
                     </div>
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border tracking-wider uppercase ${acc.accent.badgeBg}`}>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono-tech font-bold border tracking-wider uppercase ${acc.accent.badgeBg}`}>
                       {acc.badge}
                     </span>
                   </div>
@@ -282,7 +282,7 @@ const DemoCredentialsSection = () => {
 
                   {/* Capabilities List */}
                   <div className="mb-5 space-y-1.5">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">
+                    <span className="text-[10px] uppercase font-mono-tech font-bold tracking-wider text-slate-400 block mb-1">
                       Key Modules You Can Test:
                     </span>
                     {acc.capabilities.map((cap, idx) => (
@@ -298,7 +298,7 @@ const DemoCredentialsSection = () => {
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-slate-400 font-medium">Email:</span>
                       <div className="flex items-center gap-1.5 overflow-hidden">
-                        <span className="font-mono text-slate-200 text-[11px] truncate">{acc.email}</span>
+                        <span className="font-mono-tech text-slate-200 text-[11px] truncate">{acc.email}</span>
                         <button
                           type="button"
                           onClick={() => handleCopy(acc.email, `${acc.roleKey}-email`)}
@@ -317,7 +317,7 @@ const DemoCredentialsSection = () => {
                     <div className="flex items-center justify-between gap-2 border-t border-slate-800 pt-1.5">
                       <span className="text-slate-400 font-medium">Password:</span>
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-amber-300 text-[11px] font-bold">{acc.password}</span>
+                        <span className="font-mono-tech text-amber-300 text-[11px] font-bold">{acc.password}</span>
                         <button
                           type="button"
                           onClick={() => handleCopy(acc.password, `${acc.roleKey}-pass`)}
@@ -341,7 +341,7 @@ const DemoCredentialsSection = () => {
                     type="button"
                     onClick={() => handle1ClickLogin(acc)}
                     disabled={isLoggingIn}
-                    className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${acc.accent.btn} disabled:opacity-60 disabled:cursor-not-allowed`}
+                    className={`w-full py-2.5 px-4 rounded-xl font-heading font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[44px] ${acc.accent.btn} disabled:opacity-60 disabled:cursor-not-allowed`}
                   >
                     {isLoggingIn ? (
                       <>
@@ -364,7 +364,7 @@ const DemoCredentialsSection = () => {
         {/* Bottom Note */}
         <div className="mt-12 text-center text-xs text-slate-400">
           <span>Need a customized on-premise or cloud deployment for your organization? </span>
-          <a href="#contact" className="text-indigo-400 hover:text-indigo-300 font-semibold underline underline-offset-4">
+          <a href="#contact" className="text-indigo-400 hover:text-indigo-300 font-heading font-semibold underline underline-offset-4">
             Contact our Solutions Engineering Team
           </a>
         </div>

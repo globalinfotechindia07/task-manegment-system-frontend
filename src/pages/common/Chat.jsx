@@ -454,6 +454,37 @@ const Chat = () => {
     }
   }, [messages, isFetchingNextPage, prevScrollHeight]);
 
+  // Mobile keyboard & visual viewport handler to keep messages in view
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const scrollToLatest = (behavior = 'smooth') => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
+      }
+    };
+
+    if (window.visualViewport) {
+      const handleResize = () => {
+        // When keyboard opens or window resizes, keep chat scrolled to latest message
+        scrollToLatest('smooth');
+      };
+      window.visualViewport.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
+      return () => {
+        window.visualViewport.removeEventListener('resize', handleResize);
+        window.visualViewport.removeEventListener('scroll', handleResize);
+      };
+    }
+  }, [selectedChat]);
+
+  const handleInputFocus = () => {
+    // Delay slightly for keyboard slide-up animation on mobile
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 280);
+  };
+
   const handleScroll = useCallback(
     (e) => {
       if (e.target.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
@@ -599,11 +630,15 @@ const Chat = () => {
      RENDER
      ============================================================ */
   return (
-    <div className="flex flex-col h-[calc(100dvh-5rem)] sm:h-[calc(100vh-5rem)] bg-slate-50">
-      <div className="flex-1 flex flex-col w-full h-full p-0 sm:p-2 md:p-4 overflow-hidden">
-        <div className="flex-1 overflow-hidden sm:border border-slate-200 sm:shadow-sm sm:rounded-xl flex flex-col bg-white">
+    <div className="w-full h-full flex-1 flex flex-col min-h-0 overflow-hidden bg-slate-50">
+      <div className="flex-1 flex flex-col w-full h-full p-0 sm:p-2 md:p-3 overflow-hidden min-h-0">
+        <div className="flex-1 overflow-hidden sm:border border-slate-200 sm:shadow-sm sm:rounded-xl flex flex-col bg-white min-h-0">
           {/* ===================== HEADER ===================== */}
-          <div className="px-3 sm:px-4 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-white shrink-0">
+          <div
+            className={`px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-200 ${
+              selectedChat ? 'hidden md:flex' : 'flex'
+            } flex-wrap items-center justify-between gap-2 bg-white shrink-0`}
+          >
             <div className="flex items-center gap-2">
               <h1 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
                 <HiOutlineChatBubbleLeftRight className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
@@ -632,13 +667,14 @@ const Chat = () => {
           </div>
 
           {/* ===================== BODY ===================== */}
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden min-h-0">
             {/* ---------- SIDEBAR ---------- */}
             <div
-              className={`${selectedChat ? 'hidden md:flex' : 'flex'
-                } w-full md:w-80 lg:w-96 border-r-0 md:border-r border-slate-200 flex-col bg-slate-50`}
+              className={`${
+                selectedChat ? 'hidden md:flex' : 'flex'
+              } w-full md:w-80 lg:w-96 border-r-0 md:border-r border-slate-200 flex-col bg-slate-50 min-h-0`}
             >
-              <div className="p-3 border-b border-slate-200 bg-white">
+              <div className="p-2.5 sm:p-3 border-b border-slate-200 bg-white shrink-0">
                 <div className="relative">
                   <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
@@ -651,7 +687,7 @@ const Chat = () => {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-2 space-y-1">
+              <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-0 overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-slate-300">
                 {conversationsLoading ? (
                   <div className="flex flex-col items-center justify-center py-10 opacity-60">
                     <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mb-3" />
@@ -740,19 +776,20 @@ const Chat = () => {
 
             {/* ---------- CHAT AREA ---------- */}
             <div
-              className={`${selectedChat ? 'flex' : 'hidden md:flex'
-                } flex-1 flex-col bg-white relative min-w-0`}
+              className={`${
+                selectedChat ? 'flex' : 'hidden md:flex'
+              } flex-1 flex-col bg-white relative min-w-0 min-h-0 overflow-hidden`}
             >
               {selectedChat ? (
                 <>
                   {/* Chat header */}
-                  <div className="px-3 py-2.5 border-b border-slate-200 flex items-center justify-between gap-2 bg-white shrink-0">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="px-3 py-2.5 sm:py-3 border-b border-slate-200 flex items-center justify-between gap-2 bg-white shrink-0 z-10 shadow-2xs">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       {/* Mobile back */}
                       <button
                         type="button"
                         onClick={() => setSelectedChat(null)}
-                        className="md:hidden p-1.5 -ml-1 rounded-lg hover:bg-slate-100 text-slate-500 shrink-0"
+                        className="md:hidden p-1.5 -ml-1 rounded-lg hover:bg-slate-100 text-slate-600 active:bg-slate-200 shrink-0 cursor-pointer"
                         aria-label="Back to chats"
                       >
                         <HiOutlineArrowLeft className="w-5 h-5" />
@@ -763,14 +800,15 @@ const Chat = () => {
                         isGroup={selectedChat.isGroup}
                         size="md"
                       />
-                      <div className="min-w-0">
-                        <h2 className="text-sm font-bold text-slate-900 truncate">
+                      <div className="min-w-0 flex-1">
+                        <h2 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                           {selectedChat.name}
                         </h2>
-                        <p className="text-[11px] text-slate-500 truncate">
+                        <p className="text-[10px] sm:text-[11px] text-slate-500 truncate flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
                           {selectedChat.isGroup
                             ? `${selectedChat.members?.length || 0} members`
-                            : selectedChat.role}
+                            : selectedChat.role || 'Member'}
                         </p>
                       </div>
                     </div>
@@ -778,7 +816,7 @@ const Chat = () => {
                       <button
                         type="button"
                         onClick={() => openEditGroupModal(selectedChat)}
-                        className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors shrink-0"
+                        className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors shrink-0 cursor-pointer"
                         title="Edit Group"
                       >
                         <HiOutlinePencilSquare className="w-4 h-4" />
@@ -790,7 +828,7 @@ const Chat = () => {
                   <div
                     ref={chatContainerRef}
                     onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-slate-50/50"
+                    className="flex-1 overflow-y-auto px-2.5 sm:px-4 py-3 space-y-2.5 bg-slate-50/70 min-h-0 overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-slate-300"
                   >
                     {isFetchingNextPage && (
                       <div className="flex justify-center py-2">
@@ -943,12 +981,12 @@ const Chat = () => {
                   </div>
 
                   {/* ---------- INPUT AREA ---------- */}
-                  <div className="px-2 py-2 sm:px-3 sm:py-3 bg-white border-t border-slate-200 flex flex-col gap-2 shrink-0">
+                  <div className="px-2.5 py-2 sm:px-3 sm:py-2.5 bg-white border-t border-slate-200 flex flex-col gap-1.5 shrink-0 z-10 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
                     {/* Media preview chip */}
                     {(selectedFile || audioBlob) && (
-                      <div className="flex items-center gap-2 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 w-fit max-w-full">
+                      <div className="flex items-center gap-2 bg-indigo-50/80 px-2.5 py-1.5 rounded-lg border border-indigo-100 w-fit max-w-full">
                         {selectedFile && (
-                          <span className="text-xs text-indigo-700 truncate max-w-[150px] font-medium flex items-center gap-1.5">
+                          <span className="text-xs text-indigo-700 truncate max-w-[180px] font-medium flex items-center gap-1.5">
                             <HiOutlinePaperClip className="w-3.5 h-3.5 shrink-0" />
                             {selectedFile.name}
                           </span>
@@ -962,7 +1000,7 @@ const Chat = () => {
                         <button
                           type="button"
                           onClick={clearMedia}
-                          className="text-slate-400 hover:text-rose-600 shrink-0"
+                          className="text-slate-400 hover:text-rose-600 shrink-0 cursor-pointer"
                           aria-label="Remove media"
                         >
                           <HiOutlineXMark className="w-4 h-4" />
@@ -995,21 +1033,23 @@ const Chat = () => {
                         type="text"
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
+                        onFocus={handleInputFocus}
                         placeholder={
                           isRecording ? 'Recording audio…' : 'Type a message…'
                         }
                         disabled={isRecording}
-                        className="flex-1 bg-slate-50 border border-slate-300 rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none min-w-0 disabled:opacity-50 transition-colors"
+                        className="flex-1 bg-slate-100/80 border border-slate-200 rounded-full px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none min-w-0 disabled:opacity-50 transition-colors"
                       />
 
                       {!messageText.trim() && !selectedFile && !audioBlob && (
                         <button
                           type="button"
                           onClick={isRecording ? stopRecording : startRecording}
-                          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${isRecording
-                            ? 'bg-rose-50 text-rose-600'
-                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
-                            }`}
+                          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors flex-shrink-0 cursor-pointer ${
+                            isRecording
+                              ? 'bg-rose-50 text-rose-600'
+                              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                          }`}
                           aria-label={isRecording ? 'Stop recording' : 'Record audio'}
                         >
                           <HiOutlineMicrophone className="w-5 h-5" />
@@ -1022,7 +1062,7 @@ const Chat = () => {
                           (!messageText.trim() && !selectedFile && !audioBlob) ||
                           sendMessageMutation.isPending
                         }
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center text-white transition-all active:scale-95 disabled:opacity-40 disabled:active:scale-100 flex-shrink-0 shadow-sm"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 flex items-center justify-center text-white transition-all active:scale-95 disabled:opacity-40 disabled:active:scale-100 flex-shrink-0 shadow-sm cursor-pointer"
                         aria-label="Send message"
                       >
                         <HiOutlinePaperAirplane className="w-4 h-4 ml-0.5" />

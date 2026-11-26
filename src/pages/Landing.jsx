@@ -230,15 +230,15 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-500/20 selection:text-indigo-900 pt-[15px] pb-[30px] sm:pt-0 sm:pb-0">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans-modern selection:bg-indigo-500/20 selection:text-indigo-900 pt-[15px] pb-[30px] sm:pt-0 sm:pb-0 overflow-x-hidden w-full">
       {/* ===================== 1. HEADER ===================== */}
       <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-3">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform shrink-0">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
+            <div className="w-8 h-8 sm:w-11 sm:h-11 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform shrink-0">
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                className="w-4 h-4 sm:w-6 sm:h-6 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -252,17 +252,17 @@ const Landing = () => {
               </svg>
             </div>
             <div className="min-w-0">
-              <span className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors block truncate">
+              <span className="font-heading font-extrabold text-sm sm:text-lg md:text-xl tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors block truncate">
                 Global Infotech
               </span>
-              <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-indigo-600 block -mt-0.5 sm:-mt-1">
+              <span className="font-mono-tech text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-indigo-600 block -mt-0.5 sm:-mt-1 truncate">
                 Enterprise Cloud Hub
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-semibold text-slate-600">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-7 text-xs lg:text-sm font-semibold text-slate-600">
             <a href="#modules" className="hover:text-indigo-600 transition-colors">
               Platform Tour
             </a>
@@ -293,11 +293,11 @@ const Landing = () => {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-3 shrink-0">
+          <div className="hidden md:flex items-center gap-2.5 sm:gap-3 shrink-0">
             {user ? (
               <Link
                 to={getDashboardPath()}
-                className={`${tokens.btnPrimary} px-5 py-2.5 text-sm`}
+                className={`${tokens.btnPrimary} px-4 lg:px-5 py-2.5 text-xs lg:text-sm font-heading font-bold`}
               >
                 <span>Go to Dashboard</span>
                 <svg
@@ -325,13 +325,13 @@ const Landing = () => {
                 </a>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors"
+                  className="px-3.5 py-2 text-xs lg:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors"
                 >
                   Sign In
                 </Link>
                 <a
                   href="#plans"
-                  className={`${tokens.btnPrimary} px-5 py-2.5 text-sm`}
+                  className={`${tokens.btnPrimary} px-4 lg:px-5 py-2.5 text-xs lg:text-sm font-heading font-bold`}
                 >
                   Get Started
                 </a>
@@ -340,18 +340,18 @@ const Landing = () => {
           </div>
 
           {/* Mobile Bar: Quick Sign-In / Dashboard Button + Hamburger Toggle */}
-          <div className="flex md:hidden items-center gap-2 shrink-0">
+          <div className="flex md:hidden items-center gap-1.5 sm:gap-2 shrink-0">
             {user ? (
               <Link
                 to={getDashboardPath()}
-                className={`${tokens.btnPrimary} px-3 py-1.5 text-xs font-semibold`}
+                className={`${tokens.btnPrimary} px-2.5 sm:px-3 py-1.5 text-xs font-bold font-heading`}
               >
                 Dashboard
               </Link>
             ) : (
               <Link
                 to="/login"
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors font-heading"
               >
                 Sign In
               </Link>
@@ -512,64 +512,64 @@ const Landing = () => {
       )}
 
       {/* ===================== 2. HERO ===================== */}
-      <section className="relative overflow-hidden pt-12 sm:pt-16 pb-16 sm:pb-24 lg:pt-20 lg:pb-32 bg-gradient-to-b from-white via-slate-50 to-indigo-50/40">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] sm:w-[1000px] h-[400px] sm:h-[500px] bg-gradient-to-tr from-indigo-200/30 via-violet-200/20 to-sky-200/30 rounded-full blur-3xl pointer-events-none -z-10" />
+      <section className="relative overflow-hidden pt-10 sm:pt-16 pb-14 sm:pb-24 lg:pt-20 lg:pb-32 bg-gradient-to-b from-white via-slate-50 to-indigo-50/40">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[1000px] h-[350px] sm:h-[500px] bg-gradient-to-tr from-indigo-200/30 via-violet-200/20 to-sky-200/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-6 sm:mb-8 shadow-sm">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-indigo-50/90 border border-indigo-200 text-indigo-700 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-5 sm:mb-8 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
-            <span className="truncate max-w-[220px] sm:max-w-none">{hero.badge}</span>
+            <span className="truncate max-w-[200px] sm:max-w-none font-mono-tech">{hero.badge}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-[1.15] max-w-4xl mx-auto px-2">
+          <h1 className="text-2.5xl xs:text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-slate-900 tracking-tight leading-[1.18] sm:leading-[1.12] max-w-4xl mx-auto px-1 sm:px-2 break-words">
             {hero.title}{' '}
-            <span className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-700 bg-clip-text text-transparent font-heading">
               {hero.highlight}
             </span>
           </h1>
 
-          <p className="mt-4 sm:mt-6 text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-2">
+          <p className="mt-3.5 sm:mt-6 text-xs sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed px-1 sm:px-2 font-normal">
             {hero.subtitle}
           </p>
 
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center items-stretch sm:items-center gap-3 sm:gap-4 px-2">
+          <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center items-stretch sm:items-center gap-2.5 sm:gap-4 px-1 sm:px-2 max-w-lg sm:max-w-none mx-auto">
             <a
               href="#demo"
-              className="inline-flex items-center justify-center gap-2 font-bold rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/25 px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base transition-all hover:scale-[1.02] cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 font-bold rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/25 px-5 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm md:text-base transition-all hover:scale-[1.02] cursor-pointer min-h-[46px]"
             >
               <span>⚡ Test Live Demo Accounts</span>
               <HiOutlineSparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-200" />
             </a>
             <a
               href="#modules"
-              className={`${tokens.btnPrimary} px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base`}
+              className={`${tokens.btnPrimary} px-5 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm md:text-base min-h-[46px] justify-center`}
             >
               <span>Explore Platform Tour</span>
               <HiOutlineArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
             <a
               href="#plans"
-              className={`${tokens.btnSecondary} px-6 sm:px-7 py-3 sm:py-3.5 text-sm sm:text-base`}
+              className={`${tokens.btnSecondary} px-5 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm md:text-base min-h-[46px] justify-center`}
             >
               View Pricing &amp; Plans
             </a>
           </div>
 
           {/* Interactive Hero Software Preview Mockup */}
-          <div className="mt-10 sm:mt-14 max-w-5xl mx-auto rounded-3xl bg-slate-900/90 p-2 sm:p-3 shadow-2xl shadow-indigo-950/20 border border-slate-800 text-left">
-            <div className="rounded-2xl bg-slate-950 overflow-hidden border border-slate-850">
+          <div className="mt-8 sm:mt-14 max-w-5xl mx-auto rounded-2xl sm:rounded-3xl bg-slate-900/90 p-1.5 sm:p-3 shadow-2xl shadow-indigo-950/20 border border-slate-800 text-left">
+            <div className="rounded-xl sm:rounded-2xl bg-slate-950 overflow-hidden border border-slate-850">
               {/* Window Titlebar */}
-              <div className="px-4 py-3 bg-slate-900 flex items-center justify-between border-b border-slate-800">
+              <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-900 flex items-center justify-between border-b border-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
-                  <span className="ml-3 text-[11px] font-mono text-slate-400 hidden sm:inline-block">
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-rose-500 inline-block" />
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500 inline-block" />
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 inline-block" />
+                  <span className="ml-2 sm:ml-3 text-[10px] sm:text-[11px] font-mono-tech text-slate-400 hidden sm:inline-block">
                     https://app.globalinfotech.com/admin/dashboard
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono-tech">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Multi-Branch Connected
                   </span>
@@ -577,57 +577,57 @@ const Landing = () => {
               </div>
 
               {/* Window Content */}
-              <div className="p-3 sm:p-5 bg-slate-900 text-slate-100">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3.5">
-                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] text-slate-400 font-semibold block">Geofenced Punch-Ins</span>
-                    <span className="text-base sm:text-lg font-extrabold text-emerald-400 block mt-0.5">118 / 124</span>
-                    <span className="text-[9px] text-slate-400">95.2% On-Site Present</span>
+              <div className="p-2.5 sm:p-5 bg-slate-900 text-slate-100">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mb-3 sm:mb-3.5">
+                  <div className="bg-slate-800/80 p-2 sm:p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold block truncate">Geofenced Punches</span>
+                    <span className="text-sm sm:text-lg font-heading font-extrabold text-emerald-400 block mt-0.5 truncate">118 / 124</span>
+                    <span className="text-[8px] sm:text-[9px] text-slate-400 block truncate">95.2% On-Site Present</span>
                   </div>
-                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] text-slate-400 font-semibold block">Monthly Payroll</span>
-                    <span className="text-base sm:text-lg font-extrabold text-indigo-400 block mt-0.5">₹24,80,000</span>
-                    <span className="text-[9px] text-slate-400">Net Disbursed</span>
+                  <div className="bg-slate-800/80 p-2 sm:p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold block truncate">Monthly Payroll</span>
+                    <span className="text-sm sm:text-lg font-heading font-extrabold text-indigo-400 block mt-0.5 truncate">₹24,80,000</span>
+                    <span className="text-[8px] sm:text-[9px] text-slate-400 block truncate">Net Disbursed</span>
                   </div>
-                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] text-slate-400 font-semibold block">Active Tasks</span>
-                    <span className="text-base sm:text-lg font-extrabold text-white block mt-0.5">38 Running</span>
-                    <span className="text-[9px] text-emerald-400 font-bold">Live Timers Active</span>
+                  <div className="bg-slate-800/80 p-2 sm:p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold block truncate">Active Tasks</span>
+                    <span className="text-sm sm:text-lg font-heading font-extrabold text-white block mt-0.5 truncate">38 Running</span>
+                    <span className="text-[8px] sm:text-[9px] text-emerald-400 font-bold block truncate">Live Timers Active</span>
                   </div>
-                  <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] text-slate-400 font-semibold block">Deliverables Completed</span>
-                    <span className="text-base sm:text-lg font-extrabold text-amber-400 block mt-0.5">142 Sprints</span>
-                    <span className="text-[9px] text-slate-400">98% Quality SLA</span>
+                  <div className="bg-slate-800/80 p-2 sm:p-3 rounded-xl border border-slate-700/60">
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold block truncate">Completed Sprints</span>
+                    <span className="text-sm sm:text-lg font-heading font-extrabold text-amber-400 block mt-0.5 truncate">142 Sprints</span>
+                    <span className="text-[8px] sm:text-[9px] text-slate-400 block truncate">98% Quality SLA</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  <div className="sm:col-span-2 bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 flex flex-col justify-between">
-                    <div className="flex items-center justify-between text-xs mb-2">
-                      <span className="font-bold text-white">Live Time Tracking &amp; Task Deliverables</span>
-                      <span className="text-[10px] text-emerald-400 font-mono font-bold">● Dinesh Tawade (Running: 01:42:15)</span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
+                  <div className="sm:col-span-2 bg-slate-800/60 p-2.5 sm:p-3 rounded-xl border border-slate-700/50 flex flex-col justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs mb-2 gap-1">
+                      <span className="font-heading font-bold text-white text-[11px] sm:text-xs">Live Time Tracking &amp; Deliverables</span>
+                      <span className="text-[9px] sm:text-[10px] text-emerald-400 font-mono-tech font-bold">● Dinesh (Running: 01:42:15)</span>
                     </div>
-                    <div className="space-y-1.5 text-[10px]">
-                      <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                    <div className="space-y-1.5 text-[9px] sm:text-[10px]">
+                      <div className="flex items-center justify-between p-1.5 sm:p-2 rounded-lg bg-slate-900/80 border border-slate-700/60 gap-2">
                         <span className="font-medium text-slate-200 truncate">Payment Gateway Webhook Sync &amp; Testing</span>
-                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-300">In Progress</span>
+                        <span className="px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-indigo-500/20 text-indigo-300 shrink-0">In Progress</span>
                       </div>
-                      <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                      <div className="flex items-center justify-between p-1.5 sm:p-2 rounded-lg bg-slate-900/80 border border-slate-700/60 gap-2">
                         <span className="font-medium text-slate-200 truncate">Reports Center: Export Attendance &amp; Payroll PDF</span>
-                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300">Completed</span>
+                        <span className="px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-emerald-500/20 text-emerald-300 shrink-0">Completed</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-indigo-700 to-violet-800 p-3 rounded-xl flex flex-col justify-between text-white">
+                  <div className="bg-gradient-to-br from-indigo-700 to-violet-800 p-2.5 sm:p-3 rounded-xl flex flex-col justify-between text-white">
                     <div>
-                      <span className="text-[9px] uppercase font-bold text-indigo-200">1-Click Action Hub</span>
-                      <p className="font-bold text-xs mt-0.5">Attendance, Salary &amp; Reports</p>
-                      <p className="text-[10px] text-indigo-100 mt-1">Export instant RFC 4180 Excel &amp; Printable PDF</p>
+                      <span className="text-[8px] sm:text-[9px] uppercase font-bold text-indigo-200 font-mono-tech">1-Click Action Hub</span>
+                      <p className="font-heading font-bold text-xs mt-0.5">Attendance, Salary &amp; Reports</p>
+                      <p className="text-[9px] sm:text-[10px] text-indigo-100 mt-1">Export instant RFC 4180 Excel &amp; Printable PDF</p>
                     </div>
                     <div className="pt-2">
-                      <a href="#modules" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-indigo-900 font-bold text-[10px] hover:bg-indigo-50 transition-colors shadow-xs">
-                        <span>Explore All Modules Tour</span>
+                      <a href="#modules" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-indigo-900 font-bold text-[9px] sm:text-[10px] hover:bg-indigo-50 transition-colors shadow-xs">
+                        <span>Explore All Modules</span>
                         <HiOutlineArrowRight className="w-3 h-3" />
                       </a>
                     </div>
@@ -637,13 +637,13 @@ const Landing = () => {
             </div>
           </div>
 
-          <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto pt-8 sm:pt-10 border-t border-slate-200/80 px-2">
+          <div className="mt-10 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 max-w-4xl mx-auto pt-6 sm:pt-10 border-t border-slate-200/80 px-2">
             {aboutUs.stats?.map((st, i) => (
               <div key={i} className="text-center">
-                <div className="text-xl sm:text-3xl font-extrabold text-slate-900">
+                <div className="text-xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900">
                   {st.value}
                 </div>
-                <div className="text-[10px] sm:text-xs font-medium text-slate-500 mt-1">
+                <div className="text-[10px] sm:text-xs font-semibold text-slate-500 mt-1">
                   {st.label}
                 </div>
               </div>
@@ -660,16 +660,16 @@ const Landing = () => {
         {/* Ambient subtle glow */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-indigo-500/10 blur-3xl pointer-events-none rounded-full" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100/80 px-3.5 py-1.5 rounded-full border border-indigo-200 inline-flex items-center gap-1.5 shadow-xs">
+            <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100/80 px-3.5 py-1.5 rounded-full border border-indigo-200 inline-flex items-center gap-1.5 shadow-xs">
               <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-600" />
               Transparent Multi-Branch Pricing
             </span>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mt-3">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
               Scalable Subscription Plans for Growing Teams
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+            <p className="text-xs sm:text-base text-slate-600 mt-3 leading-relaxed max-w-2xl mx-auto">
               Get complete multi-branch management, geofenced mobile attendance, dynamic salary slips, and dedicated cloud isolation.
             </p>
 
@@ -679,7 +679,7 @@ const Landing = () => {
                 <button
                   type="button"
                   onClick={() => setBillingInterval('monthly')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-heading font-bold transition-all cursor-pointer ${
                     billingInterval === 'monthly'
                       ? 'bg-white text-slate-900 shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
@@ -690,14 +690,14 @@ const Landing = () => {
                 <button
                   type="button"
                   onClick={() => setBillingInterval('annual')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-heading font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     billingInterval === 'annual'
                       ? 'bg-white text-indigo-900 shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <span>Annual Billing</span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-mono-tech font-bold">
                     Save 20%
                   </span>
                 </button>
@@ -710,7 +710,7 @@ const Landing = () => {
               <div className="w-8 h-8 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 items-stretch">
               {plans?.map((plan) => {
                 const isPro = plan.name.toLowerCase().includes('pro') || plan.name.toLowerCase().includes('growth') || plan.name.toLowerCase().includes('premium');
                 const basePrice = plan.price || 0;
@@ -719,14 +719,14 @@ const Landing = () => {
                 return (
                   <div
                     key={plan._id}
-                    className={`rounded-3xl p-6 sm:p-8 transition-all flex flex-col justify-between relative bg-white hover:-translate-y-1 duration-200 ${
+                    className={`rounded-3xl p-5 sm:p-8 transition-all flex flex-col justify-between relative bg-white hover:-translate-y-1 duration-200 ${
                       isPro
                         ? 'border-2 border-indigo-600 ring-4 ring-indigo-500/10 shadow-2xl shadow-indigo-600/15 lg:scale-105 lg:z-10 bg-gradient-to-b from-indigo-50/40 via-white to-white'
                         : 'border border-slate-200/90 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:border-slate-300'
                     }`}
                   >
                     {isPro && (
-                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-600 text-white text-[10px] sm:text-[11px] font-extrabold px-4 py-1 rounded-full uppercase tracking-wider shadow-md shadow-indigo-600/30 whitespace-nowrap flex items-center gap-1.5 animate-pulse-subtle">
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-600 text-white text-[10px] sm:text-[11px] font-mono-tech font-extrabold px-4 py-1 rounded-full uppercase tracking-wider shadow-md shadow-indigo-600/30 whitespace-nowrap flex items-center gap-1.5 animate-pulse-subtle">
                         <HiOutlineSparkles className="w-3.5 h-3.5" />
                         <span>Most Popular Choice</span>
                       </div>
@@ -734,10 +734,10 @@ const Landing = () => {
 
                     <div>
                       <div className="flex items-center justify-between mb-2 gap-2">
-                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 truncate">
+                        <h3 className="text-lg sm:text-xl font-heading font-bold text-slate-900 truncate">
                           {plan.name}
                         </h3>
-                        <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">
+                        <span className="text-[10px] sm:text-xs font-mono-tech font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">
                           {billingInterval === 'annual' ? 'Billed Annually' : (plan.billingCycle || 'Monthly')}
                         </span>
                       </div>
@@ -746,14 +746,14 @@ const Landing = () => {
                       </p>
 
                       <div className="mt-5 mb-5 pb-5 border-b border-slate-100 flex items-baseline gap-1.5 flex-wrap">
-                        <span className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                        <span className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900">
                           ₹{displayPrice.toLocaleString('en-IN')}
                         </span>
                         <span className="text-xs text-slate-500 font-medium">
                           / seat / month
                         </span>
                         {billingInterval === 'annual' && (
-                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                          <span className="text-[10px] font-mono-tech font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
                             20% Discounted
                           </span>
                         )}
@@ -762,26 +762,26 @@ const Landing = () => {
                       <div className="space-y-2 mb-6">
                         <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
                           <span className="shrink-0 text-slate-500">Employee Capacity</span>
-                          <span className="font-bold text-indigo-700 text-right">
+                          <span className="font-heading font-bold text-indigo-700 text-right">
                             Up to {plan.maxEmployees} Seats
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
                           <span className="shrink-0 text-slate-500">Validity Cycle</span>
-                          <span className="font-bold text-indigo-700 text-right">
+                          <span className="font-heading font-bold text-indigo-700 text-right">
                             {plan.durationDays || 30} Days Guaranteed
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-slate-50 text-slate-700 font-medium border border-slate-100 gap-2">
                           <span className="shrink-0 text-slate-500">Cloud Isolation</span>
-                          <span className="font-bold text-emerald-700 text-right">
+                          <span className="font-heading font-bold text-emerald-700 text-right">
                             100% Dedicated Tenant
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
+                        <p className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-slate-400">
                           Included Modules &amp; Privileges
                         </p>
                         <ul className="space-y-2.5">
@@ -802,7 +802,7 @@ const Landing = () => {
                       <button
                         type="button"
                         onClick={() => handleInitiatePayment(plan)}
-                        className={`w-full py-3 sm:py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md cursor-pointer ${
+                        className={`w-full py-3 sm:py-3.5 px-4 rounded-xl font-heading font-bold text-xs sm:text-sm transition-all shadow-md cursor-pointer min-h-[46px] ${
                           isPro
                             ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30 active:scale-98'
                             : 'bg-slate-900 hover:bg-slate-800 text-white active:scale-98'
@@ -838,15 +838,15 @@ const Landing = () => {
         id="features"
         className="py-16 sm:py-20 lg:py-28 bg-white border-y border-slate-200/80"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+            <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
               Complete Operational Suite
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
               Engineered for Complete Enterprise Productivity
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 mt-3">
+            <p className="text-xs sm:text-base text-slate-600 mt-3 max-w-2xl mx-auto leading-relaxed">
               One centralized platform replacing disjointed tools for attendance,
               task management, dynamic salary slips, and team video meetings.
             </p>
@@ -854,7 +854,7 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {/* Feature 1 */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -876,7 +876,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Geofenced Mobile Attendance
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -886,7 +886,7 @@ const Landing = () => {
             </div>
 
             {/* Feature 2 */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -902,7 +902,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Automated Dynamic Payroll
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -912,7 +912,7 @@ const Landing = () => {
             </div>
 
             {/* Feature 3 */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -928,7 +928,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Task &amp; Project Tracking
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -938,7 +938,7 @@ const Landing = () => {
             </div>
 
             {/* Feature 4 */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -954,7 +954,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Real-Time Chat &amp; Meetings
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -964,7 +964,7 @@ const Landing = () => {
             </div>
 
             {/* Feature 5 */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -980,7 +980,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Multi-Office Tenant Isolation
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -990,7 +990,7 @@ const Landing = () => {
             </div>
 
             {/* Feature 6 */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -1006,7 +1006,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Automated Policy &amp; Security
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -1015,7 +1015,7 @@ const Landing = () => {
               </p>
             </div>
             {/* Feature 7: Reports & Export Hub */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -1031,7 +1031,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 Reports &amp; Export Hub
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -1040,7 +1040,7 @@ const Landing = () => {
             </div>
 
             {/* Feature 8: CRM & Client Portal */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
+            <div className="p-5 sm:p-8 rounded-2xl bg-slate-50 hover:bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold mb-4 sm:mb-5 group-hover:scale-110 transition-transform">
                 <svg
                   className="w-5 h-5 sm:w-6 sm:h-6"
@@ -1056,7 +1056,7 @@ const Landing = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-2">
                 CRM Pipeline &amp; Client Portal
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -1072,22 +1072,22 @@ const Landing = () => {
         id="about"
         className="py-16 sm:py-20 lg:py-28 bg-white border-y border-slate-200/80"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <div>
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+              <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
                 {aboutUs.badge}
               </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
                 {aboutUs.title}
               </h2>
-              <p className="mt-4 sm:mt-5 text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="mt-4 sm:mt-5 text-xs sm:text-base text-slate-600 leading-relaxed">
                 {aboutUs.description}
               </p>
 
               <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <h4 className="text-sm font-heading font-bold text-slate-900 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-indigo-600" />
                     Our Mission
                   </h4>
@@ -1097,7 +1097,7 @@ const Landing = () => {
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                  <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <h4 className="text-sm font-heading font-bold text-slate-900 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-violet-600" />
                     Our Vision
                   </h4>
@@ -1114,7 +1114,7 @@ const Landing = () => {
                 <img
                   src={aboutUs.imageUrl}
                   alt="Team collaboration"
-                  className="w-full h-[280px] sm:h-[420px] object-cover"
+                  className="w-full h-[240px] sm:h-[420px] object-cover"
                 />
               </div>
               <div className="absolute -bottom-5 sm:-bottom-6 -left-3 sm:-left-6 bg-white p-3 sm:p-5 rounded-2xl shadow-xl border border-slate-100 hidden sm:block">
@@ -1123,10 +1123,10 @@ const Landing = () => {
                     <HiOutlineCheck className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm font-bold text-slate-900">
+                    <p className="text-xs sm:text-sm font-heading font-bold text-slate-900">
                       Multi-Tenant Verified
                     </p>
-                    <p className="text-[10px] sm:text-xs text-slate-500">
+                    <p className="text-[10px] sm:text-xs text-slate-500 font-mono-tech">
                       100% Cryptographic Segregation
                     </p>
                   </div>
@@ -1139,15 +1139,15 @@ const Landing = () => {
 
       {/* ===================== 6. TESTIMONIALS ===================== */}
       <section id="reviews" className="py-16 sm:py-20 lg:py-28 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100/70 px-3 py-1 rounded-full border border-indigo-200">
+            <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100/70 px-3 py-1 rounded-full border border-indigo-200">
               Trusted by Industry Leaders
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
               What Business Owners Say About Us
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 mt-3">
+            <p className="text-xs sm:text-base text-slate-600 mt-3 max-w-2xl mx-auto leading-relaxed">
               Real testimonials from corporate managers, directors, and HR heads
               using Global Infotech every day.
             </p>
@@ -1182,7 +1182,7 @@ const Landing = () => {
                       className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-indigo-100 shrink-0"
                     />
                     <div className="min-w-0">
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                      <h4 className="text-xs sm:text-sm font-heading font-bold text-slate-900 truncate">
                         {t.name}
                       </h4>
                       <p className="text-[10px] sm:text-xs text-slate-500 truncate">
@@ -1203,15 +1203,15 @@ const Landing = () => {
         id="faq"
         className="py-16 sm:py-20 lg:py-28 bg-white border-t border-slate-200/80"
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+            <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
               Got Questions?
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 mt-3">
+            <p className="text-xs sm:text-base text-slate-600 mt-3 leading-relaxed">
               Everything you need to know about attendance tracking, multi-tenant workspace isolation, pricing, and system security.
             </p>
 
@@ -1222,7 +1222,7 @@ const Landing = () => {
                   <button
                     key={category}
                     onClick={() => setActiveFaqCategory(category)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-heading font-bold transition-all cursor-pointer ${
                       activeFaqCategory === category
                         ? 'bg-indigo-600 text-white shadow-xs'
                         : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -1256,10 +1256,10 @@ const Landing = () => {
                     <button
                       type="button"
                       onClick={() => setExpandedFaqId(isOpen ? null : faq._id)}
-                      className="w-full px-5 sm:px-6 py-4 sm:py-5 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
+                      className="w-full px-4 sm:px-6 py-3.5 sm:py-5 text-left flex items-center justify-between gap-3 sm:gap-4 cursor-pointer focus:outline-none"
                       aria-expanded={isOpen}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                         <div
                           className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
                             isOpen
@@ -1271,11 +1271,11 @@ const Landing = () => {
                         </div>
                         <div className="min-w-0">
                           {faq.category && (
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block mb-0.5">
+                            <span className="text-[10px] font-mono-tech font-bold uppercase tracking-wider text-indigo-600 block mb-0.5">
                               {faq.category}
                             </span>
                           )}
-                          <span className="text-sm sm:text-base font-bold text-slate-900 leading-snug block">
+                          <span className="text-xs sm:text-base font-heading font-bold text-slate-900 leading-snug block">
                             {faq.question}
                           </span>
                         </div>
@@ -1291,8 +1291,8 @@ const Landing = () => {
                     </button>
 
                     {isOpen && (
-                      <div className="px-5 sm:px-6 pb-5 pt-1 border-t border-slate-100 animate-in fade-in duration-150">
-                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pl-10 sm:pl-11 whitespace-pre-line">
+                      <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-1 border-t border-slate-100 animate-in fade-in duration-150">
+                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pl-9 sm:pl-11 whitespace-pre-line">
                           {faq.answer}
                         </p>
                       </div>
@@ -1304,17 +1304,17 @@ const Landing = () => {
           </div>
 
           {/* Need more help banner */}
-          <div className="mt-10 sm:mt-12 bg-slate-50 rounded-2xl border border-slate-200 p-6 sm:p-8 text-center shadow-xs">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">
+          <div className="mt-10 sm:mt-12 bg-slate-50 rounded-2xl border border-slate-200 p-5 sm:p-8 text-center shadow-xs">
+            <h3 className="text-sm sm:text-base font-heading font-bold text-slate-900">
               Have a question that is not answered here?
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto leading-relaxed">
               Our enterprise consultants are available to walk you through any custom requirement or schedule an interactive demo.
             </p>
             <div className="mt-4">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-heading font-bold transition-colors cursor-pointer shadow-xs min-h-[44px]"
               >
                 <span>Send Us a Direct Message Below</span>
                 <HiOutlineArrowRight className="w-4 h-4" />
@@ -1329,17 +1329,17 @@ const Landing = () => {
         id="contact"
         className="py-16 sm:py-20 lg:py-28 bg-white border-t border-slate-200/80"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
             {/* Contact details */}
             <div>
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+              <span className="text-[10px] sm:text-xs font-mono-tech font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
                 Get In Touch
               </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-slate-900 tracking-tight mt-3">
                 {contactInfo.title}
               </h2>
-              <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 leading-relaxed">
                 {contactInfo.description}
               </p>
 
@@ -1361,12 +1361,12 @@ const Landing = () => {
                     </svg>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">
+                    <p className="text-[10px] sm:text-xs font-mono-tech font-bold text-slate-500 uppercase">
                       Email Us Directly
                     </p>
                     <a
                       href={`mailto:${contactInfo.email}`}
-                      className="text-xs sm:text-sm font-bold text-slate-900 hover:text-indigo-600 break-all"
+                      className="text-xs sm:text-sm font-heading font-bold text-slate-900 hover:text-indigo-600 break-all"
                     >
                       {contactInfo.email}
                     </a>
@@ -1390,12 +1390,12 @@ const Landing = () => {
                     </svg>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">
+                    <p className="text-[10px] sm:text-xs font-mono-tech font-bold text-slate-500 uppercase">
                       Call Support Hotline
                     </p>
                     <a
                       href={`tel:${contactInfo.phone}`}
-                      className="text-xs sm:text-sm font-bold text-slate-900 hover:text-indigo-600"
+                      className="text-xs sm:text-sm font-heading font-bold text-slate-900 hover:text-indigo-600"
                     >
                       {contactInfo.phone}
                     </a>
@@ -1425,7 +1425,7 @@ const Landing = () => {
                     </svg>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">
+                    <p className="text-[10px] sm:text-xs font-mono-tech font-bold text-slate-500 uppercase">
                       Corporate Headquarters
                     </p>
                     <p className="text-xs sm:text-sm font-medium text-slate-900">
@@ -1451,7 +1451,7 @@ const Landing = () => {
                     </svg>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">
+                    <p className="text-[10px] sm:text-xs font-mono-tech font-bold text-slate-500 uppercase">
                       Working Hours
                     </p>
                     <p className="text-xs sm:text-sm font-medium text-slate-900">
@@ -1464,10 +1464,10 @@ const Landing = () => {
 
             {/* Inquiry form */}
             <div className="bg-slate-50 p-5 sm:p-8 rounded-3xl border border-slate-200 shadow-md">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
+              <h3 className="text-base sm:text-lg font-heading font-bold text-slate-900 mb-1">
                 Send Us a Direct Message
               </h3>
-              <p className="text-xs text-slate-500 mb-5 sm:mb-6">
+              <p className="text-xs text-slate-500 mb-5 sm:mb-6 leading-relaxed">
                 Our enterprise onboarding specialist will respond within 24 hours.
               </p>
 
@@ -1547,7 +1547,7 @@ const Landing = () => {
                 <button
                   type="submit"
                   disabled={isSubmittingInquiry}
-                  className={`${tokens.btnPrimary} w-full py-3 sm:py-3.5 text-sm`}
+                  className={`${tokens.btnPrimary} w-full py-3 sm:py-3.5 text-xs sm:text-sm font-heading font-bold min-h-[46px] justify-center`}
                 >
                   {isSubmittingInquiry && (
                     <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -1566,15 +1566,15 @@ const Landing = () => {
 
       {/* ===================== 8. FOOTER ===================== */}
       <footer className="bg-slate-900 text-slate-400 py-10 sm:py-12 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8 pb-8 sm:pb-12 border-b border-slate-800">
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
+                <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-heading font-extrabold shadow-md shadow-indigo-600/30">
                   GI
                 </div>
-                <span className="font-bold text-base sm:text-lg text-white">
+                <span className="font-heading font-extrabold text-base sm:text-lg text-white">
                   Global Infotech SaaS
                 </span>
               </div>
@@ -1587,7 +1587,7 @@ const Landing = () => {
 
             {/* Navigation */}
             <div>
-              <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white mb-3">
+              <h4 className="text-[10px] sm:text-xs font-heading font-bold uppercase tracking-wider text-white mb-3">
                 Quick Navigation
               </h4>
               <ul className="space-y-2 text-xs">
@@ -1626,7 +1626,7 @@ const Landing = () => {
 
             {/* Legal */}
             <div>
-              <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white mb-3">
+              <h4 className="text-[10px] sm:text-xs font-heading font-bold uppercase tracking-wider text-white mb-3">
                 Legal &amp; Compliance
               </h4>
               <ul className="space-y-2 text-xs">
@@ -1634,7 +1634,7 @@ const Landing = () => {
                   <button
                     type="button"
                     onClick={() => setActiveLegalModal('terms')}
-                    className="hover:text-white transition-colors text-left"
+                    className="hover:text-white transition-colors text-left cursor-pointer"
                   >
                     Terms &amp; Conditions
                   </button>
@@ -1643,7 +1643,7 @@ const Landing = () => {
                   <button
                     type="button"
                     onClick={() => setActiveLegalModal('privacy')}
-                    className="hover:text-white transition-colors text-left"
+                    className="hover:text-white transition-colors text-left cursor-pointer"
                   >
                     Privacy Policy
                   </button>
@@ -1652,7 +1652,7 @@ const Landing = () => {
                   <button
                     type="button"
                     onClick={() => setActiveLegalModal('payment')}
-                    className="hover:text-white transition-colors text-left"
+                    className="hover:text-white transition-colors text-left cursor-pointer"
                   >
                     Payment Policy &amp; Billing
                   </button>
@@ -1661,7 +1661,7 @@ const Landing = () => {
                   <button
                     type="button"
                     onClick={() => setActiveLegalModal('refund')}
-                    className="hover:text-white transition-colors text-left"
+                    className="hover:text-white transition-colors text-left cursor-pointer"
                   >
                     Refund &amp; Cancellation
                   </button>
@@ -1669,9 +1669,10 @@ const Landing = () => {
                 <li className="pt-2 border-t border-slate-800">
                   <Link
                     to="/login"
-                    className="text-indigo-400 hover:text-indigo-300 font-medium"
+                    className="text-indigo-400 hover:text-indigo-300 font-heading font-bold inline-flex items-center gap-1"
                   >
-                    Employee / Admin Login →
+                    <span>Employee / Admin Login</span>
+                    <span>→</span>
                   </Link>
                 </li>
               </ul>
@@ -1683,7 +1684,7 @@ const Landing = () => {
               © {new Date().getFullYear()} Global Infotech India Pvt. Ltd. All rights
               reserved.
             </p>
-            <p>Designed with enterprise-grade multi-tenant architecture.</p>
+            <p className="font-mono-tech">Designed with enterprise-grade multi-tenant architecture.</p>
           </div>
         </div>
       </footer>
